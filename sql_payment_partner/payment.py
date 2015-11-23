@@ -62,7 +62,7 @@ class account_payment_term(osv.osv):
             # Normal import function launched:
             super(account_payment_term, self).schedule_sql_payment_import(
                 cr, uid, context=context)
-
+            
             _logger.info('Start import SQL: payment for partner')
             partner_pool = self.pool.get('res.partner')
 

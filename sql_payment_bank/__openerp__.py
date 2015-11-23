@@ -36,10 +36,9 @@
         'account',
         'base_mssql',
         'base_mssql_accounting',
-        'sql_partner',
         'l10n_it_abicab', # https://github.com/OCA/l10n-italy#7.0
         'l10n_it_iban_cin',
-        'sql_payment',
+        'sql_payment_partner',
     ],
     'init_xml': [], 
     'data': [

@@ -32,6 +32,8 @@ from openerp.osv import osv, fields
 from datetime import datetime, timedelta
 import logging
 
+from tools.translate import _
+
 
 _logger = logging.getLogger(__name__)
 
@@ -79,10 +81,12 @@ class account_payment_term(osv.osv):
                 return True
 
             # Load dict for convert bank ID in OpenERP ID:
-            bank_convert = {}
-            bank_ids = self.search(cr, uid, [], context=context)
-            for bank in self.browse(cr, uid, bank_ids, context=context):
+            bank_convert = {} # Correct
+            bank_names = {} # With problem!
+            bank_ids = bank_pool.search(cr, uid, [], context=context)
+            for bank in bank_pool.browse(cr, uid, bank_ids, context=context):
                 bank_convert[(bank.abi, bank.cab)] = bank.id
+                bank_names[bank.name] = bank.id
                 
             i = 0            
             _logger.info('Start import payment for bank')
@@ -91,23 +95,35 @@ class account_payment_term(osv.osv):
                 try:
                     partner_code = record['CKY_CNT']
                     
-                    bank_name = record['CDS_BANCA'] 
+                    bank_name = record['CDS_BANCA'].strip()
                     abi = record['NGL_ABI']
-                    cav = record['NGL_CAB']
+                    cab = record['NGL_CAB']
                     prefix = record['CKY_CNT_BAN_PREF']
-                    cc = record['CSG_CC']
+                    cc = record['CSG_CC'] or _('Not found!')
                     cin = record['CSG_BBAN_CIN']
                     nation_code = record['CSG_IBAN_PAESE']
                     cin_letter = record['NGB_IBAN_CIN'] 
                     bban = record['CSG_IBAN_BBAN'] 
                     bic = record['CSG_BIC']
-
+                  
                     # ---------------------------------------------------------
                     #                    res.bank:
                     # ---------------------------------------------------------
-                    if (abi, cab) in bank_convert:
-                        bank_id = bank_convert((abi, cab))
-                    else: # create    
+                    if abi and cab:
+                        if (abi, cab) in bank_convert:
+                            bank_id = bank_convert[(abi, cab)]
+                        else:
+                            bank_id = False    
+                    elif bank_name:
+                        bank_id = bank_names.get(bank_name, False)
+                    else:
+                        _logger.warning(
+                            'No ABI, CAB or bank name, partner: %s' % (
+                                partner_code))
+                        continue    
+                                
+                    # TODO problem if abi and cab added after (duplicated rec.)            
+                    if not bank_id:            
                         bank_id = bank_pool.create(cr, uid, {
                             'abi': abi,
                             'cab': cab,
@@ -149,8 +165,8 @@ class account_payment_term(osv.osv):
                             'bank_cab': cab,
                             'nation_code': nation_code,
                             'cin_code': cin,
-                            'cin_letter', cin_letter,
-                            'state': 'iban',
+                            'cin_letter': cin_letter,
+                            'state': 'bank', #'iban',
                             # TODO enought?
                             }, context=context)
                 except:
