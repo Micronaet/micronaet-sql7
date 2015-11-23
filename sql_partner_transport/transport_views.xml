@@ -1,6 +1,20 @@
 <?xml version="1.0" ?>
 <openerp>
 <data>
+    <!--res.partner--> 
+    <record id='view_res_partner_sql_vector' model='ir.ui.view'>
+        <field name='name'>Partner Vector</field>
+        <field name='model'>res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name='arch' type='xml'>
+            <xpath expr="//notebook/page[@string='Sales &amp; Purchases']//field[@name='supplier']" position="after">
+                <field name="is_vector"/>
+                <field name="default_transport_id" attrs="{'invisible':[('is_vector','=',True)]}"/>
+            </xpath>
+        </field>
+    </record>    
+    <!--TODO create view and filter for is_vector-->
+    <!--<menuitem name="Partner" parent="base_mssql.menu_sql_anagraphic" id="menu_sql_anagraphic_partner" action="base.action_partner_form" sequence="10" />-->
 </data>
 </openerp>
 

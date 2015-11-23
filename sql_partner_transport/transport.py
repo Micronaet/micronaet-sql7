@@ -128,7 +128,7 @@ class res_partner(osv.osv):
     _columns = {
         'is_vector': fields.boolean('Is Vector'),
         'default_transport_id': fields.many2one('res.partner', 
-            'Default payment'),
+            'Default vector'),
         }
-        
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
