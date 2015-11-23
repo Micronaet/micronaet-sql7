@@ -140,6 +140,48 @@ class micronaet_accounting(osv.osv):
             return False  # Error return nothing
 
     def get_payment_partner(self, cr, uid, year=False, context=None):
+        ''' Access to anagrafic table of payments
+            Table: PC_CONDIZIONI_COMM
+        '''
+        if self.pool.get('res.company').table_capital_name(cr, uid, 
+                context=context):
+            table = "PC_CONDIZIONI_COMM"
+        else:
+            table = "pc_condizioni_comm"
+
+        cursor = self.connect(cr, uid, year=year, context=context)
+        try:
+            cursor.execute("""
+                SELECT CKY_CNT, NKY_PAG FROM %s;""" % table)
+            return cursor # with the query setted up                  
+        except: 
+            return False  # Error return nothing
+
+    def get_payment_bank(self, cr, uid, year=False, context=None):
+        ''' Access to anagrafic table of payments
+            Table: PC_CONDIZIONI_COMM
+        '''
+        if self.pool.get('res.company').table_capital_name(cr, uid, 
+                context=context):
+            table = "PC_CONDIZIONI_COMM"
+        else:
+            table = "pc_condizioni_comm"
+
+        cursor = self.connect(cr, uid, year=year, context=context)
+        try:
+            cursor.execute("""
+                SELECT 
+                    CKY_CNT, NKY_PAG, CDS_BANCA, NGL_ABI, NGL_CAB, 
+                    CKY_CNT_BAN_PREF, CSG_CC, CSG_BBAN_CIN, CSG_IBAN_PAESE,
+                    NGB_IBAN_CIN, CSG_IBAN_BBAN, CSG_BIC
+                FROM 
+                    %s;
+                """ % table)
+            return cursor # with the query setted up                  
+        except: 
+            return False  # Error return nothing
+
+    def get_payment_partner(self, cr, uid, year=False, context=None):
         ''' Access to anagrafic partner link to table of payments
             Table: PC_CONDIZIONI_COMM
             (only record with payment setted up)

@@ -114,7 +114,7 @@ class res_company(osv.osv):
             else:
                 # if no multi DB or no year current
                 database = company_proxy.mssql_database      
-            
+
             if company_proxy.mssql_type == 'mssql':
                 try:
                     import pymssql
