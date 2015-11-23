@@ -100,9 +100,9 @@ class account_payment_term(osv.osv):
                     cab = record['NGL_CAB']
                     prefix = record['CKY_CNT_BAN_PREF']
                     cc = record['CSG_CC'] or _('Not found!')
-                    cin = record['CSG_BBAN_CIN']
+                    cin_letter = record['CSG_BBAN_CIN']
                     nation_code = record['CSG_IBAN_PAESE']
-                    cin_letter = record['NGB_IBAN_CIN'] 
+                    cin_code = record['NGB_IBAN_CIN'] 
                     bban = record['CSG_IBAN_BBAN'] 
                     bic = record['CSG_BIC']
                   
@@ -114,22 +114,23 @@ class account_payment_term(osv.osv):
                             bank_id = bank_convert[(abi, cab)]
                         else:
                             bank_id = False    
-                    elif bank_name:
-                        bank_id = bank_names.get(bank_name, False)
                     else:
-                        _logger.warning(
-                            'No ABI, CAB or bank name, partner: %s' % (
-                                partner_code))
-                        continue    
+                        if bank_name:
+                            bank_id = bank_names.get(bank_name, False)
+                        else:
+                            _logger.warning(
+                                'No ABI, CAB or bank name, partner: %s' % (
+                                    partner_code))
+                            continue    
                                 
                     # TODO problem if abi and cab added after (duplicated rec.)            
                     if not bank_id:            
                         bank_id = bank_pool.create(cr, uid, {
-                            'abi': abi,
-                            'cab': cab,
+                            'abi': '%05d' % abi,
+                            'cab': '%05d' % cab,
                             'name': bank_name,
                             'nation_code': nation_code,
-                            'cin_code': cin,
+                            'cin_code': cin_code,
                             'cin_letter': cin_letter,                            
                             # TODO enought data!!!!!
                             }, context=context)
