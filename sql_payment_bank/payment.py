@@ -82,11 +82,11 @@ class account_payment_term(osv.osv):
 
             # Load dict for convert bank ID in OpenERP ID:
             bank_convert = {} # Correct
-            bank_names = {} # With problem!
+            #bank_names = {} # With problem!
             bank_ids = bank_pool.search(cr, uid, [], context=context)
             for bank in bank_pool.browse(cr, uid, bank_ids, context=context):
                 bank_convert[(bank.abi, bank.cab)] = bank.id
-                bank_names[bank.name] = bank.id
+                #bank_names[bank.name] = bank.id
                 
             i = 0            
             _logger.info('Start import payment for bank')
@@ -115,14 +115,14 @@ class account_payment_term(osv.osv):
                         else:
                             bank_id = False    
                     else:
-                        if bank_name:
-                            bank_id = bank_names.get(bank_name, False)
-                        else:
-                            _logger.warning(
-                                'No ABI, CAB or bank name, partner: %s' % (
-                                    partner_code))
-                            continue    
-                                
+                        #if bank_name:
+                        #    bank_id = bank_names.get(bank_name, False)
+                        #else:
+                        _logger.warning(
+                            'No ABI, CAB or bank name, partner: %s' % (
+                                partner_code))
+                        continue    
+                            
                     # TODO problem if abi and cab added after (duplicated rec.)            
                     if not bank_id:            
                         bank_id = bank_pool.create(cr, uid, {
@@ -162,10 +162,10 @@ class account_payment_term(osv.osv):
                             'acc_number': cc,
                             'bank': bank_id,
                             'bank_name': bank_name,
-                            'bank_abi': abi,
-                            'bank_cab': cab,
+                            'bank_abi': '%05d' % abi,
+                            'bank_cab': '%05d' % cab,
                             'nation_code': nation_code,
-                            'cin_code': cin,
+                            'cin_code': cin_code,
                             'cin_letter': cin_letter,
                             'state': 'bank', #'iban',
                             # TODO enought?
