@@ -93,8 +93,7 @@ class account_payment_term(osv.osv):
             for record in cursor:
                 i += 1
                 try:
-                    partner_code = record['CKY_CNT']
-                    
+                    partner_code = record['CKY_CNT']                    
                     bank_name = record['CDS_BANCA'].strip()
                     abi = record['NGL_ABI']
                     cab = record['NGL_CAB']
@@ -110,10 +109,12 @@ class account_payment_term(osv.osv):
                     #                    res.bank:
                     # ---------------------------------------------------------
                     if abi and cab:
+                        abi = '%05d' % abi
+                        cab = '%05d' % cab
                         if (abi, cab) in bank_convert:
                             bank_id = bank_convert[(abi, cab)]
-                        else:
-                            bank_id = False    
+                        else:                        
+                            bank_id = False
                     else:
                         #if bank_name:
                         #    bank_id = bank_names.get(bank_name, False)
@@ -126,14 +127,15 @@ class account_payment_term(osv.osv):
                     # TODO problem if abi and cab added after (duplicated rec.)            
                     if not bank_id:            
                         bank_id = bank_pool.create(cr, uid, {
-                            'abi': '%05d' % abi,
-                            'cab': '%05d' % cab,
+                            'abi': abi,
+                            'cab': cab,
                             'name': bank_name,
                             'nation_code': nation_code,
                             'cin_code': cin_code,
                             'cin_letter': cin_letter,                            
                             # TODO enought data!!!!!
                             }, context=context)
+                        bank_convert[(abi, cab)] = bank_id # save for after    
                             
                     # ---------------------------------------------------------
                     #                    res.partner.bank:
@@ -162,8 +164,8 @@ class account_payment_term(osv.osv):
                             'acc_number': cc,
                             'bank': bank_id,
                             'bank_name': bank_name,
-                            'bank_abi': '%05d' % abi,
-                            'bank_cab': '%05d' % cab,
+                            'bank_abi': abi,
+                            'bank_cab': cab,
                             'nation_code': nation_code,
                             'cin_code': cin_code,
                             'cin_letter': cin_letter,
