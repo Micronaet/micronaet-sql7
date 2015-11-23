@@ -1,0 +1,281 @@
+<?xml version="1.0" ?>
+<openerp>
+<data>
+    <!--INHERIT VIEW-->    
+    <!--res.currency-->
+    <record model="ir.ui.view" id="view_currency_sql_form">
+        <field name="name">Currency SQL</field>
+        <field name="model">res.currency</field>
+        <field name="inherit_id" ref="base.view_currency_form" />
+        <field name="arch" type="xml">
+             <field name="position" position="after">
+                 <field name="sql_name" />
+             </field>   
+        </field>
+    </record>
+
+    <!--res.partner-->
+    <record model="ir.ui.view" id="view_res_partner_payment_duelist_form">
+        <field name="name">Partner payment duelist</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form" />
+        <field name="arch" type="xml">
+            <xpath expr="/form/sheet/notebook/page[@string='Sales &amp; Purchases']" position="after">
+                <page string="Duelist payment">
+                    <group name="payment_duelist" colspan="4" col="4">
+                         <field name="duelist_optin" />
+                         <field name="duelist_mail" />
+                         <field name="duelist_uncovered" readonly="1"/>
+                         <field name="duelist_uncovered_amount" readonly="1"/>
+                         <separator name="Duelist" colspan="4" />
+                        <field name="duelist_ids" colspan="4" nolabel="1" readonly="1"/>
+                    </group>    
+                </page>    
+             </xpath>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="view_res_partner_payment_duelist_tree">
+        <field name="name">Partner payment duelist</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_tree" />
+        <field name="arch" type="xml">
+             <field name="email" position="after">
+                 <field name="duelist_optin" />
+                 <field name="duelist_mail" />
+                 <field name="duelist_uncovered" invisible="1"/>
+                 <field name="duelist_uncovered_amount" invisible="1"/>
+             </field>   
+             <xpath expr="/tree" position="attributes">
+                 <attribute name="colors">blue:duelist_optin==True</attribute>
+             </xpath>
+        </field>
+    </record>    
+    <record model="ir.ui.view" id="view_res_partner_payment_duelist_filter">
+        <field name="name">Partner payment duelist</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_res_partner_filter" />
+        <field name="arch" type="xml">
+             <filter string="Suppliers" name="supplier" position="after">
+                 <filter string="Payment mailing" name="duelist_optin" domain="[('duelist_optin','=',1)]" help="Duelist mailing"/>
+             </filter>   
+        </field>
+    </record>
+
+    <!--sql.payment.stage-->
+    <record model="ir.ui.view" id="view_sql_payment_stage_tree">
+        <field name="name">sql.payment.stage.tree</field>
+        <field name="model">sql.payment.stage</field>
+        <field name="arch" type="xml">
+            <tree string="Payment stage">
+                <field name="sequence" />
+                <field name="name" />
+                <field name="days" />
+                <field name="period" />
+                <field name="recipient" />
+                <field name="template_id" />
+            </tree>
+        </field>    
+    </record>    
+    <record model="ir.ui.view" id="view_sql_payment_stage_form">
+        <field name="name">sql.payment.stage.form</field>
+        <field name="model">sql.payment.stage</field>
+        <field name="arch" type="xml">
+            <form string="Payment stage" version="7.0">
+                <sheet>
+                    <group col="4" colspan="4">
+                        <field name="sequence" />
+                        <field name="name" />
+                        <field name="template_id" />
+                        <field name="days" />
+                        <field name="period" />
+                        <field name="recipient" />
+                        <separator string="Note" colspan="4" />
+                        <field name="note" nolabel="1" colspan="4" />
+                    </group>    
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record model="ir.actions.act_window" id="action_payment_stage_form">
+        <field name="name">Duelist stage</field>
+        <field name="res_model">sql.payment.stage</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_sql_payment_stage_tree"/>
+        <field name="context">{}</field>
+        <field name="domain">[]</field>
+    </record>
+    
+    <!--sql.payment.duelist-->
+    <record model="ir.ui.view" id="view_sql_payment_duelist_search">
+        <field name="name">sql.payment.duelist.search</field>
+        <field name="model">sql.payment.duelist</field>
+        <field name="priority" eval="20"/>
+        <field name="arch" type="xml">
+            <search string="Payment duelist (red=no mail, blue=deadlined, grey=not deadline, orange=deadlined today)">
+                    <field name="name" string="Ref." filter_domain="[('name','=',self)]"/> 
+                    <field name="partner_id" string="Partner" filter_domain="[('partner_id','=',self)]"/>
+                    <field name="country_id" string="Country" filter_domain="[('country_id','=',self)]"/>
+                    <field name="stage_id" string="Stage" filter_domain="[('stage_id','=',self)]"/>
+
+                    <separator string="State:"/>
+                    <filter icon="terp-go-home" name="state_draft" string="Draft" domain="[('state','=','draft')]"/>
+                    <filter icon="terp-go-home" name="state_confirmed" string="Confirmed" domain="[('state','=','confirmed')]"/>
+                    <filter icon="terp-go-home" name="state_done" string="Done" domain="[('state','=','done')]"/>
+                    <filter icon="terp-go-home" name="state_cancel" string="Cancel" domain="[('state','=','cancel')]"/>
+
+                    <filter icon="terp-go-home" name="state_all_opened" string="All opened" domain="[('state','in',('draft','confirmed'))]"/>
+
+                    <separator string="Deadline:"/>
+                    <filter icon="terp-go-home" name="deadlined_payment" string="Deadlined" domain="[('total','&gt;',0),('state','in',('draft','confirmed')),('deadline','&lt;',(context_today()).strftime('%%Y-%%m-%%d'))]"/>
+                    <filter icon="terp-go-home" name="not_deadlined_payment" string="Not Deadlined" domain="[('total','&gt;',0),('state','in',('draft','confirmed')),('deadline','&gt;',(context_today()).strftime('%%Y-%%m-%%d'))]"/>
+
+                    <group expand="1" string="Group By...">
+                        <filter name="group_partner" string="Partner" icon="terp-partner" context="{'group_by':'partner_id'}"/>
+                        <filter name="group_country" string="Country" icon="terp-partner" context="{'group_by':'country_id'}"/>
+                        <filter name="group_currency" string="Currency" icon="terp-accessories-archiver" context="{'group_by':'currency_id'}"/>
+                        <filter name="group_payment_type" string="Type of payment" icon="terp-accessories-archiver" context="{'group_by':'payment_type'}"/>
+                        <filter name="group_payment_stage" string="Stage" icon="terp-accessories-archiver" context="{'group_by':'stage_id'}"/>
+                        <filter name="group_deadline" string="Deadline" icon="terp-accessories-archiver" context="{'group_by':'deadline'}"/>
+                        <filter name="group_date" string="Date" icon="terp-accessories-archiver" context="{'group_by':'date'}"/>
+                        <filter name="group_state" string="State" icon="terp-accessories-archiver" context="{'group_by':'state'}"/>
+                    </group>                    
+            </search>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_sql_payment_duelist_colors_tree">
+        <field name="name">sql.payment.duelist.tree</field>
+        <field name="model">sql.payment.duelist</field>
+        <field name="arch" type="xml">
+            <tree string="Payment duelist (red=no mail, blue=deadlined, grey=not deadline, orange=deadlined today)" 
+                  colors="red:duelist_mail==False;orange:deadline==current_date;grey:deadline&gt;current_date;blue:deadline&lt;current_date">
+                <field name="name" />
+                <field name="date" />
+                <field name="deadline" />
+
+                <field name="partner_id" />
+                <field name="duelist_mail" />
+                <button name="%(res_partner_assign_duelist_mail_wizard_action)d" string="Assign" type="action" icon="gtk-index" context="{'partner_id':partner_id}" />
+                <field name="country_id" />
+
+                <field name="todo_stage_id" invisible="1" />
+                <field name="stage_id" />
+
+                <field name="total" sum="total" />
+                <field name="currency_id" />
+
+                <field name="payment_type" />
+                <field name="duelist_optin" invisible="1"/>
+
+                <button string="Always mail" name="trigger_duelist_draft_confirmed_always" type="object" icon="terp-personal+" attrs="{'invisible':['|',('duelist_optin','=',True),('state','!=','draft')]}"/>
+                <button string="Never mail" name="trigger_duelist_draft_confirmed_never" type="object" icon="terp-personal-" attrs="{'invisible':['|',('duelist_optin','=',False),('state','!=','draft')]}"/>
+                <button string="Confirmed" name="trigger_duelist_draft_confirmed" type="workflow" states="draft" icon="terp-mail-message-new"/>
+                <button string="Re-send" name="resend_mail" type="object" icon="terp-mail-replied" attrs="{'invisible':['|',('state','!=','confirmed'),('stage_id','=',False),]}"/>
+                <button string="Done" name="trigger_duelist_draft_done" type="workflow" states="draft" icon="gtk-paste-v"/>
+                <button string="Cancel" name="trigger_duelist_draft_cancel" type="workflow" states="draft" icon="gtk-cancel"/>
+                
+                <button string="Done" name="trigger_duelist_confirmed_done" type="workflow" states="confirmed" icon="gtk-paste-v"/>
+                <button string="Cancel" name="trigger_duelist_confirmed_cancel" type="workflow" states="confirmed" icon="gtk-cancel"/>
+                
+                <button string="Cancel" name="trigger_duelist_done_cancel" type="workflow" states="done" icon="gtk-cancel"/>
+                
+                <button string="Restart" name="trigger_duelist_cancel_draft" type="workflow" states="cancel" icon="gtk-refresh"/>
+                
+                <field name="state" widget="statusbar" />
+            </tree>
+        </field>    
+    </record>    
+    <record model="ir.ui.view" id="view_sql_payment_duelist_form">
+        <field name="name">sql.payment.duelist.form</field>
+        <field name="model">sql.payment.duelist</field>
+        <field name="arch" type="xml">
+            <form string="Payment duelist" version="7.0">
+                <header>
+                    <button string="Always mail" name="trigger_duelist_draft_confirmed_always" type="object" icon="terp-personal+" attrs="{'invisible':['|',('duelist_optin','=',True),('state','!=','draft')]}"/>
+                    <button string="Never mail" name="trigger_duelist_draft_confirmed_never" type="object" icon="terp-personal-" attrs="{'invisible':['|',('duelist_optin','=',False),('state','!=','draft')]}"/>
+                    <button string="Confirmed" name="trigger_duelist_draft_confirmed" type="workflow" states="draft" icon="terp-mail-message-new"/>
+                    <button string="Re-send" name="resend_mail" type="object" icon="terp-mail-replied" attrs="{'invisible':['|',('state','!=','confirmed'),('stage_id','=',False),]}"/>
+                    <button string="Done" name="trigger_duelist_draft_done" type="workflow" states="draft" icon="gtk-paste-v"/>
+                    <button string="Cancel" name="trigger_duelist_draft_cancel" type="workflow" states="draft" icon="gtk-cancel"/>
+
+                    <button string="Done" name="trigger_duelist_confirmed_done" type="workflow" states="confirmed" icon="gtk-paste-v"/>
+                    <button string="Cancel" name="trigger_duelist_confirmed_cancel" type="workflow" states="confirmed" icon="gtk-cancel"/>
+
+                    <button string="Cancel" name="trigger_duelist_done_cancel" type="workflow" states="done" icon="gtk-cancel"/>
+
+                    <button string="Restart" name="trigger_duelist_cancel_draft" type="workflow" states="cancel" icon="gtk-refresh"/>
+
+                    <!--<button string="Manual send" name="action_duelist_send" type="object" icon="terp-mail-replied"/>-->
+                    <field name="state" widget="statusbar" readonly='1'/>
+                </header>
+                <sheet>
+                    <group col="4" colspan="4">
+                        <field name="name" />
+                        <field name="stage_id" />
+                        <field name="partner_id" />
+                        <field name="country_id" />
+                        <field name="payment_type" />
+                        <field name="todo_stage_id" invisible="1"/>
+                        <field name="duelist_optin" invisible="1"/>
+                        <notebook colspan="4">
+                            <page string="Info">
+                                <group colspan="4" col="4">
+                                    <field name="date" />
+                                    <field name="deadline" />
+                                    <field name="total" />
+                                    <field name="currency_id" />
+                                </group>
+                            </page>                    
+                            <page string="Workflow">
+                                <group colspan="4" col="4">
+                                    <field name="draft_date" />
+                                    <newline />
+                                    <field name="confirmed_date" />
+                                    <field name="confirmed_user_id" />
+                                    <field name="done_date" />
+                                    <field name="done_user_id" />
+                                    <field name="cancel_date" />
+                                    <field name="cancel_user_id" />
+                                </group>
+                            </page>
+                        </notebook>
+                        <separator string="Note" colspan="4" />
+                        <field name="note" colspan="4" nolabel="1" />
+                    </group>
+                </sheet>
+	            <div class="oe_chatter">
+		            <field name="message_follower_ids" widget="mail_followers" modifiers="{}"/>
+		            <field name="message_ids" widget="mail_thread" options="{'thread_level': 1}" modifiers="{}"/>
+	            </div>
+            </form>
+        </field>
+    </record>
+    <record model="ir.actions.act_window" id="action_payment_duelist_form">
+        <field name="name">Duelist payment</field>
+        <field name="res_model">sql.payment.duelist</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_sql_payment_duelist_colors_tree"/>
+        <field name="context">{'search_default_deadlined_payment':1}</field>        
+        <field name="domain">[('state','!=','cancel')]</field>
+    </record>
+    <record model="ir.actions.act_window" id="action_payment_duelist_all_form">
+        <field name="name">Duelist payment</field>
+        <field name="res_model">sql.payment.duelist</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_sql_payment_duelist_colors_tree"/>
+        <!--<field name="context">{}</field>        
+        <field name="domain">[]</field>-->
+    </record>
+
+    <!--Menu tree:-->
+    <menuitem id="menu_sql_accounting" name="Accounting sql" parent="account.menu_finance" sequence="1" />
+        <menuitem id="menu_sql_accounting_duelist" name="Deadline payment" parent="menu_sql_accounting" sequence="10" action="action_payment_duelist_form" />
+            <menuitem id="menu_sql_accounting_all_duelist" name="All payment" parent="menu_sql_accounting_duelist" sequence="10" action="action_payment_duelist_all_form" />
+        <menuitem id="menu_sql_accounting_configuration" name="Configuration" parent="menu_sql_accounting" sequence="99" />
+            <menuitem id="menu_sql_accounting_configuration_stage" name="Stage" parent="menu_sql_accounting_configuration" sequence="10" action="action_payment_stage_form"/>
+</data>
+</openerp>
+

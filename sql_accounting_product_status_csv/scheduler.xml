@@ -1,0 +1,33 @@
+<?xml version="1.0" ?>
+<openerp>
+	<data noupdate="1">
+		<record id="ir_cron_product_existence_csv" model="ir.cron">
+			<field eval="&quot;&quot;&quot;import_quantity_existence_csv&quot;&quot;&quot;" name="function"/>
+			<field eval="&quot;&quot;&quot;days&quot;&quot;&quot;" name="interval_type"/>
+			<field name="user_id" ref="base.user_root"/>
+			<field eval="&quot;&quot;&quot;CSV Import product existence&quot;&quot;&quot;" name="name"/>
+			<field eval="-1" name="numbercall"/>
+			<field eval="&quot;&quot;&quot;2010-07-04 23:00:00&quot;&quot;&quot;" name="nextcall"/>
+			<field eval="5" name="priority"/>
+			<field eval="0" name="doall"/>
+			<field eval="1" name="active"/>
+			<field name="args">('~/etl/company','esi.txt')</field>
+			<field eval="1" name="interval_number"/>
+			<field eval="&quot;&quot;&quot;product.product&quot;&quot;&quot;" name="model"/>
+		</record>
+		<record id="ir_cron_product_existence_csv_export" model="ir.cron">
+			<field eval="&quot;&quot;&quot;export_store_qty_csv&quot;&quot;&quot;" name="function"/>
+			<field eval="&quot;&quot;&quot;days&quot;&quot;&quot;" name="interval_type"/>
+			<field name="user_id" ref="base.user_root"/>
+			<field eval="&quot;&quot;&quot;CSV Export store quantity&quot;&quot;&quot;" name="name"/>
+			<field eval="-1" name="numbercall"/>
+			<field eval="&quot;&quot;&quot;2010-07-04 23:10:00&quot;&quot;&quot;" name="nextcall"/>
+			<field eval="5" name="priority"/>
+			<field eval="0" name="doall"/>
+			<field eval="1" name="active"/>
+			<field name="args">('~/etl/company','store.txt')</field>
+			<field eval="1" name="interval_number"/>
+			<field eval="&quot;&quot;&quot;product.product&quot;&quot;&quot;" name="model"/>
+		</record>
+	</data>
+</openerp>

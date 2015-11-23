@@ -1,0 +1,73 @@
+# Translation of OpenERP Server.
+# This file contains the translation of the following modules:
+# 	* sql_accounting_product_status_bs_set_date
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenERP Server 7.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-11-24 10:44+0000\n"
+"PO-Revision-Date: 2014-11-24 11:45+0100\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"X-Generator: Poedit 1.5.4\n"
+
+#. module: sql_accounting_product_status_bs_set_date
+#: model:ir.model,name:sql_accounting_product_status_bs_set_date.model_product_product
+msgid "Product"
+msgstr "Prodotto"
+
+#. module: sql_accounting_product_status_bs_set_date
+#: field:res.company,default_inventory_date:0
+msgid "Inventory date"
+msgstr "Data inventario"
+
+#. module: sql_accounting_product_status_bs_set_date
+#: model:ir.model,name:sql_accounting_product_status_bs_set_date.model_res_company_inventory_date_wizard
+msgid "res.company.inventory.date.wizard"
+msgstr "res.company.inventory.date.wizard"
+
+#. module: sql_accounting_product_status_bs_set_date
+#: model:ir.model,name:sql_accounting_product_status_bs_set_date.model_res_company
+msgid "Companies"
+msgstr "Aziende"
+
+#. module: sql_accounting_product_status_bs_set_date
+#: field:res.company.inventory.date.wizard,inventory_date:0
+msgid "Date"
+msgstr "Data"
+
+#. module: sql_accounting_product_status_bs_set_date
+#: view:res.company.inventory.date.wizard:0
+msgid "Set today"
+msgstr "Imposta oggi"
+
+#. module: sql_accounting_product_status_bs_set_date
+#: view:res.company.inventory.date.wizard:0
+msgid "Set date"
+msgstr "Imposta data"
+
+#. module: sql_accounting_product_status_bs_set_date
+#: view:product.product:0
+msgid "onchange_inventory_date(inventory_quantity)"
+msgstr "onchange_inventory_date(inventory_quantity)"
+
+#. module: sql_accounting_product_status_bs_set_date
+#: view:res.company.inventory.date.wizard:0
+msgid "Cancel"
+msgstr "Annulla"
+
+#. module: sql_accounting_product_status_bs_set_date
+#: help:res.company,default_inventory_date:0
+msgid "Default inventory date (set up by wizard)"
+msgstr "Data default inventario (impostata da wizard)"
+
+#. module: sql_accounting_product_status_bs_set_date
+#: model:ir.actions.act_window,name:sql_accounting_product_status_bs_set_date.action_res_company_inventory_date_wizard
+#: view:product.product:0 view:res.company.inventory.date.wizard:0
+msgid "Set inventory date"
+msgstr "Imposta data inventario"

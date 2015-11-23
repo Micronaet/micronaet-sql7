@@ -1,0 +1,34 @@
+<?xml version="1.0" ?>
+<openerp>
+	<data>
+	
+	    <record model="ir.ui.view" id="view_product_category_range_form">
+	        <field name="name">product.category.range.form</field>
+	        <field name="model">product.category</field>
+	        <field name="inherit_id" ref="product.product_category_form_view"/>	        
+	        <field name="arch" type="xml">
+	            <xpath expr="//group/group" position="after">
+				    <group name="product_range" string="Product range" colspan="2">
+					    <field name="auto_category_type" />
+					    <field name="from_code" />
+					    <field name="to_code" />
+				    </group>	        
+				</xpath>
+	        </field>
+	    </record>
+
+	    <record model="ir.ui.view" id="view_product_category_range_tree">
+	        <field name="name">product.category.range.tree</field>
+	        <field name="model">product.category</field>
+	        <field name="inherit_id" ref="product.product_category_list_view"/>	        
+	        <field name="arch" type="xml">
+	            <field name="complete_name" position="after">
+	                <field name="auto_category_type" />
+	                <field name="from_code" />
+	                <field name="to_code" />
+				</field>
+	        </field>
+	    </record>
+
+	</data>
+</openerp>

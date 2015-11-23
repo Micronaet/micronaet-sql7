@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+<openerp>
+<data>
+    <!--sql.payment.duelist-->
+    <record model="ir.ui.view" id="view_sql_payment_duelist_cei_search">
+        <field name="name">sql.payment.duelist.search</field>
+        <field name="model">sql.payment.duelist</field>
+        <field name="inherit_id" ref="sql_due_list_mailing.view_sql_payment_duelist_search" />
+        
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <!--<field name="type_cei" />-->
+                
+                <separator string="CEI:"/>
+                <filter icon="terp-go-home" name="type_cei_i" string="Italy" domain="[('type_cei','=','i')]"/>
+                <filter icon="terp-go-home" name="type_cei_c" string="CEE" domain="[('type_cei','=','c')]"/>
+                <filter icon="terp-go-home" name="type_cei_e" string="Extra CEE" domain="[('type_cei','=','e')]"/>
+            </field>    
+        </field>
+    </record>
+</data>
+</openerp>
+

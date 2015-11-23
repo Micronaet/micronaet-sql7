@@ -1,0 +1,4 @@
+"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
+"access_sql_payment_duelist_user","sql.payment.duelist","model_sql_payment_duelist","base.group_user",1,1,1,1
+"access_sql_payment_stage_user","sql.payment.stage","model_sql_payment_stage","base.group_user",1,1,1,1
+

@@ -1,0 +1,60 @@
+<?xml version="1.0" ?>
+<openerp>
+<data>
+    <!-- sql.move.line -->
+    <record model="ir.ui.view" id="view_sql_move_line_code35_search">
+        <field name="name">Search Code 3 and 5</field>
+        <field name="model">sql.move.line</field>
+        <field name="inherit_id" ref="sql_accounting_analysis.view_sql_move_line_search" />
+        <field name="arch" type="xml">
+            <field name="product_id" position="after">
+                <field name="code3" />
+                <field name="code5" />
+                <field name="season" />
+                <field name="range" />
+
+                <filter name="range_0" string="0 or negative" icon="terp-partner" domain="[('range','=',0)]" />
+                <filter name="range_1" string="Range 1" icon="terp-partner" domain="[('range','=',1)]" />
+                <filter name="range_2" string="Range 2" icon="terp-partner" domain="[('range','=',2)]" />
+                <filter name="range_3" string="Range 3" icon="terp-partner" domain="[('range','=',3)]" />
+                <filter name="range_4" string="Oversize" icon="terp-partner" domain="[('range','=',4)]" />
+            </field>
+
+            <filter name="group_partner" position="after">
+                <filter name="group_code_3" string="Code 3" icon="terp-partner" context="{'group_by':'code3'}" />
+                <filter name="group_code_5" string="Code 5" icon="terp-partner" context="{'group_by':'code5'}" />
+                <filter name="group_season" string="Season" icon="terp-partner" context="{'group_by':'season'}" />
+                <filter name="group_range" string="Range" icon="terp-partner" context="{'group_by':'range'}" />
+            </filter>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="view_sql_move_line_code35_tree">
+        <field name="name">sql.move.line.tree</field>
+        <field name="model">sql.move.line</field>
+        <field name="inherit_id" ref="sql_accounting_analysis.view_sql_move_line_tree" />
+        <field name="arch" type="xml">
+            <field name="product_id" position="after">
+                <field name="code3" />
+                <field name="code5" />
+                <field name="season" />
+                <field name="range" invisibile="1" />
+            </field>     
+        </field>
+    </record>
+    <record model="ir.ui.view" id="view_sql_move_line_tree_code35_manager">
+        <field name="name">sql.move.line.tree.manager</field>
+        <field name="model">sql.move.line</field>
+        <field name="inherit_id" ref="sql_accounting_analysis.view_sql_move_line_tree_manager" />
+        <field name="arch" type="xml">
+            <field name="product_id" position="after">
+                <field name="code3" />
+                <field name="code5" />
+                <field name="season" />
+                <field name="range" invisibile="1" />
+            </field>                
+        </field>
+    </record>    
+</data>
+</openerp>
+

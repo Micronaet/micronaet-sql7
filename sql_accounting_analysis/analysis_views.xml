@@ -1,0 +1,219 @@
+<?xml version="1.0" ?>
+<openerp>
+<data>
+    <!-- product.product -->
+        <record id="product_form_view_analysis" model="ir.ui.view">
+            <field name="name">product.product.form.analysis</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_normal_form_view"/>
+            <field name="arch" type="xml">
+                 <field name="sale_ok" position="before">
+                     <field name="not_analysis" />
+                     <label for="not_analysis"/>
+                 </field>
+            </field>
+        </record>
+    
+    <!-- sql.move.line -->
+    <record model="ir.ui.view" id="view_sql_move_line_search">
+        <field name="name">sql.move.line.search</field>
+        <field name="model">sql.move.line</field>
+        <field name="arch" type="xml">
+            <search string="Stock movement line">
+                <field name="name" string="Ref." filter_domain="[('name','ilike',self)]" />
+
+                <field name="type" string="Type of doc." filter_domain="[('type','=',self)]" />
+
+                <field name="partner_name" string="Partner like" filter_domain="[('partner_name','ilike',self)]" />
+                <field name="partner_id" string="Partner" filter_domain="[('partner_id','=',self)]" />
+                
+                <field name="product_description" string="Prod. desc. like" filter_domain="[('product_description','ilike',self)]" />
+                <field name="product_name" string="Product like" filter_domain="[('product_name','ilike',self)]" />
+                <field name="product_id" string="Product" filter_domain="[('product_id','=',self)]" />
+
+                <field name="product_name" string="Product parent like" filter_domain="[('product_name','ilike',self)]" />
+                <field name="parent_product_id" string="Product parent" filter_domain="[('parent_product_id','=',self)]" groups="sql_accounting_analysis.group_SQL_accounting_use_lot"/>
+                <field name="lot" string="Lot" filter_domain="[('lot','=',self)]" groups="sql_accounting_analysis.group_SQL_accounting_use_lot"/>
+
+                <field name="date" string="From date" filter_domain="[('date','&gt;=',self)]" />
+                <field name="date" string="To date" filter_domain="[('date','&lt;=',self)]" />
+
+                <filter icon="terp-go-home" name="BC" string="DDT" domain="[('type','=','BC')]"/>
+                <filter icon="terp-go-home" name="BD" string="BD" domain="[('type','=','BD')]"/>
+                <filter icon="terp-go-home" name="BF" string="BF" domain="[('type','=','BF')]"/>
+                <filter icon="terp-go-home" name="BS" string="BS" domain="[('type','=','BS')]"/>
+                <filter icon="terp-go-home" name="FT" string="Invoice" domain="[('type','=','FT')]"/>
+                <filter icon="terp-go-home" name="NC" string="Credit note" domain="[('type','=','NC')]"/>
+                <separator />
+
+                <filter name="current_year" string="Current Year (BS)" domain="[('type','=','BS'),('date','&gt;=',context_today().strftime('%%Y-01-01'))]" />
+                <filter name="current_year_all" string="Current Year (All)" domain="[('date','&gt;=',context_today().strftime('%%Y-01-01'))]" />
+                <separator />
+                
+                <group expand="1" string="Group By...">
+                    <filter name="group_partner" string="Partner" icon="terp-partner" context="{'group_by':'partner_id'}"/>
+                    <filter name="group_product" string="Product" icon="terp-accessories-archiver" context="{'group_by':'product_id'}"/>
+                    <filter name="group_parent_product_id" string="Product parent" icon="terp-accessories-archiver" context="{'group_by':'parent_product_id'}" groups="sql_accounting_analysis.group_SQL_accounting_use_lot"/>
+                    <filter name="group_lot" string="Lot" icon="terp-accessories-archiver" context="{'group_by':'lot'}" groups="sql_accounting_analysis.group_SQL_accounting_use_lot"/>
+                    <filter name="group_type" string="Type of doc." icon="terp-accessories-archiver" context="{'group_by':'type'}"/>
+                    <filter name="group_header" string="Header" icon="terp-accessories-archiver" context="{'group_by':'header'}"/>
+                    <filter name="group_date" string="Date" icon="terp-accessories-archiver" context="{'group_by':'date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="view_sql_move_line_tree">
+        <field name="name">sql.move.line.tree</field>
+        <field name="model">sql.move.line</field>
+        <field name="arch" type="xml">
+            <tree string="Sales analisys line" version="7.0" colors="red:quantity&lt;0">
+                <field name="type" />
+                <field name="name" />
+                <field name="date" />
+                <field name="parent_product_id" groups="sql_accounting_analysis.group_SQL_accounting_use_lot"/>
+                <field name="product_id" />
+                <field name="product_description" />
+                <field name="lot" groups="sql_accounting_analysis.group_SQL_accounting_use_lot"/>
+                <field name="partner_id" />
+                <field name="quantity" sum="Quantity Total" />
+                <field name="unit_price" />
+                <field name="total" sum="Amount Total" />
+            </tree>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="view_sql_move_line_tree_manager">
+        <field name="name">sql.move.line.tree.manager</field>
+        <field name="model">sql.move.line</field>
+        <field name="priority" eval="30"/>
+        <field name="arch" type="xml">
+            <tree string="Sales analisys line" version="7.0" colors="red:analysis_quantity&lt;0">
+                <field name="type" />
+                <field name="name" />
+                <field name="header" />
+                <field name="date" />
+                <field name="parent_product_id" groups="sql_accounting_analysis.group_SQL_accounting_use_lot"/>
+                <field name="product_id" />
+                <field name="product_description" />
+                <field name="lot" groups="sql_accounting_analysis.group_SQL_accounting_use_lot"/>
+                <field name="partner_id" />
+                <field name="quantity" sum="Quantity Total" />
+                <field name="unit_price" />
+                <field name="analysis_quantity" sum="Analysis quantity" />
+                <field name="analysis_total" sum="Analysis total" />
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_sql_move_line_form">
+        <field name="name">sql.move.line.form</field>
+        <field name="model">sql.move.line</field>
+        <field name="arch" type="xml">
+            <form string="Sales analisys line" version="7.0">
+               <sheet>
+               <group col="4" colspan="4">
+                    <field name="quantity" />
+                    <field name="date" />
+    
+                    <field name="type" />
+                    <field name="name" />
+
+                    <field name="product_id" />
+                    <field name="lot" groups="sql_accounting_analysis.group_SQL_accounting_use_lot"/>
+                    
+                    <field name="parent_product_id" groups="sql_accounting_analysis.group_SQL_accounting_use_lot"/>
+                    <field name="partner_id" />
+                    <field name="product_description" />
+
+                    <field name="unit_price" />
+                    <field name="analysis_total" sum="Analysis total" />
+                    <!--<field name="import_note" />-->
+               </group>
+               </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_sql_move_line_graph">
+        <field name="name">sql.move.line.graph</field>
+        <field name="model">sql.move.line</field>
+        <field name="arch" type="xml">
+            <graph string="Sales analisys line" type="bar" orientation="vertical">
+                <field name="partner_id"/>
+                <field name="total" operator="+"/>
+            </graph>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="view_sql_move_line_graph_manager">
+        <field name="name">sql.move.line.graph.manager</field>
+        <field name="model">sql.move.line</field>
+        <field name="arch" type="xml">
+            <graph string="Sales analisys line" type="bar" orientation="vertical">
+                <field name="partner_id"/>
+                <field name="analysis_total" operator="+"/>
+            </graph>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="view_sql_move_line_graph_quantity_manager">
+        <field name="name">Move for Q. manager</field>
+        <field name="model">sql.move.line</field>
+        <field name="arch" type="xml">
+            <graph string="Sales analisys line" type="bar" orientation="vertical">
+                <field name="partner_id"/>
+                <field name="analysis_quantity" operator="+"/>
+            </graph>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_sql_move_line_form">
+        <field name="name">Sales analisys line</field>
+        <field name="res_model">sql.move.line</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form,graph</field>
+        <field name="view_id" ref="view_sql_move_line_tree"/>
+        <field name="search_view_id" ref="view_sql_move_line_search"/>
+        <field name="context">{'search_default_current_year':'1'}</field>
+        <field name="domain">[]</field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_sql_move_line_ft_form">
+        <field name="name">Sales analisys line FT</field>
+        <field name="res_model">sql.move.line</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form,graph</field>
+        <field name="view_id" ref="view_sql_move_line_tree"/>
+        <field name="search_view_id" ref="view_sql_move_line_search"/>
+        <field name="domain">[('type','=','FT')]</field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_sql_move_line_form_manager">
+        <field name="name">Sales analisys manager</field>
+        <field name="res_model">sql.move.line</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form,graph</field>
+        <field name="view_id" ref="view_sql_move_line_tree_manager"/>
+        <field name="search_view_id" ref="view_sql_move_line_search"/>
+        <field name="context">{'search_default_current_year':'1','graph_view_ref':'sql_accounting_analysis.view_sql_move_line_graph_manager'}</field>
+        <field name="domain">[]</field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_sql_move_line_quantity_form_manager">
+        <field name="name">Sales analisys manager (q.)</field>
+        <field name="res_model">sql.move.line</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form,graph</field>
+        <field name="view_id" ref="view_sql_move_line_tree_manager"/>
+        <field name="search_view_id" ref="view_sql_move_line_search"/>
+        <field name="context">{'search_default_current_year':'1','graph_view_ref':'sql_accounting_analysis.view_sql_move_line_graph_quantity_manager'}</field>
+        <field name="domain">[]</field>
+    </record>
+
+    <!-- child of base SQL root menu-->
+        <menuitem name="Stock movement" id="menu_sql_stock" parent="base_mssql.menu_sql_root" action="action_sql_move_line_form" sequence="10" groups="sql_accounting_analysis.group_SQL_accounting_manager"/>  
+            <menuitem name="Move on stock" id="menu_sql_stock_analysis" parent="menu_sql_stock" action="action_sql_move_line_form" sequence="10" />  
+            <!--    <menuitem name="Move on stock FT" id="menu_sql_stock_analysis_ft" parent="menu_sql_stock_analysis" action="action_sql_move_line_ft_form" sequence="10" />  -->
+            <menuitem name="Analysis" id="menu_sql_stock_analysis_manager_root" parent="menu_sql_stock" sequence="20" />
+                <menuitem name="Total analysis" id="menu_sql_stock_analysis_manager" parent="menu_sql_stock_analysis_manager_root" action="action_sql_move_line_form_manager" sequence="10" />
+                <menuitem name="Quantity analysis" id="menu_sql_stock_analysis_quantity_manager" parent="menu_sql_stock_analysis_manager_root" action="action_sql_move_line_quantity_form_manager" sequence="20" />
+</data>
+</openerp>
+

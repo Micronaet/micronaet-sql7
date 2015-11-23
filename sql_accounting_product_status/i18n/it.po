@@ -1,0 +1,207 @@
+# Translation of OpenERP Server.
+# This file contains the translation of the following modules:
+# 	* sql_accounting_product_status
+# <> <>, 2014.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenERP Server 7.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-03-12 11:29+0000\n"
+"PO-Revision-Date: 2014-03-12 12:34+0100\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: sql_accounting_product_status
+#: field:product.product,sql_reorder_lot:0
+msgid "Reorder lot"
+msgstr "Lotto di riordino"
+
+#. module: sql_accounting_product_status
+#: field:product.product,sql_min_level:0
+msgid "Min. level"
+msgstr "Livello minimo"
+
+#. module: sql_accounting_product_status
+#: view:product.product:0
+msgid "Orders:"
+msgstr "Ordini:"
+
+#. module: sql_accounting_product_status
+#: field:product.product,sql_unload:0
+msgid "Unload"
+msgstr "Scarico"
+
+#. module: sql_accounting_product_status
+#: field:res.company,sql_exclude_movement:0
+msgid "Exclude movement"
+msgstr "Escludi movimento"
+
+#. module: sql_accounting_product_status
+#: field:product.product,sql_order_customer_auto:0
+msgid "Customer auto"
+msgstr "Cliente auto"
+
+#. module: sql_accounting_product_status
+#: field:product.product,sql_net:0
+msgid "Net"
+msgstr "Netto"
+
+#. module: sql_accounting_product_status
+#: field:product.product,sql_inventary:0
+msgid "Inventary"
+msgstr "Inventario"
+
+#. module: sql_accounting_product_status
+#: model:ir.model,name:sql_accounting_product_status.model_product_product
+msgid "Product"
+msgstr "Prodotto"
+
+#. module: sql_accounting_product_status
+#: field:product.product,sql_availability_gross:0
+msgid "Availability gross"
+msgstr "Disponibilità lorda"
+
+#. module: sql_accounting_product_status
+#: view:product.product:0
+msgid "Availability:"
+msgstr "Disponibilità:"
+
+#. module: sql_accounting_product_status
+#: field:res.company,sql_exclude_list:0
+msgid "Exclue list"
+msgstr "Lista esclusioni"
+
+#. module: sql_accounting_product_status
+#: view:product.product:0
+msgid "Net:"
+msgstr "Netto:"
+
+#. module: sql_accounting_product_status
+#: field:product.product,sql_max_level:0
+msgid "Max. level"
+msgstr "Livello massimo"
+
+#. module: sql_accounting_product_status
+#: view:product.product:0
+msgid "Min level:"
+msgstr "Livello minimo:"
+
+#. module: sql_accounting_product_status
+#: view:product.product:0
+msgid "blue:sql_net<=sql_min_level;red:sql_net<=0"
+msgstr "blue:sql_net<=sql_min_level;red:sql_net<=0"
+
+#. module: sql_accounting_product_status
+#: field:product.product,sql_order_customer_suspended:0
+msgid "Customer order susp."
+msgstr "Ordine cliente sosp."
+
+#. module: sql_accounting_product_status
+#: field:product.product,sql_load:0
+msgid "Load"
+msgstr "Carico"
+
+#. module: sql_accounting_product_status
+#: view:product.product:0
+msgid "Accounting information:"
+msgstr "Informazioni contabili:"
+
+#. module: sql_accounting_product_status
+#: help:res.company,sql_exclude_movement:0
+msgid ""
+"There's some movement that is excluded (insert in next field), if so "
+"inventory quantity is calculated with this total"
+msgstr ""
+"Ci sono alcuni movimenti che vengono esclusi (inserire nel prossimo campo), "
+"se così la quantità inventario è calcolata partendo da questo totale"
+
+#. module: sql_accounting_product_status
+#: help:res.company,sql_exclude_list:0
+msgid "Exclude list, use: [\"SL\", \"CL\"] or (\"SL\", \"CL\")"
+msgstr "Lista esclusioni, usare: [\"SL\", \"CL\"] or (\"SL\", \"CL\")"
+
+#. module: sql_accounting_product_status
+#: model:ir.model,name:sql_accounting_product_status.model_res_company
+msgid "Companies"
+msgstr "Aziende"
+
+#. module: sql_accounting_product_status
+#: view:product.product:0
+msgid "Stock level:"
+msgstr "Livello magazzino:"
+
+#. module: sql_accounting_product_status
+#: model:ir.actions.act_window,name:sql_accounting_product_status.product_normal_action_sell_kanban
+msgid "Products"
+msgstr "Prodotti"
+
+#. module: sql_accounting_product_status
+#: view:product.product:0
+msgid "Existence:"
+msgstr "Esistenza:"
+
+#. module: sql_accounting_product_status
+#: field:product.product,sql_order_production:0
+msgid "Production order"
+msgstr "Ordine di produzione"
+
+#. module: sql_accounting_product_status
+#: field:product.product,sql_availability_net:0
+msgid "Availability net"
+msgstr "Disponibilità netta"
+
+#. module: sql_accounting_product_status
+#: field:product.product,sql_order_supplier:0
+msgid "Supplier order"
+msgstr "Ordini fornitore"
+
+#. module: sql_accounting_product_status
+#: model:ir.actions.act_window,help:sql_accounting_product_status.product_normal_action_sell_kanban
+msgid ""
+"<p class=\"oe_view_nocontent_create\">\n"
+"                Click to define a new product.\n"
+"              </p><p>\n"
+"                You must define a product for everything you sell, whether "
+"it's\n"
+"                a physical product, a consumable or a service you offer to\n"
+"                customers.\n"
+"              </p><p>\n"
+"                The product form contains information to simplify the sale\n"
+"                process: price, notes in the quotation, accounting data,\n"
+"                procurement methods, etc.\n"
+"              </p>\n"
+"            "
+msgstr ""
+"<p class=\"oe_view_nocontent_create\">\n"
+"                Click to define a new product.\n"
+"              </p><p>\n"
+"                You must define a product for everything you sell, whether "
+"it's\n"
+"                a physical product, a consumable or a service you offer to\n"
+"                customers.\n"
+"              </p><p>\n"
+"                The product form contains information to simplify the sale\n"
+"                process: price, notes in the quotation, accounting data,\n"
+"                procurement methods, etc.\n"
+"              </p>\n"
+"            "
+
+#. module: sql_accounting_product_status
+#: view:product.product:0
+msgid "Availability net:"
+msgstr "Disponibilità netta:"
+
+#. module: sql_accounting_product_status
+#: view:product.product:0
+msgid "Availability gross:"
+msgstr "Disponibilità lorda:"
+
+#. module: sql_accounting_product_status
+#: field:product.product,sql_order_customer:0
+msgid "Customer order"
+msgstr "Ordine cliente"

@@ -1,0 +1,204 @@
+# Translation of OpenERP Server.
+# This file contains the translation of the following modules:
+#	* sql_order_analysis
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenERP Server 7.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-03-12 11:39+0000\n"
+"PO-Revision-Date: 2014-03-12 11:39+0000\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: sql_order_analysis
+#: view:sql.order:0
+#: view:sql.order.line:0
+msgid "Total agent"
+msgstr "Totale agente"
+
+#. module: sql_order_analysis
+#: view:sql.order:0
+msgid "Note:"
+msgstr "Note:"
+
+#. module: sql_order_analysis
+#: view:sql.order:0
+msgid "Details:"
+msgstr "Dettagli:"
+
+#. module: sql_order_analysis
+#: field:sql.order,note:0
+msgid "Note"
+msgstr "Note"
+
+#. module: sql_order_analysis
+#: view:sql.order:0
+#: view:sql.order.line:0
+msgid "Group By..."
+msgstr "Raggruppa per..."
+
+#. module: sql_order_analysis
+#: model:ir.model,name:sql_order_analysis.model_sql_order
+msgid "SQL Order"
+msgstr "Ordini (SQL)"
+
+#. module: sql_order_analysis
+#: view:sql.order.line:0
+#: field:sql.order.line,product_id:0
+msgid "Product"
+msgstr "Prodotto"
+
+#. module: sql_order_analysis
+#: view:sql.order.line:0
+msgid "From deadline"
+msgstr "Da scadenza"
+
+#. module: sql_order_analysis
+#: view:sql.order.line:0
+msgid "To date"
+msgstr "Alla data"
+
+#. module: sql_order_analysis
+#: help:sql.order,name:0
+msgid "Order code"
+msgstr "Codice ordine"
+
+#. module: sql_order_analysis
+#: view:sql.order:0
+#: field:sql.order,date:0
+#: view:sql.order.line:0
+#: field:sql.order.line,date:0
+msgid "Date"
+msgstr "Data"
+
+#. module: sql_order_analysis
+#: field:sql.order,line_ids:0
+msgid "Line"
+msgstr "Riga"
+
+#. module: sql_order_analysis
+#: view:sql.order.line:0
+msgid "To deadline"
+msgstr "Alla scadenza"
+
+#. module: sql_order_analysis
+#: model:ir.ui.menu,name:sql_order_analysis.menu_sql_order
+msgid "Order analysis"
+msgstr "Analisi ordini"
+
+#. module: sql_order_analysis
+#: field:sql.order.line,agent_cost:0
+msgid "Agent cost"
+msgstr "Costo agente"
+
+#. module: sql_order_analysis
+#: field:sql.order.line,total:0
+msgid "Total amount"
+msgstr "Importo totale"
+
+#. module: sql_order_analysis
+#: help:sql.order,date:0
+msgid "Date when order is created"
+msgstr "Data di creazione ordine"
+
+#. module: sql_order_analysis
+#: model:res.groups,name:sql_order_analysis.group_SQL_order_manager_admin
+msgid "SQL / Order manager"
+msgstr "SQL / Order manager"
+
+#. module: sql_order_analysis
+#: field:sql.order,agent_total:0
+msgid "Agent total"
+msgstr "Totale agente"
+
+#. module: sql_order_analysis
+#: help:sql.order.line,deadline:0
+msgid "Deadline for statistic evaluation of delivery"
+msgstr "Scadenze per valutazioni statistiche di consegna"
+
+#. module: sql_order_analysis
+#: model:ir.actions.act_window,name:sql_order_analysis.action_sql_order_line_form
+#: model:ir.ui.menu,name:sql_order_analysis.menu_sql_order_line_analysis
+#: view:sql.order.line:0
+msgid "Order line"
+msgstr "Righe ordine"
+
+#. module: sql_order_analysis
+#: model:ir.actions.act_window,name:sql_order_analysis.action_sql_order_form
+#: model:ir.ui.menu,name:sql_order_analysis.menu_sql_order_analysis
+#: view:sql.order:0
+#: field:sql.order,name:0
+#: view:sql.order.line:0
+#: field:sql.order.line,order_id:0
+msgid "Order"
+msgstr "Ordine"
+
+#. module: sql_order_analysis
+#: field:sql.order.line,quantity:0
+msgid "Quantity"
+msgstr "Quantità"
+
+#. module: sql_order_analysis
+#: view:sql.order:0
+msgid "Quantity Total"
+msgstr "Totale quantità"
+
+#. module: sql_order_analysis
+#: help:sql.order.line,name:0
+msgid "Order line code"
+msgstr "Codice riga ordine"
+
+#. module: sql_order_analysis
+#: field:sql.order.line,sequence:0
+msgid "Sequence"
+msgstr "Ordinamento"
+
+#. module: sql_order_analysis
+#: model:ir.model,name:sql_order_analysis.model_sql_order_line
+msgid "SQL Order line"
+msgstr "Riga ordine (SQL)"
+
+#. module: sql_order_analysis
+#: field:sql.order.line,name:0
+msgid "Number"
+msgstr "Numero"
+
+#. module: sql_order_analysis
+#: field:sql.order.line,unit_price:0
+msgid "Unit price"
+msgstr "Prezzo unitario"
+
+#. module: sql_order_analysis
+#: field:sql.order.line,deadline:0
+msgid "Deadline"
+msgstr "Scadenza"
+
+#. module: sql_order_analysis
+#: view:sql.order.line:0
+msgid "From date"
+msgstr "Dalla data"
+
+#. module: sql_order_analysis
+#: view:sql.order:0
+#: field:sql.order,partner_id:0
+#: view:sql.order.line:0
+#: field:sql.order.line,partner_id:0
+msgid "Partner"
+msgstr "Partner"
+
+#. module: sql_order_analysis
+#: view:sql.order:0
+#: view:sql.order.line:0
+msgid "Total"
+msgstr "Totale"
+
+#. module: sql_order_analysis
+#: field:sql.order,total:0
+msgid "Order total"
+msgstr "Totale ordine"
+

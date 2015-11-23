@@ -1,0 +1,230 @@
+# Translation of OpenERP Server.
+# This file contains the translation of the following modules:
+# 	* sql_accounting_analysis_header
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenERP Server 7.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-11-05 09:36+0000\n"
+"PO-Revision-Date: 2014-11-05 10:38+0100\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"X-Generator: Poedit 1.5.4\n"
+
+#. module: sql_accounting_analysis_header
+#: view:sql.move.header:0
+msgid "BD"
+msgstr "BD"
+
+#. module: sql_accounting_analysis_header
+#: view:sql.move.header:0
+msgid "BF"
+msgstr "BF"
+
+#. module: sql_accounting_analysis_header
+#: help:sql.move.header,analysis_total:0
+msgid "Used for analysis purpose (usually is equal to -(total)"
+msgstr "Utilizzato per scopi di analisi (di solito è uguale a -(totale))"
+
+#. module: sql_accounting_analysis_header
+#: view:sql.move.header:0 field:sql.move.header,note:0
+msgid "Note"
+msgstr "Note"
+
+#. module: sql_accounting_analysis_header
+#: view:sql.move.header:0
+msgid "Group By..."
+msgstr "Raggruppa per..."
+
+#. module: sql_accounting_analysis_header
+#: field:sql.move.header,type:0
+msgid "State"
+msgstr "Stato"
+
+#. module: sql_accounting_analysis_header
+#: view:sql.move.header:0
+msgid "Details"
+msgstr "Dettagli"
+
+#. module: sql_accounting_analysis_header
+#: view:sql.move.header:0
+msgid "BS"
+msgstr "BS"
+
+#. module: sql_accounting_analysis_header
+#: view:sql.move.header:0
+msgid "Stock movement header"
+msgstr "Intestazione movimento"
+
+#. module: sql_accounting_analysis_header
+#: view:sql.move.header:0
+msgid "total"
+msgstr "totale"
+
+#. module: sql_accounting_analysis_header
+#: view:sql.move.header:0
+msgid "Type of doc."
+msgstr "Tipo di documento"
+
+#. module: sql_accounting_analysis_header
+#: field:sql.move.header,partner_name:0
+msgid "Partner name"
+msgstr "Nome cliente"
+
+#. module: sql_accounting_analysis_header
+#: field:sql.move.header,name:0
+msgid "Ref. document"
+msgstr "Rif. documento"
+
+#. module: sql_accounting_analysis_header
+#: view:res.partner:0
+msgid "Agent Partners"
+msgstr "Agente"
+
+#. module: sql_accounting_analysis_header
+#: model:ir.ui.menu,name:sql_accounting_analysis_header.menu_sql_stock_header
+msgid "Stock header"
+msgstr "Intestazione movimento"
+
+#. module: sql_accounting_analysis_header
+#: model:ir.actions.act_window,name:sql_accounting_analysis_header.action_sql_move_header_form
+#: view:sql.move.header:0
+msgid "Sales analisys header"
+msgstr "Analisi vendite (intestazione)"
+
+#. module: sql_accounting_analysis_header
+#: view:sql.move.header:0
+msgid "To date"
+msgstr "Alla data"
+
+#. module: sql_accounting_analysis_header
+#: view:sql.move.header:0
+msgid "Ref."
+msgstr "Rif."
+
+#. module: sql_accounting_analysis_header
+#: view:sql.move.header:0 field:sql.move.header,date:0
+msgid "Date"
+msgstr "Data"
+
+#. module: sql_accounting_analysis_header
+#: field:sql.move.header,deadline:0
+msgid "Deadline"
+msgstr "Scadenza"
+
+#. module: sql_accounting_analysis_header
+#: view:sql.move.header:0
+msgid "Partner like"
+msgstr "Cliente"
+
+#. module: sql_accounting_analysis_header
+#: model:ir.model,name:sql_accounting_analysis_header.model_sql_move_header
+msgid "ETL Move header"
+msgstr "ETL movimento intestazione"
+
+#. module: sql_accounting_analysis_header
+#: view:sql.move.header:0
+msgid "Payment"
+msgstr "Pagamenti"
+
+#. module: sql_accounting_analysis_header
+#: view:sql.move.header:0
+msgid "Credit note"
+msgstr "Nota di credito"
+
+#. module: sql_accounting_analysis_header
+#: model:ir.model,name:sql_accounting_analysis_header.model_sql_move_line
+msgid "ETL Move line"
+msgstr "Riga movimento (ETL)"
+
+#. module: sql_accounting_analysis_header
+#: field:sql.move.header,payment_id:0
+msgid "Payment term"
+msgstr "Termini di pagamento"
+
+#. module: sql_accounting_analysis_header
+#: help:sql.move.header,name:0
+msgid "Header document information"
+msgstr "Informazione documento (intestazione)"
+
+#. module: sql_accounting_analysis_header
+#: field:sql.move.header,line_ids:0
+msgid "Lines"
+msgstr "Linee"
+
+#. module: sql_accounting_analysis_header
+#: model:ir.ui.menu,name:sql_accounting_analysis_header.menu_sql_stock_header_analysis
+msgid "Analysis"
+msgstr "Analisi"
+
+#. module: sql_accounting_analysis_header
+#: view:sql.move.header:0
+msgid "DDT"
+msgstr "DDT"
+
+#. module: sql_accounting_analysis_header
+#: field:sql.move.header,analysis_total:0 field:sql.move.header,total:0
+msgid "Amount"
+msgstr "Importo"
+
+#. module: sql_accounting_analysis_header
+#: help:sql.move.header,date:0
+msgid "Date when order is created"
+msgstr "Data di creazione ordine"
+
+#. module: sql_accounting_analysis_header
+#: help:sql.move.header,deadline:0
+msgid "Deadline for statistic evaluation of delivery"
+msgstr "Scadenza per valutazioni statistiche"
+
+#. module: sql_accounting_analysis_header
+#: field:sql.move.header,number:0
+msgid "Number"
+msgstr "Numero"
+
+#. module: sql_accounting_analysis_header
+#: field:res.partner,is_agent:0 view:sql.move.header:0
+#: field:sql.move.header,agent_id:0
+msgid "Agent"
+msgstr "Agente"
+
+#. module: sql_accounting_analysis_header
+#: view:sql.move.header:0 field:sql.move.header,reason_id:0
+msgid "Transportation reason"
+msgstr "Causale trasporto"
+
+#. module: sql_accounting_analysis_header
+#: field:sql.move.line,header_id:0
+msgid "Header"
+msgstr "Intestazione"
+
+#. module: sql_accounting_analysis_header
+#: view:res.partner:0
+msgid "Agents"
+msgstr "Agenti"
+
+#. module: sql_accounting_analysis_header
+#: view:sql.move.header:0
+msgid "From date"
+msgstr "Dalla data"
+
+#. module: sql_accounting_analysis_header
+#: view:sql.move.header:0
+msgid "Invoice"
+msgstr "Fattura"
+
+#. module: sql_accounting_analysis_header
+#: model:ir.model,name:sql_accounting_analysis_header.model_res_partner
+#: view:sql.move.header:0 field:sql.move.header,partner_id:0
+msgid "Partner"
+msgstr "Partner"
+
+#. module: sql_accounting_analysis_header
+#: view:sql.move.header:0
+msgid "Amount Total"
+msgstr "Importo totale"

@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <!-- Workflow claim: -->
+        <record model="workflow" id="wkf_payment_duelist">
+            <field name="name">sql.payment.duelist.wkf</field>
+            <field name="osv">sql.payment.duelist</field>
+            <field name="on_create">True</field>
+        </record>
+
+        <!-- Activity: -->
+        <record model="workflow.activity" id="act_duelist_draft">
+            <field name="wkf_id" ref="wkf_payment_duelist" />
+            <field name="flow_start">True</field>
+            <field name="name">draft</field>
+            <field name="kind">function</field>
+            <field name="action">duelist_draft()</field>
+        </record>
+
+        <record model="workflow.activity" id="act_duelist_confirmed">
+            <field name="wkf_id" ref="wkf_payment_duelist" />
+            <field name="name">confirmed</field>
+            <field name="kind">function</field>
+            <field name="action">duelist_confirmed()</field>
+        </record>
+
+        <record model="workflow.activity" id="act_duelist_done">
+            <field name="wkf_id" ref="wkf_payment_duelist" />
+            <field name="name">done</field>
+            <field name="kind">function</field>
+            <field name="action">duelist_done()</field>
+        </record>
+
+        <record model="workflow.activity" id="act_duelist_cancel">
+            <field name="wkf_id" ref="wkf_payment_duelist" />
+            <field name="name">cancel</field>
+            <field name="kind">function</field>
+            <field name="action">duelist_cancel()</field>
+        </record>
+
+        <!-- Trigger: -->
+        <record model="workflow.transition" id="trg01a">
+            <field name="act_from" ref="act_duelist_draft" />
+            <field name="act_to" ref="act_duelist_confirmed" />
+            <field name="signal">trigger_duelist_draft_confirmed</field>
+        </record>
+        <record model="workflow.transition" id="trg01b">
+            <field name="act_from" ref="act_duelist_draft" />
+            <field name="act_to" ref="act_duelist_done" />
+            <field name="signal">trigger_duelist_draft_done</field>
+        </record>
+        <record model="workflow.transition" id="trg01c">
+            <field name="act_from" ref="act_duelist_draft" />
+            <field name="act_to" ref="act_duelist_cancel" />
+            <field name="signal">trigger_duelist_draft_cancel</field>
+        </record>
+
+        <record model="workflow.transition" id="trg02a">
+            <field name="act_from" ref="act_duelist_confirmed" />
+            <field name="act_to" ref="act_duelist_done" />
+            <field name="signal">trigger_duelist_confirmed_done</field>
+        </record>
+        <record model="workflow.transition" id="trg02b">
+            <field name="act_from" ref="act_duelist_confirmed" />
+            <field name="act_to" ref="act_duelist_cancel" />
+            <field name="signal">trigger_duelist_confirmed_cancel</field>
+        </record>
+
+        <record model="workflow.transition" id="trg03a">
+            <field name="act_from" ref="act_duelist_done" />
+            <field name="act_to" ref="act_duelist_cancel" />
+            <field name="signal">trigger_duelist_done_cancel</field>
+        </record>
+
+        <record model="workflow.transition" id="trg04a">
+            <field name="act_from" ref="act_duelist_cancel" />
+            <field name="act_to" ref="act_duelist_draft" />
+            <field name="signal">trigger_duelist_cancel_draft</field>
+        </record>
+
+    </data>
+</openerp>

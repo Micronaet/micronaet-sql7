@@ -1,0 +1,198 @@
+<?xml version="1.0" ?>
+<openerp>
+<data>
+
+    <!-- sql.order -->
+    <record model="ir.ui.view" id="view_sql_order_search">
+        <field name="name">sql.order.search</field>
+        <field name="model">sql.order</field>
+        <field name="arch" type="xml">
+            <search string="Order">
+                <field name="name" string="Order" filter_domain="[('name','ilike',self)]" />
+                <field name="partner_id" string="Partner" filter_domain="[('partner_id','=',self)]" />
+                <separator />
+                
+                <group expand="1" string="Group By...">
+                    <filter name="group_partner" string="Partner" icon="terp-partner" context="{'group_by':'partner_id'}"/>
+                    <filter name="group_date" string="Date" icon="terp-accessories-archiver" context="{'group_by':'date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="view_sql_order_tree">
+        <field name="name">sql.order.tree</field>
+        <field name="model">sql.order</field>
+        <field name="arch" type="xml">
+            <tree string="Order">
+                <field name="name" />
+                <field name="date" />
+                <field name="partner_id" />
+                <field name="total" sum="Quantity Total" />
+            </tree>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="view_sql_order_form">
+        <field name="name">sql.order.form</field>
+        <field name="model">sql.order</field>
+        <field name="arch" type="xml">
+            <form string="Order" version="7.0">
+               <sheet>
+               <group col="4" colspan="4">
+                    <field name="name" />
+                    <newline/>
+                    
+                    <field name="date" />
+                    <field name="partner_id" />
+
+                    <field name="total" />
+                    <field name="agent_total" />
+
+                    <separator string="Details:"/>
+                    <field name="line_ids" colspan="4" nolabel="1">
+                        <tree>
+                            <field name="sequence" />
+                            <field name="deadline" />
+                            <field name="product_id" />
+                            <field name="quantity" />
+                            <field name="unit_price" />
+                            <field name="total" sum="Total"/>
+                            <field name="agent_cost" sum="Total agent"/>
+                        </tree>
+                    </field>
+                    
+                    <separator string="Note:"/>
+                    <field name="note" colspan="4" nolabel="1" />
+               </group>
+               </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_sql_order_graph">
+        <field name="name">sql.order.graph</field>
+        <field name="model">sql.order</field>
+        <field name="arch" type="xml">
+            <graph string="Order" type="bar" orientation="horizontal">
+                <field name="partner_id"/>
+                <field name="total" operator="+"/>
+            </graph>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_sql_order_form">
+        <field name="name">Order</field>
+        <field name="res_model">sql.order</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form,graph</field>
+        <field name="view_id" ref="view_sql_order_tree"/>
+        <field name="search_view_id" ref="view_sql_order_search"/>
+        <field name="context">{}</field>
+        <field name="domain">[]</field>
+    </record>
+
+    <!-- sql.order.line -->
+    <record model="ir.ui.view" id="view_sql_order_line_search">
+        <field name="name">sql.order.line.search</field>
+        <field name="model">sql.order.line</field>
+        <field name="arch" type="xml">
+            <search string="Order line">
+                <field name="order_id" string="Order" filter_domain="[('order_id','=',self)]" />
+                <!--<field name="partner_name" string="Partner like" filter_domain="[('partner_name','ilike',self)]" />-->
+                <field name="partner_id" string="Partner" filter_domain="[('partner_id','=',self)]" />
+                
+                <!--<field name="product_name" string="Product like" filter_domain="[('product_name','ilike',self)]" />-->
+                <field name="product_id" string="Product" filter_domain="[('product_id','=',self)]" />
+
+                <field name="date" string="From date" filter_domain="[('date','&gt;=',self)]" />
+                <field name="date" string="To date" filter_domain="[('date','&lt;=',self)]" />
+
+                <field name="deadline" string="From deadline" filter_domain="[('deadline','&gt;=',self)]" />
+                <field name="deadline" string="To deadline" filter_domain="[('deadline','&lt;=',self)]" />
+                <!--<filter icon="terp-go-home" name="BC" string="DDT" domain="[('type','=','BC')]"/>
+                <filter icon="terp-go-home" name="FT" string="Invoice" domain="[('type','=','FT')]"/>-->
+                <separator />
+                
+                <group expand="1" string="Group By...">
+                    <filter name="group_order" string="Order" icon="terp-partner" context="{'group_by':'order_id'}"/>
+                    <filter name="group_partner" string="Partner" icon="terp-partner" context="{'group_by':'partner_id'}"/>
+                    <filter name="group_product" string="Product" icon="terp-accessories-archiver" context="{'group_by':'product_id'}"/>
+                    <filter name="group_date" string="Date" icon="terp-accessories-archiver" context="{'group_by':'date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="view_sql_order_line_tree">
+        <field name="name">sql.order.line.tree</field>
+        <field name="model">sql.order.line</field>
+        <field name="arch" type="xml">
+            <tree string="Order line">
+                <field name="order_id" />
+                <field name="name" />
+                <field name="date" />
+                <field name="deadline" />
+                <field name="product_id" />
+                <field name="partner_id" />
+                <field name="quantity" />
+                <field name="unit_price" />
+                <field name="total" sum="Total"/>
+                <field name="agent_cost" sum="Total agent"/>
+            </tree>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="view_sql_order_line_form">
+        <field name="name">sql.order.line.form</field>
+        <field name="model">sql.order.line</field>
+        <field name="arch" type="xml">
+            <form string="Order line" version="7.0">
+               <sheet>
+                   <group col="4" colspan="4">
+                        <field name="order_id" />
+                        <field name="name" invisible="1"/>
+                        <field name="sequence" />
+                        
+                        <field name="date" />
+                        <field name="deadline" />
+
+                        <field name="product_id" />
+                        <field name="partner_id" />
+
+                        <field name="quantity" />
+                        <field name="unit_price" />
+
+                        <field name="total" />
+                        <field name="agent_cost" />
+                   </group>
+               </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_sql_order_line_graph">
+        <field name="name">sql.order.line.graph</field>
+        <field name="model">sql.order.line</field>
+        <field name="arch" type="xml">
+            <graph string="Order line" type="bar" orientation="horizontal">
+                <field name="partner_id"/>
+                <field name="total" operator="+"/>
+            </graph>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_sql_order_line_form">
+        <field name="name">Order line</field>
+        <field name="res_model">sql.order.line</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form,graph</field>
+        <field name="view_id" ref="view_sql_order_line_tree"/>
+        <field name="search_view_id" ref="view_sql_order_line_search"/>
+        <field name="context">{}</field>
+        <field name="domain">[]</field>
+    </record>
+
+    <!-- child of base SQL root menu-->
+        <menuitem name="Order analysis" id="menu_sql_order" parent="base_mssql.menu_sql_root" sequence="10" groups="sql_order_analysis.group_SQL_order_manager_admin"/>  
+            <menuitem name="Order" id="menu_sql_order_analysis" parent="menu_sql_order" action="action_sql_order_form" sequence="10" />  
+            <menuitem name="Order line" id="menu_sql_order_line_analysis" parent="menu_sql_order" action="action_sql_order_line_form" sequence="20" />  
+</data>
+</openerp>
+

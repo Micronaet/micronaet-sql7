@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+       <!--res.partner.assign.duelist.mail-->
+       <record id="res_partner_assign_duelist_mail_wizard_view" model="ir.ui.view">
+            <field name="name">Assign duelist mail</field>
+            <field name="model">res.partner.assign.duelist.mail</field>
+            <field name="arch" type="xml">
+                <form string="Assign production" version="7.0">
+                   <header>
+                       <button string="Cancel" special="cancel" />
+                       <button name="action_assign_mail" string="Save email" type="object" icon="gtk-jump-to" class="oe_highlight" />
+                   </header>
+                   <sheet>
+                       <group colspan="4" col="2">
+                          <field name="email" />
+                       </group>
+                   </sheet>    
+                </form>
+            </field>
+      </record>
+      <record model="ir.actions.act_window" id="res_partner_assign_duelist_mail_wizard_action">
+          <field name="name">Assign duelist mail</field>
+          <field name="res_model">res.partner.assign.duelist.mail</field>
+          <field name="view_type">form</field>
+          <field name="view_mode">form</field>
+          <field name="target">new</field>
+          <field name="view_id" ref="res_partner_assign_duelist_mail_wizard_view"/>
+      </record>      
+    </data>
+</openerp>

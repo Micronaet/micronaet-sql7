@@ -1,0 +1,65 @@
+<?xml version="1.0" ?>
+<openerp>
+<data>
+    <!-- product.product -->
+    <record id="product_form_view_default_supplier" model="ir.ui.view">
+        <field name="name">product.product.form.default.supplier</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="arch" type="xml">
+             <field name="ean13" position="after">
+                 <field name="default_supplier_id" />
+             </field>
+        </field>
+    </record>
+    
+    <!-- sql.move.line -->
+    <record model="ir.ui.view" id="view_sql_move_line_search_default_supplier">
+        <field name="name">sql.move.line.search.supplier</field>
+        <field name="model">sql.move.line</field>
+        <field name="inherit_id" ref="sql_accounting_analysis.view_sql_move_line_search" />
+        <field name="arch" type="xml">
+            <field name="product_id" position="after">
+                <field name="default_supplier_id" string="Default supplier" filter_domain="[('default_supplier_id','=',self)]" />
+            </field>
+            <filter name="group_parent_product_id" position="after">
+                <filter name="group_default_supplier_id" string="Default supplier" icon="terp-accessories-archiver" context="{'group_by':'default_supplier_id'}" />
+            </filter>            
+        </field>
+    </record>    
+    
+    <record model="ir.ui.view" id="view_sql_move_line_tree_default_supplier">
+        <field name="name">sql.move.line.tree.supplier</field>
+        <field name="model">sql.move.line</field>
+        <field name="inherit_id" ref="sql_accounting_analysis.view_sql_move_line_tree" />
+        <field name="arch" type="xml">
+            <field name="partner_id" position="after">
+                <field name="default_supplier_id" />
+            </field>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="view_sql_move_line_tree_default_supplier_manager">
+        <field name="name">sql.move.line.tree.supplier.manager</field>
+        <field name="model">sql.move.line</field>
+        <field name="inherit_id" ref="sql_accounting_analysis.view_sql_move_line_tree_manager" />
+        <field name="arch" type="xml">
+            <field name="partner_id" position="after">
+                <field name="default_supplier_id" />
+            </field>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_sql_move_line_form_default_supplier">
+        <field name="name">sql.move.line.form.supplier</field>
+        <field name="model">sql.move.line</field>
+        <field name="inherit_id" ref="sql_accounting_analysis.view_sql_move_line_form" />
+        <field name="arch" type="xml">
+            <field name="partner_id" position="after">
+                <field name="default_supplier_id" />
+            </field>
+        </field>
+    </record>
+
+</data>
+</openerp>
+

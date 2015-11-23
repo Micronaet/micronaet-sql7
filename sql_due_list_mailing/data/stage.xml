@@ -1,0 +1,42 @@
+<?xml version="1.0" ?>
+<openerp>
+    <data> <!--noupdate="1">--> 
+        <!--sql.payment.stage-->
+        <record id="sql_payment_stage_seq_1" model="sql.payment.stage">
+            <field name="sequence" eval="1" />
+            <field name="name">10 gg. prima della scadenza (preavviso scadenza)</field>
+            <field name="days" eval="10" />
+            <field name="template_id" ref="email_payment_duelist_template_1" />
+            <field name="note">Mail a cliente ufficio acquisti e  pagamenti con la quale si segnala la prossima scadenza e all'agente invitandolo a interessarsi e relazionarci</field>
+            <field name="period">before</field>
+            <field name="recipient">all</field>
+        </record>
+        <record id="sql_payment_stage_seq2" model="sql.payment.stage">
+            <field name="sequence" eval="2" />
+            <field name="name">15 gg. dopo la scadenza (prima mail avviso scaduto)</field>
+            <field name="days" eval="15" />
+            <field name="template_id" ref="email_payment_duelist_template_2" />
+            <field name="note">Mail con copia all'agente  di sollecito dello scaduto e, se non effettuato,  invito a eseguirlo con sollecitudine</field>
+            <field name="period">after</field>
+            <field name="recipient">all</field>
+        </record>
+        <record id="sql_payment_stage_seq3" model="sql.payment.stage">
+            <field name="sequence" eval="3" />
+            <field name="name">30 gg. dopo la scadenza (15 dopo mail avviso scaduto)</field>
+            <field name="days" eval="30" />
+            <field name="template_id" ref="email_payment_duelist_template_3" />
+            <field name="note">Mail con copia all'agente di sollecito piuttosto risentita per il ritardo e nuovo invito ad effettuare il pagamento immediato</field>
+            <field name="period">after</field>
+            <field name="recipient">all</field>
+        </record>
+        <record id="sql_payment_stage_seq4" model="sql.payment.stage">
+            <field name="sequence" eval="4" />
+            <field name="name">45 gg. dopo la scadenza (15 dopo seconda mail avviso scaduto)</field>
+            <field name="days" eval="45" />
+            <field name="template_id" ref="email_payment_duelist_template_4" />
+            <field name="note">Mail con copia all'agente in cui si dà un termine di 10 gg. per il pagamento, dopo di che si tutelerà legalmente gli interessi della societa'</field>
+            <field name="period">after</field>
+            <field name="recipient">all</field>
+        </record>
+    </data>
+</openerp>

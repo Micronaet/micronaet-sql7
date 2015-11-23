@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+   <data>
+        <record id="group_SQL_accounting_manager" model="res.groups">
+            <field name="name">SQL / Accounting manager</field>
+        </record>
+        <record id="group_SQL_accounting_use_lot" model="res.groups">
+            <field name="name">SQL / Use lot</field>
+        </record>
+   </data>
+</openerp>        

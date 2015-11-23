@@ -1,0 +1,57 @@
+<?xml version="1.0" ?>
+<openerp>
+<data>
+    <!--res.partner--> 
+    <record model="ir.ui.view" id="view_partner_form_commercial_accounting">
+        <field name="name">SQL partner commercial</field>
+        <field name="model">res.partner</field>        
+        <field name="inherit_id" ref="base.view_partner_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//notebook/page//field[@name='user_id']" position="after">
+                <field name="has_agent" readonly="1" />
+                <field name="agent_code" />
+            </xpath>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="view_partner_tree_commercial_accounting">
+        <field name="name">SQL partner commercial tree</field>
+        <field name="model">res.partner</field>        
+        <field name="inherit_id" ref="base.view_partner_tree" />
+        <field name="arch" type="xml">
+            <field name="user_id" position="after">
+                <field name="has_agent" readonly="1" />
+                <field name="agent_code" />
+            </field>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_sql_move_line_commercial_search">
+        <field name="name">sql.move.line.commercial.search</field>
+        <field name="model">sql.move.line</field>
+        <field name="inherit_id" ref="sql_accounting_analysis.view_sql_move_line_search" />
+        <field name="arch" type="xml">
+            <filter name="BS" position="before">
+                <field name="agent_code" />
+                <filter icon="terp-go-home" name="has_agent_partner" string="Partner with agent" domain="[('partner_id.has_agent','=',True)]"/>
+                <newline />
+            </filter>
+            <filter name="group_partner" position="after">
+                <filter name="group_agent_code" string="Group agent code" context="{'group_by': 'agent_code'}"/>
+            </filter>            
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_sql_move_line_agent_tree">
+        <field name="name">sql.move.line.commercial.agent</field>
+        <field name="model">sql.move.line</field>
+        <field name="inherit_id" ref="sql_accounting_analysis.view_sql_move_line_tree" />
+        <field name="arch" type="xml">
+            <field name="partner_id" position="after">
+                <field name="agent_code" />
+            </field>
+        </field>
+    </record>
+
+</data>
+</openerp>
+

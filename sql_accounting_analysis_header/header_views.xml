@@ -1,0 +1,146 @@
+<?xml version="1.0" ?>
+<openerp>
+<data>
+    <!-- sql.move.header -->
+    <record model="ir.ui.view" id="view_sql_move_header_search">
+        <field name="name">sql.move.header.search</field>
+        <field name="model">sql.move.header</field>
+        <field name="arch" type="xml">
+            <search string="Stock movement header">
+                <field name="number" />
+                <field name="type" string="Type of doc." filter_domain="[('type','=',self)]" />
+                <field name="name" string="Ref." filter_domain="[('name','ilike',self)]" />
+
+                <field name="partner_id" string="Partner" filter_domain="[('partner_id','=',self)]" />
+                <field name="partner_name" string="Partner like" filter_domain="[('partner_name','ilike',self)]" />
+                <field name="agent_id" domain="[('is_agent','=',1)]"/>
+                <field name="payment_id" />
+                <field name="reason_id" />
+                
+                <field name="date" string="From date" filter_domain="[('date','&gt;=',self)]" />
+                <field name="date" string="To date" filter_domain="[('date','&lt;=',self)]" />
+
+                <filter icon="terp-go-home" name="BC" string="DDT" domain="[('type','=','BC')]"/>
+                <filter icon="terp-go-home" name="BD" string="BD" domain="[('type','=','BD')]"/>
+                <filter icon="terp-go-home" name="BF" string="BF" domain="[('type','=','BF')]"/>
+                <filter icon="terp-go-home" name="BS" string="BS" domain="[('type','=','BS')]"/>
+                <filter icon="terp-go-home" name="FT" string="Invoice" domain="[('type','=','FT')]"/>
+                <filter icon="terp-go-home" name="NC" string="Credit note" domain="[('type','=','NC')]"/>
+                <separator />
+
+                <group expand="1" string="Group By...">
+                    <filter name="group_payment" string="Payment" icon="terp-partner" context="{'group_by':'payment_id'}"/>
+                    <filter name="group_reason" string="Transportation reason" icon="terp-partner" context="{'group_by':'reason_id'}"/>
+                    <filter name="group_partner" string="Partner" icon="terp-partner" context="{'group_by':'partner_id'}"/>
+                    <filter name="group_agent" string="Agent" icon="terp-partner" context="{'group_by':'agent_id'}"/>
+                    <filter name="group_type" string="Type of doc." icon="terp-accessories-archiver" context="{'group_by':'type'}"/>
+                    <filter name="group_date" string="Date" icon="terp-accessories-archiver" context="{'group_by':'date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="view_sql_move_header_tree">
+        <field name="name">sql.move.header.tree</field>
+        <field name="model">sql.move.header</field>
+        <field name="arch" type="xml">
+            <tree string="Sales analisys header" version="7.0">
+                <field name="type" />
+                <field name="name" />
+                <field name="date" />
+                <field name="partner_id" />
+                <field name="agent_id" />
+                <field name="payment_id" />
+                <field name="reason_id" />
+                <field name="analysis_total" sum="Amount Total" />
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_sql_move_header_form">
+        <field name="name">sql.move.header.form</field>
+        <field name="model">sql.move.header</field>
+        <field name="arch" type="xml">
+            <form string="Sales analisys header" version="7.0">
+               <sheet>               
+               <group col="4" colspan="4">
+                    <field name="date" />    
+                    <field name="type" />
+                    <field name="name" />
+                    <field name="partner_id" />
+                    <field name="agent_id" />
+                    <field name="payment_id" />
+                    <field name="reason_id" />
+                    <separator string="Details" colspan="4"/>
+                    <field name="line_ids" colspan="4" nolabel="1">
+                        <tree string="Details">
+	                        <field name="parent_product_id"/>
+	                        <field name="product_id"/>
+	                        <field name="product_name"/>
+	                        <field name="deadline"/>
+	                        <field name="analysis_quantity" />
+                            <field name="unit_price" />
+	                        <field name="analysis_total" sum="total"/>
+	                   </tree>     
+                    </field>
+                    <separator string="Note" colspan="4"/>
+                    <field name="note" colspan="4" nolabel="1"/>
+                    <!--<button name="force_header_id" type="object" string="Froce header line" />
+                    <newline />
+                    <button name="force_total" type="object" string="Froce total" />
+                    <newline />
+                    <button name="force_number" type="object" string="Froce number" />-->
+               </group>
+               </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_sql_move_header_graph">
+        <field name="name">sql.move.header.graph</field>
+        <field name="model">sql.move.header</field>
+        <field name="arch" type="xml">
+            <graph string="Sales analisys header" type="bar" orientation="vertical">
+                <field name="partner_id"/>
+                <field name="analysis_total" operator="+"/>
+            </graph>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_sql_move_header_form">
+        <field name="name">Sales analisys header</field>
+        <field name="res_model">sql.move.header</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form,graph</field>
+        <field name="view_id" ref="view_sql_move_header_tree"/>
+        <field name="search_view_id" ref="view_sql_move_header_search"/>
+        <field name="context">{}</field>
+        <field name="domain">[]</field>
+    </record>
+
+    <record model="ir.ui.view" id="view_res_partner_form_agent">
+            <field name="name">Partner with agent</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+               <xpath expr="/form/sheet/notebook/page/group/group/field[@name='supplier']" position="after">
+                   <field name="is_agent"/>                   
+                </xpath>
+            </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_res_partner_search_agent">
+            <field name="name">Partner search agent</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_res_partner_filter"/>
+            <field name="arch" type="xml">
+              <filter name="customer" position="before">
+                  <filter string="Agents" name="is_agent" domain="[('is_agent','=',1)]" help="Agent Partners"/>
+              </filter>
+            </field>
+    </record>
+
+    <!-- child of base SQL root menu-->
+    <menuitem name="Stock header" id="menu_sql_stock_header" parent="base_mssql.menu_sql_root" sequence="20" groups="sql_accounting_analysis.group_SQL_accounting_manager"/>  
+        <menuitem name="Analysis" id="menu_sql_stock_header_analysis" parent="menu_sql_stock_header" action="action_sql_move_header_form" sequence="10" />
+</data>
+</openerp>

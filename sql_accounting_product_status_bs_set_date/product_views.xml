@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+<openerp>
+    <data>        
+        <record id="view_product_form_view_analysis_bs_set_inventory_form" model="ir.ui.view">
+            <field name="name">Product set inventory</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="sql_accounting_product_status_bs.product_form_view_analysis_bs"/>
+            <field name="arch" type="xml">
+                    
+                <field name="inventory_date" position="after">
+                     <button name="%(action_res_company_inventory_date_wizard)d" string="Set inventory date" type="action" icon="terp-go-today"/>
+                     <newline />
+                </field>
+                <field name="inventory_quantity" position="attributes">
+                    <attribute name="on_change">onchange_inventory_date(inventory_quantity)</attribute>                    
+                </field>
+            </field>
+        </record>        
+    </data>
+</openerp>
+

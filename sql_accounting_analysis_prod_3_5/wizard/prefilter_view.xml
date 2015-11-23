@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="sql_move_prefilter_wizard_form" model="ir.ui.view">
+            <field name="name">Pre filter</field>
+            <field name="model">sql.move.prefilter.wizard</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Pre filter" version="7.0">
+                    <head>
+                        <button icon="gtk-cancel" special="cancel" string="Cancel"/>
+                        <button icon="gtk-ok" name="calculate_range" string="Filter" type="object"/>
+                    </head>    
+                    <sheet>
+                        <group>
+                            <field name="group" />
+                            <field name="total" />
+                            <newline />                    
+                            <field name="range1"/>
+                            <field name="range2"/>
+                            <field name="range3"/>
+                        </group>    
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+       <act_window name="Intervent report wizard"
+            res_model="sql.move.prefilter.wizard"
+            src_model="sql.move.line"
+            view_mode="form"
+            target="new"
+            key2="client_action_multi"
+            id="sql_move_prefilter_wizard_actwindow"
+            view_id="sql_move_prefilter_wizard_form" 
+            />
+
+    <record model="ir.actions.act_window" id="action_sql_move_prefilter_wizard">
+        <field name="name">Pre filter</field>
+        <field name="res_model">sql.move.prefilter.wizard</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="view_id" ref="sql_move_prefilter_wizard_form"/>
+    </record>
+
+    <!-- child of base SQL root menu-->
+        <menuitem name="Pre filter" id="menu_sql_stock_prefilter_wizard" parent="sql_accounting_analysis.menu_sql_stock_analysis_manager_root" action="action_sql_move_prefilter_wizard" sequence="5" />
+    </data>
+</openerp>

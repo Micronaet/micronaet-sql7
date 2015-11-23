@@ -1,0 +1,31 @@
+<?xml version="1.0" ?>
+<openerp>
+<data>
+    <record model="ir.actions.act_window" id="sql_custom_analysis.action_sql_move_line_form_manager">
+        <field name="name">Sales analisys manager</field>
+        <field name="res_model">sql.move.line</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form,graph</field>
+        <!--field name="view_id" ref="sql_custom_analysis.view_sql_move_line_tree_manager"/>
+        <field name="search_view_id" ref="sql_custom_analysis.view_sql_move_line_search"/-->
+        <field name="context">{'graph_view_ref':'sql_accounting_analysis.view_sql_move_line_graph_manager'}</field>
+        <field name="domain">[]</field>
+    </record>
+
+    <record id="view_sql_custom_analysis_search" model="ir.ui.view" >
+        <field name="name">SQL Custom Analysis</field>
+        <field name="model">sql.move.line</field>
+        <field name="inherit_id" ref="sql_accounting_analysis.view_sql_move_line_search" />
+        <field name="arch" type="xml">
+            <filter name='current_year' position="replace">
+                <filter name='outgoing' string='Outgoing documents' domain="[('type','in',['FT','BC','SL','RF','BS'])]"/>
+                <filter name='incoming' string='Incoming documents' domain="[('type','in',['BF','CL','NC','FF','RC','NF'])]"/>
+                <filter name='invoiced' string='Invoiced documents' domain="[('type','in',['FT','NC','FF','NF'])]"/>
+                <filter name='not_invoiced' string='Not invoiced documents' domain="[('type','in',['BC','SL','RF','BF','BS'])]"/>
+                <separator />
+            </filter>
+        </field>
+    </record>
+</data>
+</openerp>
+

@@ -1,0 +1,40 @@
+<?xml version="1.0" ?>
+<openerp>
+<data>
+    <!-- product.product -->
+        <record id="product_form_view_analysis_bs" model="ir.ui.view">
+            <field name="name">product.product.product.status.bs</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_normal_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="/form/sheet/notebook/page[@string='Inventory']/group/group[@name='status']" position="before">
+                  <group name="force_inventory">
+				     <separator string="Inventory forced:"/>
+				     <newline/>
+                     <field name="sql_bs"/>
+                     <newline/>
+                     <field name="inventory_quantity"/>
+                     <field name="inventory_date"/>
+                     <field name="inventory_updated" invisible="1"/>
+                     <separator string="Updated!" attrs="{'invisible':[('inventory_updated','=',False)]}" colspan="2"/>
+                     <button name="button_to_update" string="To update" type="object" attrs="{'invisible':[('inventory_updated','=',False)]}"/>
+                   </group>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="product_search_form_view_bs" model="ir.ui.view">
+            <field name="name">Search inventory</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_search_form_view"/>
+            <field name="arch" type="xml">
+                <filter string="Consumable" position="after">
+                    <newline />
+                    <filter string="Inventory forced" name="filter_inventory_date" domain="[('inventory_date','!=',False)]" />
+                    <filter string="Inventory updated" name="filter_inventory_updated" domain="[('inventory_updated','=',True)]" />
+                    <filter string="Inventory not updated" name="filter_inventory_not_updated" domain="[('inventory_updated','=',False)]" />
+                </filter>
+            </field>
+        </record>
+</data>
+</openerp>

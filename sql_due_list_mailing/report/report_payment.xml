@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<openerp>
+<data noupdate="1">
+    <record id="aeroo_payment_duelist_id" model="ir.actions.report.xml">
+        <field name="name">Payment duelist</field>
+        <field name="type">ir.actions.report.xml</field>
+        <field name="model">sql.payment.duelist</field>
+        <field name="report_name">sql_payment_duelist_report</field>
+        <field name="report_type">aeroo</field>
+        <field name="in_format">oo-odt</field>
+        <field name="parser_loc">sql_due_list_mailing/report/parser.py</field>
+        <field name="report_rml">sql_due_list_mailing/report/payment_duelist.odt</field>
+        <field name="parser_state">loc</field>
+        <field name="tml_source">file</field>
+    </record>
+    <ir_set>
+        <field eval="'action'" name="key"/>
+        <field eval="'client_print_multi'" name="key2"/>
+        <field eval="['sql.payment.duelist']" name="models"/>
+        <field name="name">Payment duelist</field>
+        <field eval="'ir.actions.report.xml,'+str(aeroo_payment_duelist_id)" name="value"/>
+        <field eval="True" name="isobject"/>
+        <field eval="True" name="replace"/>
+    </ir_set>
+
+    <record id="aeroo_payment_list_id" model="ir.actions.report.xml">
+        <field name="name">Payment list</field>
+        <field name="type">ir.actions.report.xml</field>
+        <field name="model">sql.payment.duelist</field>
+        <field name="report_name">sql_payment_list_report</field>
+        <field name="report_type">aeroo</field>
+        <field name="in_format">oo-odt</field>
+        <field name="parser_loc">sql_due_list_mailing/report/parser.py</field>
+        <field name="report_rml">sql_due_list_mailing/report/payment_list.odt</field>
+        <field name="parser_state">loc</field>
+        <field name="tml_source">file</field>
+    </record>
+    <ir_set>
+        <field eval="'action'" name="key"/>
+        <field eval="'client_print_multi'" name="key2"/>
+        <field eval="['sql.payment.duelist']" name="models"/>
+        <field name="name">Payment list</field>
+        <field eval="'ir.actions.report.xml,'+str(aeroo_payment_list_id)" name="value"/>
+        <field eval="True" name="isobject"/>
+        <field eval="True" name="replace"/>
+    </ir_set>
+</data>
+</openerp>
+
