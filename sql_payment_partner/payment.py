@@ -43,7 +43,6 @@ class res_partner(osv.osv):
     _columns = {
         'default_payment': fields.many2one('account.payment.term', 
             'Default payment'),
-
         }
         
 class account_payment_term(osv.osv):

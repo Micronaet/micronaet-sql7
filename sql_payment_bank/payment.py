@@ -50,7 +50,7 @@ class res_partner(osv.osv):
         
 class account_payment_term(osv.osv):
     ''' Extend account.payment.term
-    '''    
+    '''
     _inherit = 'account.payment.term'
 
     # -------------------------------------------------------------------------
