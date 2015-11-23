@@ -1,8 +1,13 @@
 # -*- encoding: utf-8 -*-
 ##############################################################################
 #
-#    OpenERP, Open Source Management Solution
-#    Copyright (C) 2004-2009 Tiny SPRL (<http://tiny.be>). All Rights Reserved
+#    OpenERP module
+#    Copyright (C) 2010 Micronaet srl (<http://www.micronaet.it>) and the
+#    Italian OpenERP Community (<http://www.openerp-italia.com>)
+#
+#    ########################################################################
+#    OpenERP, Open Source Management Solution	
+#    Copyright (C) 2004-2008 Tiny SPRL (<http://tiny.be>). All Rights Reserved
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -20,24 +25,8 @@
 #
 ##############################################################################
 
-{
-    'name' : 'Base MS SQL import accounting',
-    'version' : '0.0.1',
-    'category' : 'Generic Modules/Customization',
-    'description' : """
-        MS SQL accounting ETL module:
-        provide query for open standard import tables
-        """,
-    'author' : 'Micronaet s.r.l.',
-    'website' : 'http://www.micronaet.it',
-    'depends' : ['base',
-                 'base_mssql',
-                 'product',
-                ],
-    'init_xml' : [], 
-    'update_xml' : ['security/ir.model.access.csv',
-                   ],
-    'demo_xml' : [],
-    'active' : False, 
-    'installable' : True, 
-}
+import payment
+
+
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+

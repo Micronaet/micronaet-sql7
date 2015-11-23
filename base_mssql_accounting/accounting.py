@@ -171,7 +171,7 @@ class micronaet_accounting(osv.osv):
         try:
             cursor.execute("""
                 SELECT 
-                    CKY_CNT, NKY_PAG, CDS_BANCA, NGL_ABI, NGL_CAB, 
+                    CKY_CNT, CDS_BANCA, NGL_ABI, NGL_CAB, 
                     CKY_CNT_BAN_PREF, CSG_CC, CSG_BBAN_CIN, CSG_IBAN_PAESE,
                     NGB_IBAN_CIN, CSG_IBAN_BBAN, CSG_BIC
                 FROM 

@@ -63,39 +63,64 @@ class account_payment_term(osv.osv):
             super(account_payment_term, self).schedule_sql_payment_import(
                 cr, uid, context=context)
 
-            _logger.info('Start import SQL: payment for partner')
+            _logger.info('Start import SQL: payment for bank')
+            
+            # Used pool:
             partner_pool = self.pool.get('res.partner')
-
+            bank_pool = self.pool.get('res.bank')
+            partner_bank_pool = self.pool.get('res.partner.bank')
+            
             cursor = self.pool.get(
-                'micronaet.accounting').get_payment_partner(
+                'micronaet.accounting').get_payment_bank(
                     cr, uid, context=context)
                     
             if not cursor:
-                _logger.error("Unable to connect, no payment for partner!")
+                _logger.error("Unable to connect, no payment for bank!")
                 return True
 
-            _logger.info('Start import payment for partner')
-            i = 0            
-            
-            # Load dict for convert account ID in OpenERP ID:
-            payment_convert = {}            
-            payment_ids = self.search(cr, uid, [], context=context)
-            for payment in self.browse(cr, uid, payment_ids, context=context):
-                payment_convert[payment.import_id] = payment.id
+            # Load dict for convert bank ID in OpenERP ID:
+            bank_convert = {}
+            bank_ids = self.search(cr, uid, [], context=context)
+            for bank in self.browse(cr, uid, bank_ids, context=context):
+                bank_convert[(bank.abi, bank.cab)] = bank.id
                 
+            i = 0            
+            _logger.info('Start import payment for bank')
             for record in cursor:
                 i += 1
                 try:
-                    partner_code = record['CKY_CNT'] 
-                    payment_code = record['NKY_PAG']
+                    partner_code = record['CKY_CNT']
                     
-                    # Check payment:
-                    payment_id = payment_convert.get(payment_code, False)
-                    if not payment_id:
-                        _logger.error('Payment not found, account code: %s' % (
-                            payment_code))
-                        continue
-                        
+                    bank_name = record['CDS_BANCA'] 
+                    abi = record['NGL_ABI']
+                    cav = record['NGL_CAB']
+                    prefix = record['CKY_CNT_BAN_PREF']
+                    cc = record['CSG_CC']
+                    cin = record['CSG_BBAN_CIN']
+                    nation_code = record['CSG_IBAN_PAESE']
+                    cin_letter = record['NGB_IBAN_CIN'] 
+                    bban = record['CSG_IBAN_BBAN'] 
+                    bic = record['CSG_BIC']
+
+                    # ---------------------------------------------------------
+                    #                    res.bank:
+                    # ---------------------------------------------------------
+                    if (abi, cab) in bank_convert:
+                        bank_id = bank_convert((abi, cab))
+                    else: # create    
+                        bank_id = bank_pool.create(cr, uid, {
+                            'abi': abi,
+                            'cab': cab,
+                            'name': bank_name,
+                            'nation_code': nation_code,
+                            'cin_code': cin,
+                            'cin_letter': cin_letter,                            
+                            # TODO enought data!!!!!
+                            }, context=context)
+                            
+                    # ---------------------------------------------------------
+                    #                    res.partner.bank:
+                    # ---------------------------------------------------------                    
                     # Chech partner    
                     partner_id = partner_pool.get_partner_from_sql_code(
                         cr, uid, partner_code, context=context)
@@ -104,10 +129,30 @@ class account_payment_term(osv.osv):
                             partner_code))
                         continue
                             
-                    # Update payment term        
-                    partner_pool.write(cr, uid, partner_id, {
-                        'property_payment_term': payment_id,
-                        }, context=context)
+                    # Update banck account:
+                    account_ids = partner_bank_pool.search(cr, uid, [
+                        ('partner_id', '=', partner_id),
+                        ('acc_number', '=', cc),
+                        ('bank', '=', bank_id),
+                        ], context=context)
+                    
+                    if account_ids: # Update information:
+                        partner_bank_pool.write(cr, uid, account_ids[0], {
+                            }, context=context)
+                    else: # create:        
+                        partner_bank_pool.create(cr, uid, {
+                            'partner_id': partner_id,
+                            'acc_number': cc,
+                            'bank': bank_id,
+                            'bank_name': bank_name,
+                            'bank_abi': abi,
+                            'bank_cab': cab,
+                            'nation_code': nation_code,
+                            'cin_code': cin,
+                            'cin_letter', cin_letter,
+                            'state': 'iban',
+                            # TODO enought?
+                            }, context=context)
                 except:
                     _logger.error('Importing payment for partner [%s]' % (
                         sys.exc_info(), ))

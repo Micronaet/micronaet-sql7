@@ -21,23 +21,31 @@
 ##############################################################################
 
 {
-    'name' : 'Base MS SQL import accounting',
-    'version' : '0.0.1',
-    'category' : 'Generic Modules/Customization',
-    'description' : """
-        MS SQL accounting ETL module:
-        provide query for open standard import tables
+    'name': 'SQL Payment Bank',
+    'version': '0.0.1',
+    'category': 'Generic Modules/ETL',
+    'description': """
+        Import Bank list and default account for Partner get from commercial
+        condition.        
+        (always from external DB in MS SQL server or MySQL)
         """,
-    'author' : 'Micronaet s.r.l.',
-    'website' : 'http://www.micronaet.it',
-    'depends' : ['base',
-                 'base_mssql',
-                 'product',
-                ],
-    'init_xml' : [], 
-    'update_xml' : ['security/ir.model.access.csv',
-                   ],
-    'demo_xml' : [],
-    'active' : False, 
-    'installable' : True, 
+    'author': 'Micronaet s.r.l.',
+    'website': 'http://www.micronaet.it',
+    'depends': [
+        'base',
+        'account',
+        'base_mssql',
+        'base_mssql_accounting',
+        'sql_partner',
+        'l10n_it_abicab', # https://github.com/OCA/l10n-italy#7.0
+        'l10n_it_iban_cin',
+        'sql_payment',
+    ],
+    'init_xml': [], 
+    'data': [
+        'payment_views.xml',
+        ],
+    'demo_xml': [],
+    'active': False, 
+    'installable': True, 
 }
