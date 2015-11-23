@@ -64,6 +64,7 @@ class account_payment_term(osv.osv):
                 cr, uid, context=context)
 
             _logger.info('Start import SQL: payment for partner')
+            partner_pool = self.pool.get('res.partner')
 
             cursor = self.pool.get(
                 'micronaet.accounting').get_payment_partner(
@@ -77,11 +78,12 @@ class account_payment_term(osv.osv):
             i = 0            
             
             # Load dict for convert account ID in OpenERP ID:
-            payment_converter = {}            
+            payment_convert = {}            
             payment_ids = self.search(cr, uid, [], context=context)
             for payment in self.browse(cr, uid, payment_ids, context=context):
-                payment_converter[payment.import_id] = payment.id
+                payment_convert[payment.import_id] = payment.id
                 
+            import pdb; pdb.set_trace()    
             for record in cursor:
                 i += 1
                 try:
@@ -89,22 +91,22 @@ class account_payment_term(osv.osv):
                     payment_code = record['NKY_PAG']
                     
                     # Check payment:
-                    payment_id = payment_conveter.get(payment_code, False)
+                    payment_id = payment_convert.get(payment_code, False)
                     if not payment_id:
                         _logger.error('Payment not found, account code: %s' % (
                             payment_code))
                         continue
                         
                     # Chech partner    
-                    partner_ids = get_partner_from_sql_code(
+                    partner_id = partner_pool.get_partner_from_sql_code(
                         cr, uid, partner_code, context=context)
-                    if not partner_ids:     
+                    if not partner_id:
                         _logger.error('Partner code not found: %s' % (
                             partner_code))
                         continue
                             
                     # Update payment term        
-                    self.write(cr, uid, partner_ids[0], {
+                    partner_pool.write(cr, uid, partner_id, {
                         'property_payment_term': payment_id,
                         }, context=context)
                 except:
