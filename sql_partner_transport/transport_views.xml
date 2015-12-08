@@ -9,7 +9,9 @@
         <field name='arch' type='xml'>
             <xpath expr="//notebook/page[@string='Sales &amp; Purchases']//field[@name='supplier']" position="after">
                 <field name="is_vector"/>
+                <!--TODO remove?-->
                 <field name="default_transport_id" attrs="{'invisible':[('is_vector','=',True)]}" domain="[('is_vector', '=', True)]"/>
+                <field name="default_carrier_id" attrs="{'invisible':[('is_vector','=',True)]}" domain="[('is_vector', '=', True)]"/>
             </xpath>
         </field>
     </record>    

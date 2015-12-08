@@ -26,11 +26,23 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-import sys
 import os
-from openerp.osv import osv, fields
-from datetime import datetime, timedelta
+import sys
 import logging
+import openerp
+import openerp.netsvc as netsvc
+import openerp.addons.decimal_precision as dp
+from openerp.osv import fields, osv, expression, orm
+from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
+from openerp import SUPERUSER_ID
+from openerp import tools
+from openerp.tools.translate import _
+from openerp.tools.float_utils import float_round as round
+from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT, 
+    DEFAULT_SERVER_DATETIME_FORMAT, 
+    DATETIME_FORMATS_MAP, 
+    float_compare)
 
 
 _logger = logging.getLogger(__name__)
@@ -61,6 +73,21 @@ class res_partner(osv.osv):
                 (supplier, customer destination... TODO agent, employee)
             context: context of procedure
         '''
+        # Utility: 
+        def get_transport_product(self, cr, uid, context=None):
+            ''' Create of get default transport product
+            '''    
+            product_pool = self.pool.get('product.product')
+            name = _('Cost of transport')
+            product_ids = product_pool.search(cr, uid, [
+                ('name', '=', name)], context=context)
+            if product_ids:
+                return product_ids[0]        
+
+            return product_pool.create(cr, uid, {
+                'name': name, 
+                'type': 'service',
+                }, context=context)
             
         try:
             # Normal import function launched:
@@ -74,6 +101,7 @@ class res_partner(osv.osv):
                 context=context)
             
             _logger.info('Start import SQL: Import transport ref.')
+            carrier_pool = self.pool.get('delivery.carrier')
 
             cursor = self.pool.get(
                 'micronaet.accounting').get_partner_transport(
@@ -83,6 +111,10 @@ class res_partner(osv.osv):
                 _logger.error("Unable to connect, no transport for partner!")
                 return True
 
+            # Get product for default transport cost:
+            transport_id = get_transport_product(
+                self, cr, uid, context=context)
+            
             _logger.info('Start import transport for partner')
             i = 0            
             for record in cursor:            
@@ -92,7 +124,9 @@ class res_partner(osv.osv):
                     vector_code = record['CKY_CNT_VETT']
                     # TODO Extra parameters!
                     
-                    # Check partner    
+                    # --------------
+                    # Check partner:
+                    # --------------
                     partner_id = self.get_partner_from_sql_code(
                         cr, uid, partner_code, context=context)
                     if not partner_id:
@@ -100,20 +134,39 @@ class res_partner(osv.osv):
                             partner_code))
                         continue
 
-                    # Check vector
+                    # -------------
+                    # Check vector:
+                    # -------------
                     vector_id = self.get_partner_from_sql_code(
                         cr, uid, vector_code, context=context)
                     if not vector_id:
                         _logger.error('Vector code not found: %s' % (
                             vector_code))
                         continue
+                    name = self.browse(
+                        cr, uid, vector_id, context=context).name    
+
                     # Mark as vector:
                     self.write(cr, uid, vector_id, {
                         'is_vector': True}, context=context)
-                            
+                        
+                    # Create carrier block:
+                    carrier_ids = carrier_pool.search(cr, uid, [
+                        ('partner_id', '=', vector_id),
+                        ], context=context)
+                    if carrier_ids:
+                        carrier_id = carrier_ids[0]
+                    else:
+                        carrier_id = carrier_pool.create(cr, uid, {
+                            'name': name,
+                            'partner_id': vector_id,
+                            'product_id': transport_id,
+                            }, context=context)    
+
                     # Update payment term        
                     self.write(cr, uid, partner_id, {
                         'default_transport_id': vector_id,
+                        'default_carrier_id': carrier_id,
                         }, context=context)
                 except:
                     _logger.error('Importing payment for partner [%s]' % (
@@ -127,8 +180,11 @@ class res_partner(osv.osv):
 
     _columns = {
         'is_vector': fields.boolean('Is Vector'),
+        # TODO remove:?
         'default_transport_id': fields.many2one('res.partner', 
             'Default vector'),
+        'default_carrier_id': fields.many2one('delivery.carrier', 
+            'Default carrier'),
         }
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

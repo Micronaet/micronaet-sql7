@@ -32,6 +32,7 @@
     'depends': [
         'base',
         'account',
+        'delivery',
         'base_mssql',
         'base_mssql_accounting',
         'sql_partner',
