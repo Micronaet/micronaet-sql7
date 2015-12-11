@@ -73,7 +73,9 @@ class res_partner(osv.osv):
                 (supplier, customer destination... TODO agent, employee)
             context: context of procedure
         '''
-        # Utility: 
+        # ---------------------------------------------------------------------
+        #                           Utility: 
+        # ---------------------------------------------------------------------
         def get_transport_product(self, cr, uid, context=None):
             ''' Create of get default transport product
             '''    
@@ -88,7 +90,8 @@ class res_partner(osv.osv):
                 'name': name, 
                 'type': 'service',
                 }, context=context)
-            
+        # ---------------------------------------------------------------------
+
         try:
             # Normal import function launched:
             super(res_partner, self).schedule_sql_partner_import(cr, uid, 
