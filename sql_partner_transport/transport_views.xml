@@ -11,7 +11,7 @@
                 <field name="is_vector"/>
                 <!--TODO remove?-->
                 <!--<field name="default_transport_id" attrs="{'invisible':[('is_vector','=',True)]}" domain="[('is_vector', '=', True)]"/>-->
-                <field name="default_carrier_id" attrs="{'invisible':[('is_vector','=',True)]}" domain="[('is_vector', '=', True)]"/>
+                <field name="default_carrier_id" /> <!--attrs="{'invisible':[('is_vector','=',True)]}" domain="[('is_vector', '=', True)]"/>-->
             </xpath>
         </field>
     </record>    
