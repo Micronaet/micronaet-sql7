@@ -32,7 +32,7 @@ from openerp.osv import osv, fields
 from datetime import datetime, timedelta
 import logging
 
-from tools.translate import _
+from openerp.tools.translate import _
 
 
 _logger = logging.getLogger(__name__)

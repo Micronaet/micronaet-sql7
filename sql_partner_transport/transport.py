@@ -59,7 +59,8 @@ class res_partner(osv.osv):
     def schedule_sql_partner_import(self, cr, uid, verbose_log_count=100, 
         capital=True, write_date_from=False, write_date_to=False, 
         create_date_from=False, create_date_to=False, sync_vat=False,
-        address_link=False, only_block=False, context=None):
+        address_link=False, only_block=False, dest_merged=False, 
+            set_lang=False, context=None):
         ''' Import partner from external DB
             verbose_log_count: number of record for verbose log (0 = nothing)
             capital: if table has capital letters (usually with mysql in win)
@@ -71,6 +72,9 @@ class res_partner(osv.osv):
             address_link: Link to parent partner as an address the destination
             only_block: update only passed block name:
                 (supplier, customer destination... TODO agent, employee)
+            v. 8:
+            dest_merged 
+            set_lang
             context: context of procedure
         '''
         # ---------------------------------------------------------------------
@@ -172,11 +176,11 @@ class res_partner(osv.osv):
                         'default_carrier_id': carrier_id,
                         }, context=context)
                 except:
-                    _logger.error('Importing payment for partner [%s]' % (
+                    _logger.error('Importing transport for partner [%s]' % (
                         sys.exc_info(), ))
         except:
             _logger.error('Error generic import vector: %s' % (
-                sys.exc_info()))
+                sys.exc_info(), ))
             return False
         _logger.info('All vector is updated!')
         return True

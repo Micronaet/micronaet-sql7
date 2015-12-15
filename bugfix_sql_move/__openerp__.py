@@ -23,6 +23,8 @@
     'category': '',
     'description': '''        
         Bugfix double partner, bug of sql_move_line import
+        Correct SQL partner import when no code range provider in company 
+        page section (import all account ledge)
         ''',
     'author': 'Micronaet S.r.l. - Nicola Riolini',
     'website': 'http://www.micronaet.it',
