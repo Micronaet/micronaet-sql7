@@ -161,11 +161,10 @@ class micronaet_accounting(osv.osv):
         ''' Access to anagrafic table of payments
             Table: PC_CONDIZIONI_COMM
         '''
+        table = "pc_condizioni_comm"
         if self.pool.get('res.company').table_capital_name(cr, uid, 
                 context=context):
-            table = "PC_CONDIZIONI_COMM"
-        else:
-            table = "pc_condizioni_comm"
+            table = table.upper()
 
         cursor = self.connect(cr, uid, year=year, context=context)
         try:

@@ -177,7 +177,7 @@ class account_payment_term(osv.osv):
                         sys.exc_info(), ))
         except:
             _logger.error('Error generic import payment: %s' % (
-                sys.exc_info()))
+                sys.exc_info(), ))
             return False
         _logger.info('All payment is updated!')
         return True
