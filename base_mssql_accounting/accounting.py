@@ -180,7 +180,7 @@ class micronaet_accounting(osv.osv):
         except: 
             return False  # Error return nothing
 
-    def get_payment_partner(self, cr, uid, year=False, context=None):
+    def get_payment_partner_present(self, cr, uid, year=False, context=None):
         ''' Access to anagrafic partner link to table of payments
             Table: PC_CONDIZIONI_COMM
             (only record with payment setted up)
