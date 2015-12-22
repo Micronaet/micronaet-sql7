@@ -9,14 +9,11 @@
         <field name='arch' type='xml'>
             <xpath expr="//notebook/page[@string='Sales &amp; Purchases']//field[@name='supplier']" position="after">
                 <field name="is_vector"/>
-                <!--TODO remove?-->
-                <!--<field name="default_transport_id" attrs="{'invisible':[('is_vector','=',True)]}" domain="[('is_vector', '=', True)]"/>-->
-                <field name="default_carrier_id" /> <!--attrs="{'invisible':[('is_vector','=',True)]}" domain="[('is_vector', '=', True)]"/>-->
+                <field name="transport_number" attrs="{'invisible':[('is_vector','=',False)]}"/>
+                <field name="default_carrier_id" attrs="{'invisible':[('is_vector','=',True)]}"/>
             </xpath>
         </field>
     </record>    
-    <!--TODO create view and filter for is_vector-->
-    <!--<menuitem name="Partner" parent="base_mssql.menu_sql_anagraphic" id="menu_sql_anagraphic_partner" action="base.action_partner_form" sequence="10" />-->
 </data>
 </openerp>
 

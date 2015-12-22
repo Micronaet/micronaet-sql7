@@ -192,6 +192,8 @@ class res_partner(osv.osv):
             'Default vector'),
         'default_carrier_id': fields.many2one('delivery.carrier', 
             'Default carrier'),
+        'transport_number': fields.char(
+            'Transport #', size=25),     
         }
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
