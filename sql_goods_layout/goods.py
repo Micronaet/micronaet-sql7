@@ -35,69 +35,85 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
-class stock_picking_transportation_reason(osv.osv):
-    ''' Extend stock.picking.transportation_reason
-    '''    
-    _inherit = 'stock.picking.transportation_reason'
-    
-    # -------------------------------------------------------------------------
-    # Utility function
-    # -------------------------------------------------------------------------
-    def get_transportation(self, cr, uid, account_id, context=None):
-        ''' Return OpenERP ID from  account ID        
+class micronaet_accounting(osv.osv):
+    ''' Object for keep function with the query
+        Record are only table with last date of access
+    '''
+    _name = "micronaet.accounting"
+
+    # -------------------
+    #  GOODS DESCRIPTION:
+    # -------------------
+    def get_goods_description(self, cr, uid, year=False, context=None):
+        ''' Access to anagrafic table of goods desc.
+            Table: MB_ASP_EST_BENI
         '''
-        transportation_ids = self.search(cr, uid, [
-            ('import_id', '=', account_id)], context=context)
-        if transportation_ids:
-            return transportation_ids[0]
-        else:    
+        if self.pool.get('res.company').table_capital_name(cr, uid, 
+                context=context):
+            table = "MB_ASP_EST_BENI" 
+        else:
+            table = "mb_asp_est_beni"
+
+        cursor = self.connect(cr, uid, year=year, context=context)
+        try:
+            cursor.execute("""
+                SELECT NKY_ASPBEN, CDS_ASPBEN FROM %s;
+                """ % table)
+            return cursor
+        except: 
             return False
-            
+
+
+class stock_picking_goods_description(osv.osv):
+    ''' Extend stock.picking.goods_description
+    '''    
+    _inherit = 'stock.picking.goods_description'
+    
     # -------------------------------------------------------------------------
     #                             Scheduled action
     # -------------------------------------------------------------------------
-    def schedule_sql_transportation_import(self, cr, uid, context=None):
-        ''' Import transportation
+    def schedule_sql_good_description_import(self, cr, uid, context=None):
+        ''' Import goods description
         '''            
         try:
-            _logger.info('Start import SQL: transportation')
+            _logger.info('Start import SQL: good descriptions')
             
-            cursor = self.pool.get('micronaet.accounting').get_transportation(
-                cr, uid, context=context)
+            cursor = self.pool.get(
+                'micronaet.accounting').get_goods_description(
+                    cr, uid, context=context)
             if not cursor:
-                _logger.error('Unable to connect, no transportation!')
+                _logger.error('Unable to connect, no good description!')
                 return True
 
-            _logger.info('Start import transportation')                          
             i = 0
             for record in cursor:
                 i += 1
-                try: 
-                    import_id = record['NKY_CAUM']
+                try:
+                    import_id = record['NKY_ASPBEN']
                     data = {
                         'import_id': import_id,
-                        'name': record['CDS_CAUM'],
+                        'name': record['CDS_ASPBEN'],
                         }                    
-                    transportation_ids = self.search(cr, uid, [
+                    goods_ids = self.search(cr, uid, [
                         ('import_id', '=', import_id)], context=context)
 
                     # Update / Create
-                    if transportation_ids:
-                        transportation_id = transportation_ids[0]
-                        self.write(cr, uid, transportation_id, data, 
+                    if goods_ids:
+                        goods_id = goods_ids[0]
+                        self.write(cr, uid, goods_id, data, 
                             context=context)
                     else:
-                        transportation_id = self.create(
+                        goods_id = self.create(
                             cr, uid, data, context=context)
                 except:
-                    _logger.error('Error importing transportation [%s]' % (
+                    _logger.error('Error importing goods desc.[%s]' % (
                         sys.exc_info(), ))
                                             
         except:
-            _logger.error('Error generic import transportation: %s' % (
+            _logger.error('Error generic import goods description: %s' % (
                 sys.exc_info(), ))
             return False
-        _logger.info('All transportation is updated!')
+        _logger.info('All goods description is updated!')
         return True
 
     # -------------------------------------------------------------------------

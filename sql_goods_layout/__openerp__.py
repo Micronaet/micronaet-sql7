@@ -21,16 +21,16 @@
 ##############################################################################
 
 {
-    'name': 'SQL Transportation reason',
+    'name': 'SQL Goods description',
     'version': '0.0.1',
     'category': 'Generic Modules/ETL',
-    'description': """Import Payment from external DB in MS SQL server or MySQL
-                   """,
+    'description': """
+        Import Goods description from ETL
+        """,
     'author': 'Micronaet s.r.l.',
     'website': 'http://www.micronaet.it',
     'depends': [
         'base',
-        'l10n_it_sale',
         'base_mssql',
         'base_mssql_accounting',
     ],
