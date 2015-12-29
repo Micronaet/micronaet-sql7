@@ -39,7 +39,7 @@ class micronaet_accounting(osv.osv):
     ''' Object for keep function with the query
         Record are only table with last date of access
     '''
-    _name = "micronaet.accounting"
+    _inherit = "micronaet.accounting"
 
     # -------------------
     #  GOODS DESCRIPTION:
@@ -57,7 +57,7 @@ class micronaet_accounting(osv.osv):
         cursor = self.connect(cr, uid, year=year, context=context)
         try:
             cursor.execute("""
-                SELECT NKY_ASPBEN, CDS_ASPBEN FROM %s;
+                SELECT NKY_ASPBEN, CDS_ASPBEN FROM %s WHERE CDS_ASPBEN != '';
                 """ % table)
             return cursor
         except: 
@@ -72,7 +72,7 @@ class stock_picking_goods_description(osv.osv):
     # -------------------------------------------------------------------------
     #                             Scheduled action
     # -------------------------------------------------------------------------
-    def schedule_sql_good_description_import(self, cr, uid, context=None):
+    def schedule_good_description_import(self, cr, uid, context=None):
         ''' Import goods description
         '''            
         try:

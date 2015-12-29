@@ -32,6 +32,8 @@
     'depends': [
         'base',
         'base_mssql',
+        'l10n_it_sale', # v.7
+        # TODO for v. 80?
         'base_mssql_accounting',
     ],
     'init_xml': [], 
