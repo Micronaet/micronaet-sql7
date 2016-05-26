@@ -120,9 +120,11 @@ class account_payment_term(osv.osv):
                         field_name = 'property_payment_term'
                     else:
                         field_name = ''
+                        
                     if not field_name:
                         _logger.error(
-                            'No partner/supplier start code so cannot decide!')    
+                            'No partner/supplier start, cannot decide: %s!' % (
+                            partner_code))    
                         continue    
                             
                     partner_pool.write(cr, uid, partner_id, {
