@@ -95,7 +95,7 @@ class sql_move_line(osv.osv):
         
         # Reload documents (call same function passing yet deleted documents):
         self.schedule_etl_move_line_import(cr, uid, 0, 500, False, 0, (0, 0), where_document, context=context)
-        
+
         _logger.info("End import extra document only for analysys")
         return True
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

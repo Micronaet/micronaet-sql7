@@ -56,11 +56,20 @@ class account_payment_term(osv.osv):
     # Scheduled function:
     def schedule_sql_payment_import(self, cr, uid, context=None):
         ''' Import payment and after link to partner
-        '''            
+        ''' 
+        import pdb; pdb.set_trace()
+        context = context or {}
+        company_pool = self.pool.get('res.company')
+        company_ids = company_pool.search(cr, uid, [], context=context)[0]
+        company_proxy = company_pool.browse(
+            cr, uid, company_ids, context=context)
+        customer_start = company_proxy.sql_customer_from_code or ''    
+        supplier_start = company_proxy.sql_supplier_from_code or ''    
+             
         try:
-            # Normal import function launched:
-            super(account_payment_term, self).schedule_sql_payment_import(
-                cr, uid, context=context)
+            # Normal import function launched: TODO remove comment
+            #super(account_payment_term, self).schedule_sql_payment_import(
+            #    cr, uid) # context=context)
             
             _logger.info('Start import SQL: payment for partner')
             partner_pool = self.pool.get('res.partner')
@@ -81,7 +90,7 @@ class account_payment_term(osv.osv):
             payment_ids = self.search(cr, uid, [], context=context)
             for payment in self.browse(cr, uid, payment_ids, context=context):
                 payment_convert[payment.import_id] = payment.id
-                
+            import pdb; pdb.set_trace()
             for record in cursor:
                 i += 1
                 try:
@@ -104,8 +113,21 @@ class account_payment_term(osv.osv):
                         continue
                             
                     # Update payment term        
+                    if supplier_start and partner_code.startswith(
+                            supplier_start):
+                        field_name = 'property_supplier_payment_term'
+                    if customer_start and partner_code.startswith(
+                            customer_start):
+                        field_name = 'property_payment_term'
+                    else:
+                        field_name = ''
+                    if not field_name:
+                        _logger.error(
+                            'No partner/supplier start code so cannot decide!')    
+                        continue    
+                            
                     partner_pool.write(cr, uid, partner_id, {
-                        'property_payment_term': payment_id,
+                        field_name: payment_id,
                         }, context=context)
                 except:
                     _logger.error('Importing payment for partner [%s]' % (

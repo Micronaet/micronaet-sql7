@@ -59,7 +59,7 @@ class account_payment_term(osv.osv):
     # Scheduled function:
     def schedule_sql_payment_import(self, cr, uid, context=None):
         ''' Import payment and after link to partner
-        '''            
+        '''  
         try:
             # Normal import function launched:
             super(account_payment_term, self).schedule_sql_payment_import(

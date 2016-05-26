@@ -59,7 +59,7 @@ class account_payment_term(osv.osv):
     # -------------------------------------------------------------------------
     def schedule_sql_payment_import(self, cr, uid, context=None):
         ''' Import payment
-        '''            
+        '''
         try:
             _logger.info('Start import SQL: payment')
             
