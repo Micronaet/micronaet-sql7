@@ -33,10 +33,9 @@ _logger = logging.getLogger(__name__)
 class product_categ(osv.osv):
     ''' Extend product.category
     '''    
-    _name = 'product.category'
     _inherit = 'product.category'
     
-    # Scheduled action: ########################################################
+    # Scheduled action: #######################################################
     def schedule_update_product_category(self, cr, uid, context=None):
         ''' Update product category from external DB
         '''
@@ -68,19 +67,22 @@ class product_categ(osv.osv):
                     ))
 
             except:
-                _logger.error('Error update product category (%s) products! [%s]' % (
-                    category.name, 
-                    sys.exc_info(),
+                _logger.error(
+                    'Error update product category (%s) products! [%s]' % (
+                        category.name, 
+                        sys.exc_info(),
                 ))
         _logger.info('All product category is updated!')
         return True
 
     _columns = {
-        'from_code':fields.char('From code (>=)', size=30, required=False, readonly=False),
-        'to_code':fields.char('To code (<)', size=30, required=False, readonly=False),
+        'from_code':fields.char(
+            'From code (>=)', size=30),
+        'to_code':fields.char(
+            'To code (<)', size=30),
         'auto_category_type': fields.selection([
             ('default_code', 'Default code'),
             ('statistic_category', 'Statistic category'),
-        ], 'Auto category type', required=False),
-    }        
+            ], 'Auto category type'),
+        }        
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
