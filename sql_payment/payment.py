@@ -75,12 +75,16 @@ class account_payment_term(osv.osv):
                 i += 1
                 try:
                     import_id = record['NKY_PAG']
+                    name = record['CDS_PAG']
                     data = {
                         'import_id': import_id,
-                        'name': record['CDS_PAG'],
+                        'name': name,
                         }                    
                     payment_ids = self.search(cr, uid, [
-                        ('import_id', '=', import_id)], context=context)
+                        '|',
+                        ('import_id', '=', import_id),
+                        ('name', '=', name),
+                        ], context=context)
 
                     # Update / Create
                     if payment_ids:
