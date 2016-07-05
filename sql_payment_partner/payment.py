@@ -62,8 +62,16 @@ class account_payment_term(osv.osv):
         company_ids = company_pool.search(cr, uid, [], context=context)[0]
         company_proxy = company_pool.browse(
             cr, uid, company_ids, context=context)
+
         customer_start = company_proxy.sql_customer_from_code or ''    
+        customer_end = company_proxy.sql_customer_to_code or ''    
         supplier_start = company_proxy.sql_supplier_from_code or ''    
+        supplier_end = company_proxy.sql_supplier_to_code or ''    
+        
+        if not(customer_start and customer_end and \
+                supplier_start and supplier_end):
+            _logger.error('Setup customer/supplier range in company SQL form')
+            return False
              
         try:
             # Normal import function launched:
@@ -111,12 +119,12 @@ class account_payment_term(osv.osv):
                             partner_code))
                         continue
                             
-                    # Update payment term        
-                    if supplier_start and partner_code.startswith(
-                            supplier_start):
+                    # Update payment term (customer or supplier)
+                    if partner_code >= supplier_start and \
+                            partner_code < supplier_end:
                         field_name = 'property_supplier_payment_term'
-                    elif customer_start and partner_code.startswith(
-                            customer_start):
+                    elif partner_code >= customer_start and \
+                            partner_code < customer_end:
                         field_name = 'property_payment_term'
                     else:
                         field_name = ''
@@ -130,8 +138,6 @@ class account_payment_term(osv.osv):
                     partner_pool.write(cr, uid, partner_id, {
                         field_name: payment_id,
                         }, context=context)
-                    #_logger.info('Field name: %s > code: %s update: %s' % (
-                    #    field_name, partner_code, payment_id))                        
                 except:
                     _logger.error('Importing payment for partner [%s]' % (
                         sys.exc_info(), ))
