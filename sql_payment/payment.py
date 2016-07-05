@@ -97,7 +97,6 @@ class account_payment_term(osv.osv):
                 except:
                     _logger.error('Error importing payment [%s]' % (
                         sys.exc_info(), ))
-                                            
         except:
             _logger.error('Error generic import payment: %s' % (
                 sys.exc_info(), ))
