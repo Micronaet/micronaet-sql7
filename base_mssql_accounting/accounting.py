@@ -536,6 +536,7 @@ class micronaet_accounting(osv.osv):
         try:
             cursor.execute("""
                 SELECT 
+                    CSG_DOC, NGB_SR_DOC, NGL_DOC,
                     NPR_RIGA, CKY_ART, DTT_SCAD, NGB_TIPO_QTA, 
                     NQT_RIGA_O_PLOR, NCF_CONV
                 FROM %s;""" % table)
