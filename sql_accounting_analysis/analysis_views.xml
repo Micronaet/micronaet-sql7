@@ -27,7 +27,7 @@
                 <field name="partner_name" string="Partner like" filter_domain="[('partner_name','ilike',self)]" />
                 <field name="partner_id" string="Partner" filter_domain="[('partner_id','=',self)]" />
 
-                <field name="agent_code" string="Agent code" filter_domain="[('agent_code','ilike',self)]" />
+                <field name="move_agent_code" string="Agent code" filter_domain="[('move_agent_code','ilike',self)]" />
                 
                 <field name="product_description" string="Prod. desc. like" filter_domain="[('product_description','ilike',self)]" />
                 <field name="product_name" string="Product like" filter_domain="[('product_name','ilike',self)]" />
@@ -54,7 +54,7 @@
                 
                 <group expand="1" string="Group By...">
                     <filter name="group_partner" string="Partner" icon="terp-partner" context="{'group_by':'partner_id'}"/>
-                    <filter name="group_agent" string="Agent" icon="terp-partner" context="{'group_by':'agent_code'}"/>
+                    <filter name="group_move_agent" string="Agent" icon="terp-partner" context="{'group_by':'move_agent_code'}"/>
                     <filter name="group_product" string="Product" icon="terp-accessories-archiver" context="{'group_by':'product_id'}"/>
                     <filter name="group_parent_product_id" string="Product parent" icon="terp-accessories-archiver" context="{'group_by':'parent_product_id'}" groups="sql_accounting_analysis.group_SQL_accounting_use_lot"/>
                     <filter name="group_lot" string="Lot" icon="terp-accessories-archiver" context="{'group_by':'lot'}" groups="sql_accounting_analysis.group_SQL_accounting_use_lot"/>
@@ -78,7 +78,7 @@
                 <field name="product_description" />
                 <field name="lot" groups="sql_accounting_analysis.group_SQL_accounting_use_lot"/>
                 <field name="partner_id" />
-                <field name="agent_code" />
+                <field name="move_agent_code" />
                 <field name="quantity" sum="Quantity Total" />
                 <field name="unit_price" />
                 <field name="total" sum="Amount Total" />
@@ -100,7 +100,7 @@
                 <field name="product_description" />
                 <field name="lot" groups="sql_accounting_analysis.group_SQL_accounting_use_lot"/>
                 <field name="partner_id" />
-                <field name="agent_code" />
+                <field name="move_agent_code" />
                 <field name="quantity" sum="Quantity Total" />
                 <field name="unit_price" />
                 <field name="analysis_quantity" sum="Analysis quantity" />
@@ -128,7 +128,7 @@
                     <field name="parent_product_id" groups="sql_accounting_analysis.group_SQL_accounting_use_lot"/>
                     <field name="partner_id" />
                     
-                    <field name="agent_code" />                    
+                    <field name="move_agent_code" />                    
                     <field name="product_description" />
 
                     <field name="unit_price" />
