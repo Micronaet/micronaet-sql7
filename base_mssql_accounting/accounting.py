@@ -714,11 +714,10 @@ class micronaet_accounting(osv.osv):
         query = """
             SELECT 
                 CSG_DOC, NGB_SR_DOC, NGL_DOC, NPR_DOC, CKY_CNT_CLFR,
-                NPZ_UNIT, NQT_RIGA_ART_PLOR, NCF_CONV,
+                NPZ_UNIT, NQT_RIGA_ART_PLOR, NCF_CONV, CKY_CNT_AGEN,
                 NPR_RIGA_ART, CKY_ART, NDC_QTA, 
                 CDS_VARIAB_ART, DTT_SCAD
             FROM %s%s;""" % (table, where_clause)            
-                
         try:             
             cursor.execute(query)
             return cursor # with the query setted up                  

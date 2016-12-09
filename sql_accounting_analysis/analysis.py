@@ -84,6 +84,7 @@ class etl_move_line(osv.osv):
         'partner_id': fields.many2one('res.partner', 'Partner', required=False),
         'partner_name': fields.related('partner_id', 'name', type='char',
              string='Partner name', store=True),
+        'agent_code': fields.char('Agent code', size=8),
 
         'product_id': fields.many2one('product.product', 'Product', required=False),
         'parent_product_id': fields.many2one('product.product', 'Product parent', required=False),
