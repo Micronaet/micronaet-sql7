@@ -215,7 +215,8 @@ class etl_move_line(osv.osv):
                         'parent_product_id': parent_product_id,
                         'lot': lot,
                         'type': type_value,
-                    }
+                        'agent_code': record['CKY_CNT_AGEN'],
+                        }
                     item_id = self.search(cr, uid, [('name', '=', name)])
                     if item_id:
                         item_id = item_id[0]
@@ -233,7 +234,8 @@ class etl_move_line(osv.osv):
             # Update funz element: 
             # --------------------
             _logger.info("Start import functional movement line!")
-            cursor = accounting_proxy.get_mm_funz_line(cr, uid, where_document = only_movement_list, context=context) 
+            cursor = accounting_proxy.get_mm_funz_line(
+                cr, uid, where_document = only_movement_list, context=context) 
             if not cursor:
                 _logger.error("Unable to connect no importation of funz line!")
                 return False
@@ -258,7 +260,7 @@ class etl_move_line(osv.osv):
                         'analysis_quantity': -(quantity),
                         'total': total, 
                         'analysis_total': -(total),
-                    }
+                        }
                     try: 
                         item_id = self.search(cr, uid, [('name','=',name)])
                         if item_id:
