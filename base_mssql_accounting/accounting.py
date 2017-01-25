@@ -851,6 +851,8 @@ class micronaet_accounting(osv.osv):
                     l.CDS_VARIAB_ART as CDS_VARIAB_ART, 
                     SUM(l.NQT_RIGA_ART_PLOR * 
                         (IF(l.NCF_CONV=0, 1, 1/l.NCF_CONV))) as TOTALE, 
+                    SUM(l.NPZ_UNIT * l.NQT_RIGA_ART_PLOR * 
+                        (IF(l.NCF_CONV=0, 1, 1/l.NCF_CONV))) as IMPONIBILE, 
                     count(*) as CONSEGNE 
                 FROM %s h JOIN %s l 
                     ON (h.CSG_DOC = l.CSG_DOC AND h.NGB_SR_DOC = l.NGB_SR_DOC 
