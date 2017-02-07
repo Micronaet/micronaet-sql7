@@ -33,11 +33,10 @@
         'base',
         'product',
         'base_mssql_accounting',
-        'sql_product'
+        'sql_product',
         ],
     'init_xml': [], 
     'data': [
-        'scheduler.xml',
         'product_views.xml',
         ],
     'demo_xml': [],

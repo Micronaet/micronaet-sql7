@@ -45,10 +45,12 @@ class product_product(osv.osv):
             table = table.upper()    
 
         cursor = self.connect(cr, uid, context=context)
+        query = '''
+            SELECT CKY_ART, CKY_CNT_FOR_AB FROM %s 
+            WHERE CKY_CNT_FOR_AB != '';
+            ''' % table
         try: 
-            cursor.execute('''
-                SELECT CKY_ART, CKY_CNT_FOR_AB FROM %s 
-                WHERE CKY_CNT_FOR_AB is not null;''' % table)
+            cursor.execute(query)
             return cursor
         except: 
             return False
@@ -70,7 +72,12 @@ class product_product(osv.osv):
             verbose_log_count=100, write_date_from=False, write_date_to=False, 
             create_date_from=False, create_date_to=False, context=None):
         '''
-        import pdb; pdb.set_trace()
+        if args is None:
+            args = {}
+            context = {}
+        else:
+            context = args.get('context', {})
+                
         res = super(product_product, self).schedule_sql_product_import(
             cr, uid, **args)
 
@@ -78,22 +85,18 @@ class product_product(osv.osv):
         
         # Pool used:
         accounting_pool = self.pool.get('micronaet.accounting')
-        product_proxy = self.pool.get('product.product')
+        product_pool = self.pool.get('product.product')
         partner_pool = self.pool.get('res.partner')
-
-        cursor = accounting_pool.get_product_supplier(cr, uid, context=context)
+        
+        cursor = accounting_pool.get_product_supplier(
+            cr, uid, context=context)
         if not cursor:
             _logger.error(
                 'Unable to connect no importation product supplier!')
             return False
 
-        i = 0
         for record in cursor:
             try:
-                i += 1
-                if verbose_log_count and i % verbose_log_count == 0:
-                    _logger.info('Import %s: record import/update!' % i)                             
-
                 # Read fields:
                 default_code = record['CKY_ART']
                 supplier_code = record['CKY_CNT_FOR_AB']
@@ -114,12 +117,13 @@ class product_product(osv.osv):
                 
                 product_pool.write(cr, uid, product_ids, {
                     'first_supplier_id': partner_ids[0],
-                    ), context=context)
+                    }, context=context)
+                _logger.info('Supplier updated: %s' % record)
 
             except:
                 _logger.error('Error update product supplier: %s [%s]' % (
                     record, sys.exc_info(), ))
                     
         _logger.info('All product supplier updated!')
-        return True
+        return res
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
