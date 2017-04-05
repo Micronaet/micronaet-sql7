@@ -102,6 +102,7 @@ class product_product(osv.osv):
          
         #res = super(product_product, self).schedule_sql_product_import(
         #    cr, uid, **args)
+        res = True
 
         _logger.info('Start update product supplier!')
         
