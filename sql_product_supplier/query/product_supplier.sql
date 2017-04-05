@@ -1,0 +1,15 @@
+SELECT clienti.CDS_CNT, gruppo.* FROM `dbmirror`.`PA_RUBR_PDC_CLFR` clienti JOIN (
+    SELECT CKY_CNT_CLFR, CKY_ART, max(DTT_SCAD) FROM (
+        SELECT CKY_CNT_CLFR, CKY_ART, DTT_SCAD FROM `dbmirror`.`MM_RIGHE` WHERE CSG_DOC = 'BF'
+        UNION
+        SELECT CKY_CNT_CLFR, CKY_ART, DTT_SCAD FROM `dbmirror16`.`MM_RIGHE` WHERE CSG_DOC = 'BF' 
+        UNION
+        SELECT CKY_CNT_CLFR, CKY_ART, DTT_SCAD FROM `dbmirror15`.`MM_RIGHE` WHERE CSG_DOC = 'BF'
+        UNION
+        SELECT CKY_CNT_CLFR, CKY_ART, DTT_SCAD FROM `dbmirror14`.`MM_RIGHE` WHERE CSG_DOC = 'BF'
+        UNION
+        SELECT CKY_CNT_CLFR, CKY_ART, DTT_SCAD FROM `dbmirror13`.`MM_RIGHE` WHERE CSG_DOC = 'BF') totale
+    GROUP BY CKY_ART, CKY_CNT_CLFR
+    ORDER BY CKY_ART, max(DTT_SCAD)) gruppo 
+    ON (clienti.CKY_CNT = gruppo.CKY_CNT_CLFR)
+INTO OUTFILE '/tmp/acquisto.csv';

@@ -35,9 +35,31 @@ class product_product(osv.osv):
     ''' Extend accounting query
     '''    
     _inherit = 'micronaet.accounting'
+
+    def get_product_supplier_external(self, cr, uid, context=None):
+        ''' Return query list from external query
+        '''
+        import pdb; pdb.set_trace()
+        query_file = '~/etl/query/product_supplier.sql'        
+        _logger.info('Read external query file: %s' % query_file)
+        
+        query = ''
+        try:
+            for line in open(query_file, 'r'):
+                query += line
+            if not query:
+                _logger.error('Empty query! [%s]' % filename)
+                return False
+            cursor = self.connect(cr, uid, context=context)
+            cursor.execute(query)
+            return cursor
+        except: 
+            _logger.error('Error reading/executing query: %s' % filename)
+            return False
     
     def get_product_supplier(self, cr, uid, context=None):
         ''' Return query for first supplier
+            TODO manage this function, not used for now!!
         '''
         table = 'ar_anagrafiche' 
         if self.pool.get('res.company').table_capital_name(cr, uid, 
@@ -88,18 +110,26 @@ class product_product(osv.osv):
         product_pool = self.pool.get('product.product')
         partner_pool = self.pool.get('res.partner')
         
-        cursor = accounting_pool.get_product_supplier(
+        #cursor = accounting_pool.get_product_supplier(
+        #    cr, uid, context=context)
+        cursor = accounting_pool.get_product_supplier_external(
             cr, uid, context=context)
         if not cursor:
             _logger.error(
                 'Unable to connect no importation product supplier!')
             return False
 
+        codes = []
         for record in cursor:
             try:
                 # Read fields:
                 default_code = record['CKY_ART']
-                supplier_code = record['CKY_CNT_FOR_AB']
+                if default_code in codes:
+                    # other supplier # TODO import also them
+                    
+                codes.append(default_code)
+                #supplier_code = record['CKY_CNT_FOR_AB']
+                supplier_code = record['CKY_CNT_CLFR'] 
                 
                 # Search product (all product imported before):
                 product_ids = product_pool.search(cr, uid, [
