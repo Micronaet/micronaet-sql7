@@ -100,6 +100,7 @@ class product_product(osv.osv):
         else:
             context = args.get('context', {})
          
+        import pdb; pdb.set_trace()
         # TODO restore:       
         #res = super(product_product, self).schedule_sql_product_import(
         #    cr, uid, **args)
