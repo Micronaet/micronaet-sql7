@@ -100,8 +100,8 @@ class product_product(osv.osv):
         else:
             context = args.get('context', {})
          
-        res = True#super(product_product, self).schedule_sql_product_import(
-        #    cr, uid, **args)
+        res = super(product_product, self).schedule_sql_product_import(
+            cr, uid, **args)
 
         _logger.info('Start update product supplier!')
         
