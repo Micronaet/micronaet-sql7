@@ -39,8 +39,7 @@ class product_product(osv.osv):
     def get_product_supplier_external(self, cr, uid, context=None):
         ''' Return query list from external query
         '''
-        import pdb; pdb.set_trace()
-        query_file = '~/etl/query/product_supplier.sql'      
+        query_file = '~/etl/query/product_supplier.sql'
         query_file = os.path.expanduser(query_file)  
         _logger.info('Read external query file: %s' % query_file)
         
@@ -49,7 +48,7 @@ class product_product(osv.osv):
             for line in open(query_file, 'r'):
                 query += line
             if not query:
-                _logger.error('Empty query! [%s]' % filename)
+                _logger.error('Empty query! [%s]' % query_file)
                 return False
             cursor = self.connect(cr, uid, context=context)
             cursor.execute(query)
