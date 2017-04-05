@@ -40,7 +40,8 @@ class product_product(osv.osv):
         ''' Return query list from external query
         '''
         import pdb; pdb.set_trace()
-        query_file = '~/etl/query/product_supplier.sql'        
+        query_file = '~/etl/query/product_supplier.sql'      
+        query_file = os.path.expanduser(query_file)  
         _logger.info('Read external query file: %s' % query_file)
         
         query = ''
