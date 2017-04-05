@@ -126,6 +126,7 @@ class product_product(osv.osv):
                 default_code = record['CKY_ART']
                 if default_code in codes:
                     # other supplier # TODO import also them
+                    continue
                     
                 codes.append(default_code)
                 #supplier_code = record['CKY_CNT_FOR_AB']
