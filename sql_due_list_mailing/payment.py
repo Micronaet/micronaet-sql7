@@ -92,7 +92,8 @@ class sql_payment_duelist(osv.osv):
     _inherit = 'mail.thread'
     
     _description = 'Payment duelist'
-    _order = 'deadline desc'
+    #_order = 'deadline desc'
+    _order = 'date desc'
 
     # --------
     # Utility:
