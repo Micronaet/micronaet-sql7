@@ -117,6 +117,8 @@
                     <field name="partner_id" string="Partner" filter_domain="[('partner_id','=',self)]"/>
                     <field name="country_id" string="Country" filter_domain="[('country_id','=',self)]"/>
                     <field name="stage_id" string="Stage" filter_domain="[('stage_id','=',self)]"/>
+                    <field name="date_month" />
+                    <field name="deadline_month" />
 
                     <separator string="State:"/>
                     <filter icon="terp-go-home" name="state_draft" string="Draft" domain="[('state','=','draft')]"/>
@@ -136,8 +138,8 @@
                         <filter name="group_currency" string="Currency" icon="terp-accessories-archiver" context="{'group_by':'currency_id'}"/>
                         <filter name="group_payment_type" string="Type of payment" icon="terp-accessories-archiver" context="{'group_by':'payment_type'}"/>
                         <filter name="group_payment_stage" string="Stage" icon="terp-accessories-archiver" context="{'group_by':'stage_id'}"/>
-                        <filter name="group_deadline" string="Deadline" icon="terp-accessories-archiver" context="{'group_by':'deadline'}"/>
-                        <filter name="group_date" string="Date" icon="terp-accessories-archiver" context="{'group_by':'date'}"/>
+                        <filter name="group_date" string="Date" icon="terp-accessories-archiver" context="{'group_by':'date_month'}"/>
+                        <filter name="group_deadline" string="Deadline" icon="terp-accessories-archiver" context="{'group_by':'deadline_month'}"/>
                         <filter name="group_state" string="State" icon="terp-accessories-archiver" context="{'group_by':'state'}"/>
                     </group>                    
             </search>
@@ -153,6 +155,8 @@
                 <field name="name" />
                 <field name="date" />
                 <field name="deadline" />
+                <field name="date_month" invisible="1"/>
+                <field name="deadline_month" invisible="1" />
 
                 <field name="partner_id" />
                 <field name="duelist_mail" />

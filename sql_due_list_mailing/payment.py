@@ -564,6 +564,40 @@ class sql_payment_duelist(osv.osv):
             'state': 'cancel',
             }, context=context)
 
+    # fields date
+    def _get_date_month_4_group(self, cr, uid, ids, fields, args, context=None):
+        ''' Fields function for calculate 
+        '''
+        res = {}
+        for doc in self.browse(cr, uid, ids, context=context):
+            if doc.date:
+                res[doc.id] = ('%s' % doc.date)[:7]
+            else:
+                res[doc.id] = _('Nessuna')
+        return res
+
+    # fields deadline
+    def _get_deadline_month_4_group(self, cr, uid, ids, fields, args, 
+            context=None):
+        ''' Fields function for calculate 
+        '''
+        res = {}
+        for doc in self.browse(cr, uid, ids, context=context):
+            if doc.deadline:
+                res[doc.id] = ('%s' % doc.deadline)[:7]
+            else:
+                res[doc.id] = _('Nessuna')
+        return res
+
+    # -------------------------------------------------------------------------
+    # Store function:    
+    # -------------------------------------------------------------------------
+    def _store_date_deadline_month(self, cr, uid, ids, context=None):
+        ''' if change date reload data
+        '''
+        _logger.warning('Change date_mont depend on date or deadline')
+        return ids
+
     # -------------------------------------------------------------------------
     #                                  Fields
     # -------------------------------------------------------------------------
@@ -573,6 +607,22 @@ class sql_payment_duelist(osv.osv):
             help='Invoice reference'),
         'date': fields.date('Date'),
         'deadline': fields.date('Deadline'),
+
+        'date_month': fields.function(
+            _get_date_month_4_group, method=True, 
+            type='char', string='Mese inser.', size=15,
+            store={
+                'sql.payment.duelist': (
+                    _store_date_deadline_month, ['date'], 10),
+                }), 
+        'deadline_month': fields.function(
+            _get_deadline_month_4_group, method=True, 
+            type='char', string='Scadenza', size=15, 
+            store={
+                'sql.payment.duelist': (
+                    _store_date_deadline_month, ['deadline'], 10),
+                }), 
+                        
         'partner_id': fields.many2one('res.partner', 'Customer',
             required=True),
         'duelist_mail': fields.related('partner_id', 'duelist_mail', 
