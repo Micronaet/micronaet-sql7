@@ -36,7 +36,9 @@
     ],
     'init_xml': [], 
     'data': [
+        'security/duelist_group.xml',
         'security/ir.model.access.csv',
+
         'wizard/assign_mail_view.xml',
         'payment_views.xml',
         'scheduler.xml',
