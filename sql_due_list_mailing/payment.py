@@ -251,6 +251,7 @@ class sql_payment_duelist(osv.osv):
         # Before importation list (for delete payed after importation)
         before_ids = self.search(cr, uid, [], context)
 
+        missed_currency = []
         for line in f:
             try:
                 i += 1
@@ -277,7 +278,10 @@ class sql_payment_duelist(osv.osv):
                 currency_ref = format_string(csv_line[6])
                 currency_name = format_string(csv_line[7])
 
-                currency_id = currencies.get(currency_name, False)                
+                currency_id = currencies.get(currency_name, False)
+                if not currenct_id and currency_name and currenct_name not in \
+                        missed_currency:
+                    missed_currency.append(currency_name)
                 partner_id = partner_pool.get_partner_from_sql_code(
                         cr, uid, customer_code, context=context)
                 
@@ -330,7 +334,10 @@ class sql_payment_duelist(osv.osv):
             except:
                 _logger.error(_("Error update payment: %s") % (
                     sys.exc_info(), ))
-                        
+        
+        if missed_currency:                
+            _logger.error('Missed currency: %s' % (missed_currency, ))
+
         # Delete all elements not present:                
         _logger.info(_("Delete payment payed"))        
         if before_ids:
