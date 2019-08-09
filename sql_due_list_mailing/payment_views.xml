@@ -23,6 +23,7 @@
             <xpath expr="/form/sheet/notebook/page[@string='Sales &amp; Purchases']" position="after">
                 <page string="Duelist payment">
                     <group name="payment_duelist" colspan="4" col="4">
+                         <field name="duelist_fido" />
                          <field name="duelist_optin" />
                          <field name="duelist_mail" />
                          <field name="duelist_uncovered" readonly="1"/>
@@ -40,6 +41,7 @@
         <field name="inherit_id" ref="base.view_partner_tree" />
         <field name="arch" type="xml">
              <field name="email" position="after">
+                 <field name="duelist_fido" />
                  <field name="duelist_optin" />
                  <field name="duelist_mail" />
                  <field name="duelist_uncovered" invisible="1"/>

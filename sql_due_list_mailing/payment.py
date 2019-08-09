@@ -150,11 +150,49 @@ class sql_payment_duelist(osv.osv):
     # -------------------------------------------------------------------------
     #                                 Scheduler
     # -------------------------------------------------------------------------
-    def schedule_sql_payment_duelist_import(self, cr, uid, csv_file, from_code=False, to_code=False, context=None):
+    def schedule_sql_fido_import(self, cr, uid, fido_file, context=None):
+        ''' Update also FIDO information 
+        '''
+        _logger.info('Import also FIDO file')
+        partner_pool = self.pool.get('res.partner')
+        separator = ';'
+        
+        no_fido_ids = partner_pool.search(cr, uid, [
+            ('duelist_fido', '=', 0),
+            ], context=context)
+        
+        # FIDO File:
+        f = open(os.path.expanduser(
+            os.path.join(*fido_file)), 'r')
+        import pdb; pdb.set_trace()    
+        for line in f:
+            row = line.strip().split(separator)
+            partner_code = row[0].strip()
+            fido = row[1].strip()
+            
+            partner_id = partner_pool.get_partner_from_sql_code(
+                cr, uid, partner_code, context=context)
+            if not partner_id:
+                _logger.error('Partner not found: %s' % partner_code)                
+                continue
+            if not fido and partner_id in no_fido_ids:
+                _logger.warning('Partner yet 0 FIDO' % partner_code)                
+                continue
+                    
+            partner_pool.write(cr, uid, [partner.id], {
+                'duelist_fido': int(fido), 
+                }, context=context)
+
+        return True
+    
+    def schedule_sql_payment_duelist_import(self, cr, uid, csv_file, 
+            from_code=False, to_code=False, fido_file=False, context=None):
         ''' Import schedule action, 3 operations
             1. Import all payment (deleting payed)
             2. Assign TODO next stage depend on deadline
             3. Sent mail that need to            
+            
+            If present FIDO file import also that information
         '''
         # -----------------
         # Utility function:
@@ -187,7 +225,13 @@ class sql_payment_duelist(osv.osv):
         # Import duelist:
         # ---------------
         _logger.info(_("Start import payment duelist via CSV!"))
+        
+        # Check FIDO file if present:
+        if fido_file:
+            return self.schedule_sql_fido_import(
+                cr, uid, fido_file, context=context)
 
+        # Duelist file:
         f = open(os.path.expanduser(os.path.join(*csv_file)), "r")
         i = 0
         separator = ";"
@@ -703,6 +747,7 @@ class res_partner(osv.osv):
         return res
     
     _columns = {
+        'duelist_fido': fields.integer('FIDO'),
         'duelist_mail': fields.char('Due list address', size=400),
         'duelist_optin': fields.boolean('Duelist opt-in'),
         

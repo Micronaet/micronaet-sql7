@@ -1,5 +1,9 @@
 SELECT CKY_CNT_CLFR, CKY_ART, max(date) FROM (
-    SELECT CKY_CNT_CLFR, CKY_ART, concat('2017 ', DTT_SCAD) date FROM `dbmirror`.`MM_RIGHE` WHERE CSG_DOC = 'BF'
+    SELECT CKY_CNT_CLFR, CKY_ART, concat('2019 ', DTT_SCAD) date FROM `dbmirror`.`MM_RIGHE` WHERE CSG_DOC = 'BF'
+    UNION
+    SELECT CKY_CNT_CLFR, CKY_ART, concat('2018 ', DTT_SCAD) date FROM `dbmirror18`.`MM_RIGHE` WHERE CSG_DOC = 'BF' 
+    UNION
+    SELECT CKY_CNT_CLFR, CKY_ART, concat('2017 ', DTT_SCAD) date FROM `dbmirror17`.`MM_RIGHE` WHERE CSG_DOC = 'BF' 
     UNION
     SELECT CKY_CNT_CLFR, CKY_ART, concat('2016 ', DTT_SCAD) date FROM `dbmirror16`.`MM_RIGHE` WHERE CSG_DOC = 'BF' 
     UNION
