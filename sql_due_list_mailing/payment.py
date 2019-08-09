@@ -744,15 +744,26 @@ class res_partner(osv.osv):
         res = {}
         today = datetime.now().strftime(DEFAULT_SERVER_DATE_FORMAT)
         
-        for partner in self.browse(cr, uid, ids, context=context):
+        for partner in self.browse(cr, uid, ids, context=context):            
             res[partner.id] = {}
             uncovered = exposition = 0.0    
             
+            if partner.duelist_ids:
+                currency_id = partner.duelist_ids[0].currency_id.id
+            else:    
+                currency_id = False
             for due in partner.duelist_ids:
+                # Payment check:
+                if currency_id and due.currency_id.id != currency_id:
+                    currency_id = False # reset when different (first time)
+                    
+                
+                # Deadline check:
                 if due.deadline < today:
                     uncovered += due.total
                 exposition += due.total
 
+            res[partner.id]['duelist_currency_id'] = currency_id
             res[partner.id]['duelist_uncovered_amount'] = uncovered
             res[partner.id]['duelist_exposition_amount'] = exposition
             res[partner.id]['duelist_uncovered'] = uncovered > 0.0            
@@ -788,7 +799,10 @@ class res_partner(osv.osv):
         'duelist_exposition_amount': fields.function(_get_duelist_totals, 
             method=True, type='float', string='Total open payment', 
             store=False, multi='totals', help='Sum of all open payment'),
-
+        'duelist_currency_id': fields.function(_get_duelist_totals, 
+            method=True, type='many2one', string='Currency check', 
+            store=False, multi='totals', relation='res.currency',
+            help='If present is the currency of all payment'),
     }
 
 class res_currency(osv.osv):

@@ -28,7 +28,7 @@
                          <field name="duelist_mail" />
 
                          <field name="duelist_fido" readonly="1"/>
-                         <newline/>
+                         <field name="duelist_currency_id" readonly="1" />
 
                          <field name="duelist_uncovered_amount" readonly="1"/>
                          <field name="duelist_exposition_amount" readonly="1"/>
@@ -50,13 +50,14 @@
         <field name="inherit_id" ref="base.view_partner_tree" />
         <field name="arch" type="xml">
              <field name="email" position="after">
-                 <field name="duelist_fido" />
+                 <field name="duelist_fido" readonly="1" />
+                 <field name="duelist_currency_id" readonly="1" />
 
                  <field name="duelist_optin" />
                  <field name="duelist_mail" />
 
-                 <field name="duelist_uncovered_amount" invisible="1"/>
-                 <field name="duelist_exposition_amount" invisible="1"/>
+                 <field name="duelist_uncovered_amount" invisible="1" />
+                 <field name="duelist_exposition_amount" invisible="1" />
 
                  <field name="duelist_over_fido" />
                  <field name="duelist_uncovered" invisible="1"/>
