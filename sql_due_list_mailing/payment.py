@@ -279,7 +279,7 @@ class sql_payment_duelist(osv.osv):
                 currency_name = format_string(csv_line[7])
 
                 currency_id = currencies.get(currency_name, False)
-                if not currenct_id and currency_name and currenct_name not in \
+                if not currency_id and currency_name and currenct_name not in \
                         missed_currency:
                     missed_currency.append(currency_name)
                 partner_id = partner_pool.get_partner_from_sql_code(
