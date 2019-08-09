@@ -173,7 +173,7 @@ class sql_payment_duelist(osv.osv):
             partner_id = partner_pool.get_partner_from_sql_code(
                 cr, uid, partner_code, context=context)
             if not partner_id:
-                _logger.error('Partner %s not found: %s' % partner_code)                
+                _logger.error('Partner %s not found!' % partner_code)                
                 continue
             if not fido and partner_id in no_fido_ids:
                 _logger.warning('Partner %s yet 0 FIDO' % partner_code)                
