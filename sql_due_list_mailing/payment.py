@@ -164,7 +164,7 @@ class sql_payment_duelist(osv.osv):
         # FIDO File:
         f = open(os.path.expanduser(
             os.path.join(*fido_file)), 'r')
-
+        import pdb; pdb.set_trace()
         for line in f:
             row = line.strip().split(separator)
             partner_code = row[0].strip()
@@ -179,7 +179,7 @@ class sql_payment_duelist(osv.osv):
                 _logger.warning('Partner yet 0 FIDO' % partner_code)                
                 continue
                     
-            partner_pool.write(cr, uid, [partner.id], {
+            partner_pool.write(cr, uid, [partner_id], {
                 'duelist_fido': int(fido), 
                 }, context=context)
 
