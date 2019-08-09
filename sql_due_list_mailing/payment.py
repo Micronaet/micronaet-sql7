@@ -180,7 +180,7 @@ class sql_payment_duelist(osv.osv):
                 continue
                     
             partner_pool.write(cr, uid, [partner_id], {
-                'duelist_fido': int(fido), 
+                'duelist_fido': int(fido or '0'), 
                 }, context=context)
 
         return True
