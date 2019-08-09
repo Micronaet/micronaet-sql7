@@ -472,6 +472,8 @@ class sql_payment_duelist(osv.osv):
             
         if missed_currency:                
             _logger.error('Missed currency: %s' % (missed_currency, ))
+        else:    
+            _logger.info('No missed currency')
 
         # Send all mail now:    
         _logger.info(_("Send mails [# %s]" % len(mail_ids)))
