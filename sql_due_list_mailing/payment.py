@@ -335,9 +335,6 @@ class sql_payment_duelist(osv.osv):
                 _logger.error(_("Error update payment: %s") % (
                     sys.exc_info(), ))
         
-        if missed_currency:                
-            _logger.error('Missed currency: %s' % (missed_currency, ))
-
         # Delete all elements not present:                
         _logger.info(_("Delete payment payed"))        
         if before_ids:
@@ -473,6 +470,9 @@ class sql_payment_duelist(osv.osv):
                     'todo_stage_id': False
                     }, context=context)
             
+        if missed_currency:                
+            _logger.error('Missed currency: %s' % (missed_currency, ))
+
         # Send all mail now:    
         _logger.info(_("Send mails [# %s]" % len(mail_ids)))
         mail_pool.send(cr, uid,  mail_ids, context=context)
