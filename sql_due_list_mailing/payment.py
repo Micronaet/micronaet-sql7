@@ -164,7 +164,7 @@ class sql_payment_duelist(osv.osv):
         # FIDO File:
         f = open(os.path.expanduser(
             os.path.join(*fido_file)), 'r')
-        import pdb; pdb.set_trace()    
+
         for line in f:
             row = line.strip().split(separator)
             partner_code = row[0].strip()
@@ -738,27 +738,49 @@ class res_partner(osv.osv):
         
         for partner in self.browse(cr, uid, ids, context=context):
             res[partner.id] = {}
-            res[partner.id]['duelist_uncovered_amount'] = 0.0
+            uncovered = exposition = 0.0    
+            
             for due in partner.duelist_ids:
                 if due.deadline < today:
-                    res[partner.id]['duelist_uncovered_amount'] += due.total
-            res[partner.id]['duelist_uncovered'] = res[partner.id][
-                'duelist_uncovered_amount'] > 0.0
+                    uncovered += due.total
+                exposition += due.total
+
+            res[partner.id]['duelist_uncovered_amount'] = uncovered
+            res[partner.id]['duelist_exposition_amount'] = exposition
+            res[partner.id]['duelist_uncovered'] = uncovered > 0.0            
+
+            if partner.duelist_fido and exposition > partner.duelist_fido:
+                res[partner.id]['duelist_over_fido'] = True
+            else:    
+                res[partner.id]['duelist_over_fido'] = False
         return res
     
     _columns = {
         'duelist_fido': fields.integer('FIDO'),
         'duelist_mail': fields.char('Due list address', size=400),
         'duelist_optin': fields.boolean('Duelist opt-in'),
-        
+        'duelist_ids': fields.one2many(
+            'sql.payment.duelist', 'partner_id', 'Duelist'),
+
+        # ---------------------------------------------------------------------
+        # Calculated fields:        
+        # ---------------------------------------------------------------------
+        # Test:
         'duelist_uncovered': fields.function(_get_duelist_totals, 
-            method=True, type='boolean', string='Uncovered', 
-            store=False, multi='totals'),
+            method=True, type='boolean', string='Insolvent', 
+            store=False, multi='totals', help='Payment over data present'),
+        'duelist_over_fido': fields.function(_get_duelist_totals, 
+            method=True, type='boolean', string='Over FIDO', 
+            store=False, multi='totals', help='Exposition over FIDO'),
+        
+        # Amount:
         'duelist_uncovered_amount': fields.function(_get_duelist_totals, 
-            method=True, type='float', string='Uncovered amount', store=False, 
-            multi='totals'),
-            
-        'duelist_ids': fields.one2many('sql.payment.duelist', 'partner_id', 'Duelist', required=False),
+            method=True, type='float', string='Payment over data', 
+            store=False, multi='totals', help='Sum of payment over data'),
+        'duelist_exposition_amount': fields.function(_get_duelist_totals, 
+            method=True, type='float', string='Total open payment', 
+            store=False, multi='totals', help='Sum of all open payment'),
+
     }
 
 class res_currency(osv.osv):

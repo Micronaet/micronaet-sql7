@@ -23,11 +23,19 @@
             <xpath expr="/form/sheet/notebook/page[@string='Sales &amp; Purchases']" position="after">
                 <page string="Duelist payment">
                     <group name="payment_duelist" colspan="4" col="4">
-                         <field name="duelist_fido" />
                          <field name="duelist_optin" />
                          <field name="duelist_mail" />
-                         <field name="duelist_uncovered" readonly="1"/>
+
+                         <field name="duelist_fido" readonly="1"/>
+                         <newline/>
+
                          <field name="duelist_uncovered_amount" readonly="1"/>
+                         <field name="duelist_exposition_amount" readonly="1"/>
+
+                         <field name="duelist_over_fido" readonly="1"/>
+                         <field name="duelist_uncovered" readonly="1"/>
+
+                         
                          <separator name="Duelist" colspan="4" />
                         <field name="duelist_ids" colspan="4" nolabel="1" readonly="1"/>
                     </group>    
@@ -42,10 +50,16 @@
         <field name="arch" type="xml">
              <field name="email" position="after">
                  <field name="duelist_fido" />
+
                  <field name="duelist_optin" />
                  <field name="duelist_mail" />
-                 <field name="duelist_uncovered" invisible="1"/>
+
                  <field name="duelist_uncovered_amount" invisible="1"/>
+                 <field name="duelist_exposition_amount" invisible="1"/>
+
+                 <field name="duelist_over_fido" />
+                 <field name="duelist_uncovered" invisible="1"/>
+
              </field>   
              <xpath expr="/tree" position="attributes">
                  <attribute name="colors">blue:duelist_optin==True</attribute>
