@@ -797,8 +797,9 @@ class res_currency(osv.osv):
     _inherit = 'res.currency'
 
     _columns = {
-        'sql_id': fields.integer('SQL ID'),
+        'sql_id': fields.integer('SQL ID'),        
         'sql_name': fields.char('Name', size=20),
+        # TODO remove (move in production_line)
         'account_ref': fields.char('Account ref', size=5), # not use here
         }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

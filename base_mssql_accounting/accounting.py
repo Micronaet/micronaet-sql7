@@ -560,12 +560,7 @@ class micronaet_accounting(osv.osv):
 
         cursor = self.connect(cr, uid, year=year, context=context)
         try:
-            cursor.execute("""
-                SELECT 
-                    CSG_DOC, NGB_SR_DOC, NGL_DOC, DTT_DOC, CKY_CNT_CLFR, 
-                    CKY_CNT_SPED_ALT, CKY_CNT_AGENTE, CKY_CNT_VETT, IST_PORTO, 
-                    CDS_NOTE
-                FROM %s;""" % table)
+            cursor.execute("SELECT * FROM %s;" % table)
             return cursor # with the query setted up
         except: 
             return False  # Error return nothing    
