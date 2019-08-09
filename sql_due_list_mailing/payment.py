@@ -164,7 +164,7 @@ class sql_payment_duelist(osv.osv):
         # FIDO File:
         f = open(os.path.expanduser(
             os.path.join(*fido_file)), 'r')
-        import pdb; pdb.set_trace()
+
         for line in f:
             row = line.strip().split(separator)
             partner_code = row[0].strip()
@@ -173,16 +173,15 @@ class sql_payment_duelist(osv.osv):
             partner_id = partner_pool.get_partner_from_sql_code(
                 cr, uid, partner_code, context=context)
             if not partner_id:
-                _logger.error('Partner not found: %s' % partner_code)                
+                _logger.error('Partner %s not found: %s' % partner_code)                
                 continue
             if not fido and partner_id in no_fido_ids:
-                _logger.warning('Partner yet 0 FIDO' % partner_code)                
+                _logger.warning('Partner %s yet 0 FIDO' % partner_code)                
                 continue
                     
             partner_pool.write(cr, uid, [partner_id], {
                 'duelist_fido': int(fido or '0'), 
                 }, context=context)
-
         return True
     
     def schedule_sql_payment_duelist_import(self, cr, uid, csv_file, 
