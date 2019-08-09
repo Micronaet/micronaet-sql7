@@ -794,11 +794,11 @@ class res_partner(osv.osv):
 class res_currency(osv.osv):
     ''' Add extra field for manage extra fields
     '''
-    _name = 'res.currency'
     _inherit = 'res.currency'
 
     _columns = {
         'sql_id': fields.integer('SQL ID'),
         'sql_name': fields.char('Name', size=20),
-    }
+        'account_ref': fields.char('Account ref', size=5), # not use here
+        }
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

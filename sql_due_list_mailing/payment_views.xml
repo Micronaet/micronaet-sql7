@@ -10,6 +10,7 @@
         <field name="arch" type="xml">
              <field name="position" position="after">
                  <field name="sql_name" />
+                 <field name="account_ref" />
              </field>   
         </field>
     </record>
