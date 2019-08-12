@@ -753,8 +753,9 @@ class res_partner(osv.osv):
             else:    
                 currency_id = False
             for due in partner.duelist_ids:
-                # Payment check:
+                # Payment check:                
                 if currency_id and due.currency_id.id != currency_id:
+                    _logger.error('Different duelist currency found!')
                     currency_id = False # reset when different (first time)
                     
                 
