@@ -180,7 +180,7 @@ class sql_payment_duelist(osv.osv):
             #if not fido and partner_id in no_fido_ids:
             #    _logger.warning('Partner %s yet 0 FIDO' % partner_code)                
             #    continue
-                    
+
             partner_pool.write(cr, uid, [partner_id], {
                 'duelist_fido': int(fido or '0'), 
                 'account_agent_code': agent_code,
@@ -231,7 +231,7 @@ class sql_payment_duelist(osv.osv):
         
         # Check FIDO file if present:
         if fido_file:
-            return self.schedule_sql_fido_import(
+            self.schedule_sql_fido_import(
                 cr, uid, fido_file, context=context)
 
         # Duelist file:
