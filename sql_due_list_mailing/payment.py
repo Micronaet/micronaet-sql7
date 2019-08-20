@@ -157,9 +157,9 @@ class sql_payment_duelist(osv.osv):
         partner_pool = self.pool.get('res.partner')
         separator = ';'
         
-        no_fido_ids = partner_pool.search(cr, uid, [
-            ('duelist_fido', '=', 0),
-            ], context=context)
+        #no_fido_ids = partner_pool.search(cr, uid, [
+        #    ('duelist_fido', '=', 0),
+        #    ], context=context)
         
         # FIDO File:
         f = open(os.path.expanduser(
@@ -169,18 +169,22 @@ class sql_payment_duelist(osv.osv):
             row = line.strip().split(separator)
             partner_code = row[0].strip()
             fido = row[1].strip()
+            agent_code = row[2].strip()
+            agent_name = row[3].strip()
             
             partner_id = partner_pool.get_partner_from_sql_code(
                 cr, uid, partner_code, context=context)
             if not partner_id:
                 _logger.error('Partner %s not found!' % partner_code)                
                 continue
-            if not fido and partner_id in no_fido_ids:
-                _logger.warning('Partner %s yet 0 FIDO' % partner_code)                
-                continue
+            #if not fido and partner_id in no_fido_ids:
+            #    _logger.warning('Partner %s yet 0 FIDO' % partner_code)                
+            #    continue
                     
             partner_pool.write(cr, uid, [partner_id], {
                 'duelist_fido': int(fido or '0'), 
+                'account_agent_code': agent_code,
+                'account_agent_name': agent_name,
                 }, context=context)
         return True
     
@@ -781,6 +785,9 @@ class res_partner(osv.osv):
         'duelist_optin': fields.boolean('Duelist opt-in'),
         'duelist_ids': fields.one2many(
             'sql.payment.duelist', 'partner_id', 'Duelist'),
+
+        'account_agent_code': fields.char('Agent Code', size=9),
+        'account_agent_name': fields.char('Agent Name', size=40),
 
         # ---------------------------------------------------------------------
         # Calculated fields:        
