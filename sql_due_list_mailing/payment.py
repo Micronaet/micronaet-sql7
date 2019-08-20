@@ -229,7 +229,7 @@ class sql_payment_duelist(osv.osv):
         # ---------------
         _logger.info(_("Start import payment duelist via CSV!"))
         
-        # Check FIDO file if present:
+        # Check FIDO file if present (and import):
         if fido_file:
             self.schedule_sql_fido_import(
                 cr, uid, fido_file, context=context)
