@@ -822,7 +822,9 @@ class micronaet_accounting(osv.osv):
             year: query on database (multi year mode) selected
             originator: query on origin document not current 
                 (so CSG_DOC_ORI instead of CSG_DOC)
-        '''        
+        '''       
+        # TODO remove block in IMPONIBILE (x 1000) 
+        # XXX Function overrided! 
         query = "Not loaded"
         table_header = "mm_testate"
         table_line = "mm_righe"
