@@ -105,7 +105,7 @@ class product_product(osv.osv):
                         # TODO IFL_ART_DBP o DBV for supply_method='produce'
                         'name': record['CDS_ART'],
                         'default_code': record['CKY_ART'],
-                        'standard_price': record['NMP_UCA'],
+                        #'standard_price': record['NMP_UCA'],
                         'sql_import': True,
                         'active': True,
                         'statistic_category': "%s%s" % (
@@ -138,4 +138,53 @@ class product_product(osv.osv):
             _logger.error('Error generic import product: %s' % (sys.exc_info(), ))
             return False
         return True
+
+    def schedule_sql_product_update_last_cost(self, cr, uid, verbose_log_count=100, write_date_from=False, write_date_to=False, create_date_from=False, create_date_to=False, context=None):
+        ''' Import product from external DB only standard price
+        '''
+        _logger.warning('Update product with last cost')
+        product_proxy = self.pool.get('product.product')
+        accounting_pool = self.pool.get('micronaet.accounting')
+        try:
+            cursor = accounting_pool.get_product( 
+                cr, uid, active = False, write_date_from=write_date_from,
+                write_date_to=write_date_to, create_date_from=create_date_from,
+                create_date_to=create_date_to, context=context) 
+            if not cursor:
+                _logger.error("Unable to connect no importation of package list for product!")
+                return False
+
+            i = 0
+            for record in cursor:
+                try:
+                    i += 1
+                    if verbose_log_count and i % verbose_log_count == 0:
+                        _logger.info('Import %s: record import/update!' % i)                             
+
+                    data = {
+                        # TODO IFL_ART_DBP o DBV for supply_method='produce'
+                        'standard_price': record['NMP_UCA'],
+                        ),
+                    }
+                    product_ids = product_proxy.search(cr, uid, [
+                        ('default_code', '=', record['CKY_ART'])])
+                    if product_ids:
+                        product_id = product_ids[0]
+                        product_proxy.write(cr, uid, product_id, data, 
+                            context=context)
+                    else:
+                        product_id = product_proxy.create(cr, uid, data, 
+                            context=context)
+
+                except:
+                    _logger.error('Error import product [%s], jumped: %s' % (
+                        record['CDS_ART'], sys.exc_info(), ))
+                        
+            _logger.info('All product is updated!')
+        except:
+            _logger.error('Error generic import product: %s' % (
+                sys.exc_info(), ))
+            return False
+        return True
+        
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
