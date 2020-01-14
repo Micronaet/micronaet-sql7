@@ -163,9 +163,8 @@ class product_product(osv.osv):
 
                     data = {
                         # TODO IFL_ART_DBP o DBV for supply_method='produce'
-                        'standard_price': record['NMP_UCA'],
-                        ),
-                    }
+                        'standard_price': record['NMP_UCA'],                        
+                        }
                     product_ids = product_proxy.search(cr, uid, [
                         ('default_code', '=', record['CKY_ART'])])
                     if product_ids:
