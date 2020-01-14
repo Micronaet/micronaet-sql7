@@ -104,6 +104,7 @@ class product_product(osv.osv):
                         # TODO IFL_ART_DBP o DBV for supply_method='produce'
                         'name': record['CDS_ART'],
                         'default_code': record['CKY_ART'],
+                        'standard_price': record['NMP_UCA'],
                         'sql_import': True,
                         'active': True,
                         'statistic_category': "%s%s" % (
