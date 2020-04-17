@@ -38,7 +38,7 @@
 
                          
                          <separator name="Duelist" colspan="4" />
-                        <field name="duelist_ids" colspan="4" nolabel="1" readonly="1"/>
+                         <field name="duelist_ids" colspan="4" nolabel="1" readonly="1"/>
                     </group>    
                 </page>    
              </xpath>

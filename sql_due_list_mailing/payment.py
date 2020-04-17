@@ -765,7 +765,7 @@ class res_partner(osv.osv):
                     
                 
                 # Deadline check:
-                if due.deadline < today:
+                if due.deadline < today and due.total > 0:
                     uncovered += due.total
                 exposition += due.total
 
