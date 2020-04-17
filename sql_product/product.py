@@ -82,7 +82,7 @@ class product_product(osv.osv):
     def schedule_sql_product_import(self, cr, uid, verbose_log_count=100, write_date_from=False, write_date_to=False, create_date_from=False, create_date_to=False, context=None):
         ''' Import product from external DB
         '''
-        _logger.warning('Update product with last cost')
+        _logger.warning('Update product without')
         product_proxy = self.pool.get('product.product')
         accounting_pool = self.pool.get('micronaet.accounting')
         try:

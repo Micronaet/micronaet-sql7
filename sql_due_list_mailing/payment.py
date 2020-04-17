@@ -289,9 +289,10 @@ class sql_payment_duelist(osv.osv):
                 partner_id = partner_pool.get_partner_from_sql_code(
                         cr, uid, customer_code, context=context)
                 
-                if total <= 0.0:
-                    _logger.info('Jump negative total')
-                    continue
+                # 17 apr 2020: Removed (jump accounti)
+                #if total <= 0.0:
+                #    _logger.info('Jump negative total')
+                #    continue
                     
                 if not partner_id:
                     _logger.error(
