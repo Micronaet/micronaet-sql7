@@ -765,6 +765,7 @@ class res_partner(osv.osv):
                     
                 
                 # Deadline check:
+                import pdb; pdb.set_trace()
                 if due.deadline < today and due.total > 0:
                     uncovered += due.total
                 exposition += due.total
