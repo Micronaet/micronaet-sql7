@@ -762,10 +762,8 @@ class res_partner(osv.osv):
                 if currency_id and due.currency_id.id != currency_id:
                     _logger.error('Different duelist currency found!')
                     currency_id = False # reset when different (first time)
-                    
-                
+                                    
                 # Deadline check:
-                import pdb; pdb.set_trace()
                 if due.deadline < today and due.total > 0:
                     uncovered += due.total
                 exposition += due.total
