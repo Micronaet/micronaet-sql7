@@ -39,6 +39,19 @@
             </field>
         </field>
     </record>   
+    <record model="ir.ui.view" id="view_res_partner_account_search">
+        <field name="name">res.partner.account.search</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_res_partner_filter"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                 <field name="sql_import" />
+                 <field name="sql_customer_code" /><!--attrs="{'invisible':[('sql_import','=',False)]}" />-->
+                 <field name="sql_supplier_code" />
+                 <field name="sql_destination_code" />
+            </field>
+        </field>
+    </record>
      
     <menuitem name="Partner" parent="base_mssql.menu_sql_anagraphic" id="menu_sql_anagraphic_partner" action="base.action_partner_form" sequence="10" />
 </data>
