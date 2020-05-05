@@ -763,8 +763,8 @@ class res_partner(osv.osv):
                     _logger.error('Different duelist currency found!')
                     currency_id = False # reset when different (first time)
                                     
-                # Deadline check:
-                if due.deadline < today and due.total > 0:
+                # Deadline check (remove negative check 05/05/2020):
+                if due.deadline < today:# and due.total > 0:
                     uncovered += due.total
                 exposition += due.total
 
