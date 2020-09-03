@@ -54,7 +54,7 @@ class product_product(osv.osv):
             cursor.execute(query)
             return cursor
         except: 
-            _logger.error('Error reading/executing query: %s' % filename)
+            _logger.error('Error reading/executing query: %s' % query)
             return False
     
     def get_product_supplier(self, cr, uid, context=None):
@@ -157,4 +157,4 @@ class product_product(osv.osv):
                     
         _logger.info('All product supplier updated!')
         return res
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+
