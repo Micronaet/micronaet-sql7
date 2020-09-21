@@ -38,6 +38,7 @@ class product_categ(osv.osv):
         """
         stat_file = os.path.expanduser('~/account/catstatpan.csv')
         i = 0
+        all_product_id = 1
 
         current_stat = {}
         stat_ids = self.search(cr, uid, [
@@ -74,7 +75,8 @@ class product_categ(osv.osv):
                     'name': name,
                     'account_ref': account_ref,
                     'code_list': account_ref,
-                    'parent_id': parent_code_db.get(parent_code, False),
+                    'parent_id': parent_code_db.get(
+                        parent_code, all_product_id),
                     'auto_category_type': 'statistic_category',
                 }, context=context)
 
