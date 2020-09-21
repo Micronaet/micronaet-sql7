@@ -42,7 +42,7 @@ class product_categ(osv.osv):
 
         current_stat = {}
         stat_ids = self.search(cr, uid, [
-            ('auto_category', '=', 'statistic_category'),
+            ('auto_category_type', '=', 'statistic_category'),
         ], context=context)
         for stat in self.browse(cr, uid, stat_ids, context=context):
             current_stat[stat.account_ref] = stat.id
