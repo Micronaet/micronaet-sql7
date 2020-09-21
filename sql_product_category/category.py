@@ -101,11 +101,13 @@ class product_categ(osv.osv):
         # Read category range:
         category_ids = self.search(cr, uid, [
             ('code_list', '!=', False),
+            ('auto_category_type', '=', 'statistic_category'),
         ], context=context)
         category_proxy = self.browse(cr, uid, category_ids, context=context)
 
         # Update category product in range:
         product_pool = self.pool.get('product.product')
+        pdb.set_trace()
         for category in category_proxy:
             for code in category.code_list.split('|'):
                 try:
