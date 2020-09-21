@@ -19,12 +19,9 @@
 ###############################################################################
 import os
 import sys
-import openerp.netsvc
 import logging
+import pdb
 from openerp.osv import osv, fields
-from datetime import datetime, timedelta
-from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT, DATETIME_FORMATS_MAP, float_compare
-import openerp.addons.decimal_precision as dp
 from openerp.tools.translate import _
 
 
@@ -36,11 +33,67 @@ class product_categ(osv.osv):
     """
     _inherit = 'product.category'
 
+    def preload_category_from_account(self, cr, uid, context=None):
+        """ Preload from file
+        """
+        pdb.set_trace()
+        stat_file = os.path.expanduser('~/account/catstaspan.csv')
+        i = 0
+
+        current_stat = {}
+        stat_ids = self.search(cr, uid, [
+            ('auto_category', '=', 'statistic_category'),
+        ], context=context)
+        for stat in self.browse(cr, uid, stat_ids, context=context):
+            current_stat[stat.account_ref] = stat.id
+
+        parent_code_db = {}
+        for line in stat_file:
+            i += 1
+            line = line.strip()
+            if not line:
+                _logger.warning('%s. Jump empty line' % i)
+            row = line.split(';')
+            if len(row) != 2:
+                _logger.warning('%s. Different number of columns!' % i)
+
+            account_ref = row[0].strip()
+            name = row[1].strip().title().replace('/', ' - ')
+            parent_code = '%s00' % account_ref[:1]
+            if account_ref in current_stat:
+                stat_id = current_stat[account_ref]
+                self.write(cr, uid, [stat_id], {
+                    'name': name,
+                }, context=context)
+                del(current_stat[account_ref])
+            else:
+                state_id = self.create(cr, uid, {
+                    'name': name,
+                    'account_ref': account_ref,
+                    'code_list': account_ref,
+                    'parent_id': parent_code_db.get(parent_code, False),
+                }, context=context)
+            # Saved for parent ID in child (need alphabetic sort for list)
+            if account_ref[1:] == '00':
+                parent_code_db[account_ref] = stat_id
+
+        # Delete old items:
+        for item_id in current_stat.values():
+            self.write(cr, uid, [item_id], {
+                'accont_ref': False,
+                'code_list': False,
+            }, context=context)
+        return True
+
     # Scheduled action: #######################################################
     def schedule_update_product_category(self, cr, uid, context=None):
         """ Update product category from external DB
         """
+        pdb.set_trace()
         _logger.info('Start updating product category')
+
+        # Update category list:
+        self.preload_category_from_account(cr, uid, context=context)
 
         # Read category range:
         category_ids = self.search(cr, uid, [
@@ -77,14 +130,10 @@ class product_categ(osv.osv):
         return True
 
     _columns = {
+        'account_ref': fields.char('Codice contabile', size=10),
         'code_list': fields.text(
             'Lista codici', help='Elenco codici di questa categoria, usare '
                                  'il carattere | per dividerli'),
-
-        'from_code': fields.char(
-            'From code (>=)', size=30),
-        'to_code': fields.char(
-            'To code (<)', size=30),
 
         'auto_category_type': fields.selection([
             ('default_code', 'Default code'),
