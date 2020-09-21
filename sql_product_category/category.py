@@ -36,7 +36,7 @@ class product_categ(osv.osv):
     def preload_category_from_account(self, cr, uid, context=None):
         """ Preload from file
         """
-        stat_file = os.path.expanduser('~/account/catstaspan.csv')
+        stat_file = os.path.expanduser('~/account/catstatpan.csv')
         i = 0
 
         current_stat = {}
