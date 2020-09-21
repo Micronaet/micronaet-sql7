@@ -60,7 +60,6 @@ class product_categ(osv.osv):
                 _logger.warning('%s. Different number of columns!' % i)
                 continue
 
-            pdb.set_trace()
             account_ref = row[0].strip()
             name = row[1].strip().title().replace('/', ' - ')
             parent_code = '%s00' % account_ref[:1]
@@ -94,7 +93,6 @@ class product_categ(osv.osv):
     def schedule_update_product_category(self, cr, uid, context=None):
         """ Update product category from external DB
         """
-        pdb.set_trace()
         _logger.info('Start updating product category')
 
         # Update category list:
