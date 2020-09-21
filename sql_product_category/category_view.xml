@@ -9,7 +9,8 @@
 	            <xpath expr="//group/group" position="after">
 				    <group name="product_range" string="Product range" colspan="2">
 					    <field name="auto_category_type" />
-					    <field name="code_list" />
+					    <field name="account_ref" />
+					    <field name="code_list" colspan="4"/>
 				    </group>
 				</xpath>
 	        </field>
@@ -21,6 +22,7 @@
 	        <field name="arch" type="xml">
 	            <field name="complete_name" position="after">
 	                <field name="auto_category_type" />
+				    <field name="account_ref" />
 				    <field name="code_list" />
 				</field>
 	        </field>
