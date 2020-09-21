@@ -48,14 +48,17 @@ class product_categ(osv.osv):
             current_stat[stat.account_ref] = stat.id
 
         parent_code_db = {}
-        for line in stat_file:
+        for line in open(stat_file, 'r'):
             i += 1
             line = line.strip()
             if not line:
                 _logger.warning('%s. Jump empty line' % i)
+                continue
+
             row = line.split(';')
             if len(row) != 2:
                 _logger.warning('%s. Different number of columns!' % i)
+                continue
 
             account_ref = row[0].strip()
             name = row[1].strip().title().replace('/', ' - ')
