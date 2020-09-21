@@ -110,7 +110,6 @@ class product_categ(osv.osv):
 
         # Update category product in range:
         product_pool = self.pool.get('product.product')
-        pdb.set_trace()
         for category in category_proxy:
             for code in category.code_list.split('|'):
                 try:
