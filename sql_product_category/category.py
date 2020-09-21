@@ -30,59 +30,64 @@ from openerp.tools.translate import _
 
 _logger = logging.getLogger(__name__)
 
+
 class product_categ(osv.osv):
-    ''' Extend product.category
-    '''    
+    """ Extend product.category
+    """
     _inherit = 'product.category'
-    
+
     # Scheduled action: #######################################################
     def schedule_update_product_category(self, cr, uid, context=None):
-        ''' Update product category from external DB
-        '''
+        """ Update product category from external DB
+        """
         _logger.info('Start updating product category')
 
         # Read category range:
         category_ids = self.search(cr, uid, [
-            ('from_code', '!=', False),
-            ('to_code', '!=', False),
-        ], context = context)
+            ('code_list', '!=', False),
+        ], context=context)
         category_proxy = self.browse(cr, uid, category_ids, context=context)
 
         # Update category product in range:
         product_pool = self.pool.get('product.product')
         for category in category_proxy:
-            try:
-                field_name = category.auto_category_type
-                product_ids = product_pool.search(cr, uid, [
-                    (field_name, '>=', category.from_code),
-                    (field_name, '<', category.to_code),
-                ], context=context)
-                if product_ids:
-                    product_proxy = product_pool.write(cr, uid, product_ids, {
-                        'categ_id': category.id
-                    }, context=context)
-                    _logger.info('Update category: %s [Tot.: %s]' % (
-                        category.name, 
-                        len(product_ids),
-                    ))
-
-            except:
-                _logger.error(
-                    'Error update product category (%s) products! [%s]' % (
-                        category.name, 
-                        sys.exc_info(),
-                ))
+            for code in category.code_list.split('|'):
+                try:
+                    code = code.strip()
+                    field_name = category.auto_category_type
+                    product_ids = product_pool.search(cr, uid, [
+                        (field_name, '=', code),
+                    ], context=context)
+                    if product_ids:
+                        product_pool.write(
+                            cr, uid, product_ids, {
+                                'categ_id': category.id
+                            }, context=context)
+                        _logger.info('Update category: %s [Tot.: %s]' % (
+                            category.name,
+                            len(product_ids),
+                        ))
+                except:
+                    _logger.error(
+                        'Error update product category (%s) products! [%s]' % (
+                            category.name,
+                            sys.exc_info(),
+                        ))
         _logger.info('All product category is updated!')
         return True
 
     _columns = {
-        'from_code':fields.char(
+        'code_list': fields.text(
+            'Lista codici', help='Elenco codici di questa categoria, usare '
+                                 'il carattere | per dividerli'),
+
+        'from_code': fields.char(
             'From code (>=)', size=30),
-        'to_code':fields.char(
+        'to_code': fields.char(
             'To code (<)', size=30),
+
         'auto_category_type': fields.selection([
             ('default_code', 'Default code'),
             ('statistic_category', 'Statistic category'),
             ], 'Auto category type'),
-        }        
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+        }
