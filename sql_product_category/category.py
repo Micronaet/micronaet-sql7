@@ -44,7 +44,8 @@ class product_categ(osv.osv):
             ('auto_category_type', '=', 'statistic_category'),
         ], context=context)
         for stat in self.browse(cr, uid, stat_ids, context=context):
-            current_stat[stat.account_ref] = stat.id
+            if stat.account_ref:
+                current_stat[stat.account_ref] = stat.id
 
         parent_code_db = {}
         for line in open(stat_file, 'r'):
@@ -70,12 +71,13 @@ class product_categ(osv.osv):
                 }, context=context)
                 del(current_stat[account_ref])
             else:
-                state_id = self.create(cr, uid, {
+                stat_id = self.create(cr, uid, {
                     'name': name,
                     'account_ref': account_ref,
                     'code_list': account_ref,
                     'parent_id': parent_code_db.get(parent_code, False),
                 }, context=context)
+
             # Saved for parent ID in child (need alphabetic sort for list)
             if account_ref[1:] == '00':
                 parent_code_db[account_ref] = stat_id
@@ -83,7 +85,7 @@ class product_categ(osv.osv):
         # Delete old items:
         for item_id in current_stat.values():
             self.write(cr, uid, [item_id], {
-                'accont_ref': False,
+                'account_ref': False,
                 'code_list': False,
             }, context=context)
         return True
