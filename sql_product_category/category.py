@@ -36,7 +36,6 @@ class product_categ(osv.osv):
     def preload_category_from_account(self, cr, uid, context=None):
         """ Preload from file
         """
-        pdb.set_trace()
         stat_file = os.path.expanduser('~/account/catstaspan.csv')
         i = 0
 
@@ -60,6 +59,7 @@ class product_categ(osv.osv):
                 _logger.warning('%s. Different number of columns!' % i)
                 continue
 
+            pdb.set_trace()
             account_ref = row[0].strip()
             name = row[1].strip().title().replace('/', ' - ')
             parent_code = '%s00' % account_ref[:1]
