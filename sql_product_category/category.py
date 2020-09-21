@@ -75,6 +75,7 @@ class product_categ(osv.osv):
                     'account_ref': account_ref,
                     'code_list': account_ref,
                     'parent_id': parent_code_db.get(parent_code, False),
+                    'auto_category_type': 'statistic_category',
                 }, context=context)
 
             # Saved for parent ID in child (need alphabetic sort for list)
