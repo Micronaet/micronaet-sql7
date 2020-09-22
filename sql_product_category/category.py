@@ -41,6 +41,7 @@ class product_categ(osv.osv):
         all_product_id = 1
 
         current_stat = {}
+
         stat_ids = self.search(cr, uid, [
             ('auto_category_type', '=', 'statistic_category'),
         ], context=context)
