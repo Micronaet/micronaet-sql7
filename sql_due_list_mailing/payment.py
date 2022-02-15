@@ -29,7 +29,7 @@ from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FO
 import openerp.addons.decimal_precision as dp
 from openerp.tools.translate import _
 import re
-from tzlocal import get_localzone # $ pip install tzlocal
+# from tzlocal import get_localzone # $ pip install tzlocal
 
 
 _logger = logging.getLogger(__name__)
@@ -207,14 +207,15 @@ class sql_payment_duelist(osv.osv):
         company_pool = self.pool.get('res.company')
         company_ids = company_pool.search(cr, uid, [], context=context)
 
-        local_timezone = get_localzone()
+        # local_timezone = get_localzone()
+        """"
         etl_duelist_file = datetime.fromtimestamp(
             os.path.getctime(filename), local_timezone).strftime(
             DEFAULT_SERVER_DATETIME_FORMAT)
 
         company_pool.write(cr, uid, company_ids, {
             'etl_duelist_file': etl_duelist_file,
-        }, context=context)
+        }, context=context)"""
 
     def schedule_sql_payment_duelist_import(self, cr, uid, csv_file,
             from_code=False, to_code=False, fido_file=False, context=None):
