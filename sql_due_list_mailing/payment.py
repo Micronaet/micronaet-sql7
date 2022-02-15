@@ -17,7 +17,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #    Adding code for generate email and send from template thanks to OpenCode
-#    
+#
 ###############################################################################
 import os
 import sys
@@ -29,43 +29,56 @@ from openerp.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FO
 import openerp.addons.decimal_precision as dp
 from openerp.tools.translate import _
 import re
+from tzlocal import get_localzone # $ pip install tzlocal
 
 
 _logger = logging.getLogger(__name__)
 
+class ResCompany(osv.osv):
+    """ Add ETL date for check
+    """
+    _inherit = 'res.company'
+
+    _columns = {
+        'etl_duelist_file': fields.datetime(
+            'File scadenze',
+            help='Data del file SCADOERP.XXX con elenco pagamenti cliente',
+        ),
+    }
+
 class sql_payment_stage(osv.osv):
-    ''' Payment stage for sending e-mail
-    '''
+    """ Payment stage for sending e-mail
+    """
     _name = 'sql.payment.stage'
     _description = 'Payment Stage'
     _order = 'sequence,days'
 
     def get_default(self, cr, uid, context=None):
-        ''' Return first stage depend on days
-        '''
+        """ Return first stage depend on days
+        """
         try:
             return self.search(cr, uid, [], context=context)[0]
         except:
-            return False    
+            return False
 
     def get_next(self, cr, uid, item_id, context=None):
-        ''' Get next stage after item_id
-        '''
+        """ Get next stage after item_id
+        """
         stage_ids = self.search(cr, uid, [], context=context)
         passed = False
         for stage in self.browse(cr, uid, stage_ids, context=context):
             if passed:
                 return item.id
             if stage.id == item_id:
-                passed = True                
+                passed = True
         return False
-        
+
     _columns = {
         'sequence': fields.integer('Seq.'),
         'name': fields.char('Stage', size=64, required=True, readonly=False),
-        'days': fields.integer('Days', 
+        'days': fields.integer('Days',
             help="Days after deadline for sending e-mail", required=True),
-        'template_id': fields.many2one('email.template', 'Template', 
+        'template_id': fields.many2one('email.template', 'Template',
             required=True),
         'note': fields.char('Note'),
         'period': fields.selection([
@@ -76,7 +89,7 @@ class sql_payment_stage(osv.osv):
         'recipient': fields.selection([
             ('all', 'All (agent and customer)'),
             ('agent', 'Agent'),
-            ('customer', 'Customer'),            
+            ('customer', 'Customer'),
             ], 'Recipients', select=True),
     }
     _defaults = {
@@ -86,11 +99,11 @@ class sql_payment_stage(osv.osv):
     }
 
 class sql_payment_duelist(osv.osv):
-    ''' Master object for import payment due list
-    '''
+    """ Master object for import payment due list
+    """
     _name = 'sql.payment.duelist'
     _inherit = 'mail.thread'
-    
+
     _description = 'Payment duelist'
     #_order = 'deadline desc'
     _order = 'date desc'
@@ -99,68 +112,68 @@ class sql_payment_duelist(osv.osv):
     # Utility:
     # --------
     def validate_mail(self, email):
-        ''' Check if the email is in a valid format
-        '''
+        """ Check if the email is in a valid format
+        """
         if re.match("^.+\\@(\\[?)[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,3}|[0-9]{1,3})(\\]?)$", email) != None:
             return True
         else:
             False
 
     def write_thread_message(self, cr, uid, ids, subject='', body='', context=None):
-        ''' Write generic message 
+        """ Write generic message
             # TODO unificare con quello dello stato
-        '''
+        """
         # Default part of message:
-        message = { 
+        message = {
             'subject': subject,
             'body': body,
             'type': 'comment', #'notification', 'email',
             'subtype': False,  #parent_id, #attachments,
             'content_subtype': 'html',
-            'partner_ids': [],            
+            'partner_ids': [],
             'email_from': 'openerp@micronaet.it', #wizard.email_from,
             'context': context,
             }
         msg_id = self.message_post(cr, uid, ids, **message)
-        return 
-        
+        return
+
     def write_object_change_state(self, cr, uid, ids, state='state', context=None):
-        ''' Write info in thread list (used in WF actions)
-        '''
+        """ Write info in thread list (used in WF actions)
+        """
         current_proxy = self.browse(cr, uid, ids, context=context)[0]
 
         # Default part of message:
-        message = { 
+        message = {
             'subject': _("Changing state:"),
             'body': _("State variation in <b>%s</b>") % current_proxy.__getattr__(state),
             'type': 'comment', #'notification', 'email',
             'subtype': False,  #parent_id, #attachments,
             'content_subtype': 'html',
-            'partner_ids': [],            
+            'partner_ids': [],
             'email_from': 'openerp@micronaet.it', #wizard.email_from,
             'context': context,
             }
 
         self.message_subscribe_users(
             cr, uid, ids, user_ids=[uid], context=context)
-                        
+
         msg_id = self.message_post(cr, uid, ids, **message)
-        return    
+        return
 
     # -------------------------------------------------------------------------
     #                                 Scheduler
     # -------------------------------------------------------------------------
     def schedule_sql_fido_import(self, cr, uid, fido_file, context=None):
-        ''' Update also FIDO information 
-        '''
+        """ Update also FIDO information
+        """
         _logger.info('Import also FIDO file')
         partner_pool = self.pool.get('res.partner')
         separator = ';'
-        
+
         #no_fido_ids = partner_pool.search(cr, uid, [
         #    ('duelist_fido', '=', 0),
         #    ], context=context)
-        
+
         # FIDO File:
         f = open(os.path.expanduser(
             os.path.join(*fido_file)), 'r')
@@ -171,43 +184,58 @@ class sql_payment_duelist(osv.osv):
             fido = row[1].strip()
             agent_code = row[2].strip()
             agent_name = row[3].strip()
-            
+
             partner_id = partner_pool.get_partner_from_sql_code(
                 cr, uid, partner_code, context=context)
             if not partner_id:
-                _logger.error('Partner %s not found!' % partner_code)                
+                _logger.error('Partner %s not found!' % partner_code)
                 continue
             #if not fido and partner_id in no_fido_ids:
-            #    _logger.warning('Partner %s yet 0 FIDO' % partner_code)                
+            #    _logger.warning('Partner %s yet 0 FIDO' % partner_code)
             #    continue
 
             partner_pool.write(cr, uid, [partner_id], {
-                'duelist_fido': int(fido or '0'), 
+                'duelist_fido': int(fido or '0'),
                 'account_agent_code': agent_code,
                 'account_agent_name': agent_name,
                 }, context=context)
         return True
-    
-    def schedule_sql_payment_duelist_import(self, cr, uid, csv_file, 
+
+    def store_file_modify_date(self, cr, uid, filename, context=None):
+        """ Extract date from file
+        """
+        company_pool = self.pool.get('res.company')
+        company_ids = company_pool.search(cr, uid, [], context=context)
+
+        local_timezone = get_localzone()
+        etl_duelist_file = datetime.fromtimestamp(
+            os.path.getctime(filename), local_timezone).strftime(
+            DEFAULT_SERVER_DATETIME_FORMAT)
+
+        company_pool.write(cr, uid, company_ids, {
+            'etl_duelist_file': etl_duelist_file,
+        }, context=context)
+
+    def schedule_sql_payment_duelist_import(self, cr, uid, csv_file,
             from_code=False, to_code=False, fido_file=False, context=None):
-        ''' Import schedule action, 3 operations
+        """ Import schedule action, 3 operations
             1. Import all payment (deleting payed)
             2. Assign TODO next stage depend on deadline
-            3. Sent mail that need to            
-            
+            3. Sent mail that need to
+
             If present FIDO file import also that information
-        '''
+        """
         # -----------------
         # Utility function:
         # -----------------
         def format_string(value):
-            ''' Format float value
-            '''
+            """ Format float value
+            """
             return value.strip()
 
         def format_float(value):
-            ''' Format float value
-            '''     
+            """ Format float value
+            """
             try:
                 value = format_string(value)
                 return float(value.replace(",", "."))
@@ -215,11 +243,11 @@ class sql_payment_duelist(osv.osv):
                 return 0.0 # in case of error # TODO log
 
         def format_date(value):
-            ''' Format float value
-            '''
+            """ Format float value
+            """
             try:
                 value = value.strip()
-                if value and len(value) >= 8: # YYYYMMDD
+                if value and len(value) >= 8:  # YYYYMMDD
                     return "%s-%s-%s" % (value[:4], value[4:6], value[6:8])
             except:
                 return False
@@ -228,30 +256,32 @@ class sql_payment_duelist(osv.osv):
         # Import duelist:
         # ---------------
         _logger.info(_("Start import payment duelist via CSV!"))
-        
+
         # Check FIDO file if present (and import):
         if fido_file:
             self.schedule_sql_fido_import(
                 cr, uid, fido_file, context=context)
 
         # Duelist file:
-        f = open(os.path.expanduser(os.path.join(*csv_file)), "r")
+        filename = os.path.expanduser(os.path.join(*csv_file))
+        f = open(filename, 'r')
+
         i = 0
         separator = ";"
         currencies = {}
-        
+
         partner_pool = self.pool.get('res.partner')
         currency_pool = self.pool.get('res.currency')
 
         # Load currency:
         currency_ids = currency_pool.search(cr, uid, [
             ('sql_name', '!=', False)
-            ], context=context)            
+            ], context=context)
         currency_proxy = currency_pool.browse(
             cr, uid, currency_ids, context=context)
         for item in currency_proxy:
             currencies[item.sql_name] = item.id
- 
+
         # Before importation list (for delete payed after importation)
         before_ids = self.search(cr, uid, [], context)
 
@@ -274,7 +304,7 @@ class sql_payment_duelist(osv.osv):
                             i, customer_code))
                         continue
 
-                deadline = format_date(csv_line[1])      
+                deadline = format_date(csv_line[1])
                 total = format_float(csv_line[2])
                 payment_type = format_string(csv_line[3]).upper()
                 ref = format_string(csv_line[4])
@@ -288,12 +318,12 @@ class sql_payment_duelist(osv.osv):
                     missed_currency.append(currency_name)
                 partner_id = partner_pool.get_partner_from_sql_code(
                         cr, uid, customer_code, context=context)
-                
+
                 # 17 apr 2020: Removed (jump accounti)
                 #if total <= 0.0:
                 #    _logger.info('Jump negative total')
                 #    continue
-                    
+
                 if not partner_id:
                     _logger.error(
                         'No partner found, ID: %s, create manually' % customer_code)
@@ -303,7 +333,7 @@ class sql_payment_duelist(osv.osv):
                         'sql_customer_code': customer_code,
                         'sql_import': True,
                         }, context=context)
-                        
+
                 payment_type = payment_type if payment_type in (
                     'R', 'B', 'M', 'V') else False
 
@@ -312,15 +342,15 @@ class sql_payment_duelist(osv.osv):
                     ('date', '=', date),
                     ('partner_id', '=', partner_id),
                     ], context=context)
-                
+
                 data = {
                     'name': ref,
                     'date': date,
                     'deadline': deadline,
-                    'partner_id': partner_id, 
+                    'partner_id': partner_id,
                     'total': total,
                     'currency_id': currency_id,
-                    'payment_type': payment_type, 
+                    'payment_type': payment_type,
                     }
                 if item_ids:
                     if len(item_ids) > 1:
@@ -331,17 +361,17 @@ class sql_payment_duelist(osv.osv):
                         before_ids.remove(item_id)
                     self.write(cr, uid, item_id, data, context=context)
                     _logger.info(_("%s. Write payment!") % i)
-                    
+
                 else:
                     self.create(cr, uid, data, context=context)
                     _logger.info(_("%s. Create payment!") % i)
-                        
+
             except:
                 _logger.error(_("Error update payment: %s") % (
                     sys.exc_info(), ))
-        
-        # Delete all elements not present:                
-        _logger.info(_("Delete payment payed"))        
+
+        # Delete all elements not present:
+        _logger.info(_("Delete payment payed"))
         if before_ids:
             for item in before_ids:
                 try:
@@ -349,12 +379,12 @@ class sql_payment_duelist(osv.osv):
                 except:
                     _logger.warning(_("Error delete payment ID: %s [%s]") % (
                         item, sys.exc_info()))
-                            
+
         # ------------------
         # Assign stage todo:
         # ------------------
         _logger.info(_("Start assign todo stage"))
-        
+
         # Auto-confirm all payment for customer with opt in
         _logger.info(_("Confirm duelist mail for optin partner:"))
         duelist_ids = self.search(cr, uid, [('state', '=', 'draft')], context=context)
@@ -366,41 +396,41 @@ class sql_payment_duelist(osv.osv):
                 wf_service.trg_validate(
                     uid, 'sql.payment.duelist', item_id,
                     'trigger_duelist_draft_confirmed', cr)
-            
+
         _logger.info(_("Generate todo stage for confirmed payment:"))
 
         # Read stage for analysis:
         stage_pool = self.pool.get('sql.payment.stage')
         stage_ids = stage_pool.search(cr, uid, [], context=context)
-        stages = {}    
+        stages = {}
         for stage in stage_pool.browse(cr, uid, stage_ids, context=context):
             if stage.period == 'before':
                 stages[-stage.days] = stage.id
-            else: # 'deadline'    
+            else: # 'deadline'
                 stages[stage.days] = stage.id
-        
-        # Search and setup stage todo     
+
+        # Search and setup stage todo
         today = datetime.now()
         duelist_ids = self.search(cr, uid, [
             ('state', '=', 'confirmed')], context=context)
         stages_sorted = sorted(stages.iteritems(), reverse=True)
-        
+
         for item in self.browse(cr, uid, duelist_ids, context=context):
             deadline = datetime.strptime(item.deadline, DEFAULT_SERVER_DATE_FORMAT)
             for days, stage in stages_sorted: # sort desc per days
                 if today - timedelta(days=days)  >= deadline:
                     if stage != item.stage_id.id: # test if it's not current stage
-                        self.write(cr, uid, item.id, {'todo_stage_id': stage}, 
+                        self.write(cr, uid, item.id, {'todo_stage_id': stage},
                             context=context)
-                    break # next duelist (this is setted)        
+                    break # next duelist (this is setted)
 
         # -------------------------
         # Send mail for todo stage:
         # -------------------------
-        _logger.info(_("Start sending mail"))        
-        
-        duelist_ids = self.search(cr, uid, [('todo_stage_id', '!=', False)], 
-            context=context)        
+        _logger.info(_("Start sending mail"))
+
+        duelist_ids = self.search(cr, uid, [('todo_stage_id', '!=', False)],
+            context=context)
 
         # Pools for send message:
         message_pool = self.pool.get('mail.message')
@@ -413,9 +443,9 @@ class sql_payment_duelist(osv.osv):
             valid_email = True
             # Create template
             template = item.todo_stage_id.template_id
-            
+
             # Translate template text:
-            mail_subject = compose_pool.render_template(cr, uid, 
+            mail_subject = compose_pool.render_template(cr, uid,
                 _(template.subject), 'sql.payment.duelist', item.id,
                 context=context,
                 )
@@ -423,22 +453,22 @@ class sql_payment_duelist(osv.osv):
                 _(template.body_html), 'sql.payment.duelist', item.id,
                 context=context,
                 )
-            mail_to = compose_pool.render_template(cr, uid, 
+            mail_to = compose_pool.render_template(cr, uid,
                 _(template.email_to), 'sql.payment.duelist', item.id,
                 context=context,
-                )                
-            reply_to = compose_pool.render_template(cr, uid, 
+                )
+            reply_to = compose_pool.render_template(cr, uid,
                 _(template.reply_to), 'sql.payment.duelist', item.id,
                 context=context,
                 )
-            mail_from = compose_pool.render_template(cr, uid, 
+            mail_from = compose_pool.render_template(cr, uid,
                 _(template.email_from), 'sql.payment.duelist', item.id,
                 context=context,
                 )
 
-            if not(mail_to and self.validate_mail(mail_to)): 
+            if not(mail_to and self.validate_mail(mail_to)):
                 # Send an e-mail to Company for correcting:
-                valid_email = False                
+                valid_email = False
                 mail_subject = _("Fount invalid email for this payment partner")
                 mail_to = item.partner_id.company_id.partner_id.email
 
@@ -454,7 +484,7 @@ class sql_payment_duelist(osv.osv):
                 'model': 'sql.payment.duelist',
                 'res_id': item.id,
                 }, context=context)
-        
+
             # Create mail message
             mail_id = mail_pool.create(cr, uid, {
                 'mail_message_id': message_id,
@@ -467,34 +497,36 @@ class sql_payment_duelist(osv.osv):
                 'body_html': mail_body,
                 })
             mail_ids.append(mail_id)
-            
+
             # Set stage to last mail sent (TODO not yet sent!!!)
             if valid_email: # Remain in sending state:
                 self.write(cr, uid, item.id, {
                     'stage_id': item.todo_stage_id.id,
                     'todo_stage_id': False
                     }, context=context)
-            
-        if missed_currency:                
+
+        if missed_currency:
             _logger.error('Missed currency: %s' % (missed_currency, ))
-        else:    
+        else:
             _logger.info('No missed currency')
 
-        # Send all mail now:    
+        # Send all mail now:
         _logger.info(_("Send mails [# %s]" % len(mail_ids)))
         mail_pool.send(cr, uid,  mail_ids, context=context)
-        # TODO verify if mail are send (instead of stage is not correct)
+        # todo verify if mail are send (instead of stage is not correct)
 
+        # Update stored date:
+        self.store_file_modify_date(cr, uid, filename, context=context)
         _logger.info(_("End import / send duelist procedure"))
         return True
 
     # -------------------------------------------------------------------------
     #                                Button action
-    # -------------------------------------------------------------------------    
+    # -------------------------------------------------------------------------
     # Utility for 2 button (workflow style):
     def trigger_duelist(self, cr, uid, ids, duelist_optin, context=None):
-        ''' Raise a confirmed trigger but save the opt-in as True in partner
-        '''
+        """ Raise a confirmed trigger but save the opt-in as True in partner
+        """
         try:
             wf_service = netsvc.LocalService("workflow")
             payment_proxy = self.browse(cr, uid, ids, context=context)[0]
@@ -505,25 +537,25 @@ class sql_payment_duelist(osv.osv):
                 cr, uid, partner_id, {
                     'duelist_optin': duelist_optin,
                     }, context=context)
-                    
-            # Log operation:        
+
+            # Log operation:
             partner_pool.message_post(cr, uid, partner_id, **{
                 'subject': _('Duelist operation:'),
                 'body': _('%s opt-in for duelist deadline [%s]') % (
                     _("<b>Enable</b>") if duelist_optin else _("<b>Disable</b>"),
                     datetime.now().strftime(DEFAULT_SERVER_DATETIME_FORMAT),
                     ),
-                'type': 'comment', 
+                'type': 'comment',
                 'subtype': False,
                 'content_subtype': 'html',
-                'partner_ids': [],            
+                'partner_ids': [],
                 'email_from': 'openerp@micronaet.it',
                 'context': context,
-                })  
+                })
         except:
             raise osv.except_osv(
                 _("Error setup partner opt-in, try in partner form!"))
-            return False 
+            return False
         if duelist_optin:
             # Trigger all payment for this partner:
             duelist_ids = self.search(cr, uid, [
@@ -531,38 +563,38 @@ class sql_payment_duelist(osv.osv):
                 ('state', '=', 'draft'),
                 ], context=context)
 
-            # Trigger all payment for this partner:            
+            # Trigger all payment for this partner:
             for item_id in duelist_ids:
                 try:
                     wf_service.trg_validate(
                         uid, 'sql.payment.duelist', item_id,
                         'trigger_duelist_draft_confirmed', cr)
                 except:
-                    _logger.error("Error confirmed payment: %s" % item_id)        
+                    _logger.error("Error confirmed payment: %s" % item_id)
         return True
-                
+
     def trigger_duelist_draft_confirmed_always(self, cr, uid, ids, context=None):
-        ''' Trigger always
-        ''' 
+        """ Trigger always
+        """
         return self.trigger_duelist(cr, uid, ids, True, context=context)
 
     def trigger_duelist_draft_confirmed_never(self, cr, uid, ids, context=None):
-        ''' Trigger never
-        ''' 
+        """ Trigger never
+        """
         return self.trigger_duelist(cr, uid, ids, False, context=context)
 
     def resend_mail(self, cr, uid, ids, context=None):
-        ''' Remove stage to payment so it will be resent
-        '''
-        self.write_thread_message(cr, uid, ids, 
-            subject=_('Resend message:'), 
-            body=_('Mail for stage will be resent'), 
+        """ Remove stage to payment so it will be resent
+        """
+        self.write_thread_message(cr, uid, ids,
+            subject=_('Resend message:'),
+            body=_('Mail for stage will be resent'),
             context=None,
             )
-        
+
         return self.write(cr, uid, ids, {
             'stage_id': False, }, context=context)
-        
+
     # -------------------------------------------------------------------------
     #                                  Workflow
     # -------------------------------------------------------------------------
@@ -580,12 +612,12 @@ class sql_payment_duelist(osv.osv):
             }, context=context)
 
     def duelist_confirmed(self, cr, uid, ids, context=None):
-        self.write_thread_message(cr, uid, ids, 
-            subject=_('Change state'), 
-            body=_('Confirmed sending for this payment'), 
+        self.write_thread_message(cr, uid, ids,
+            subject=_('Change state'),
+            body=_('Confirmed sending for this payment'),
             context=None,
             )
-            
+
         return self.write(cr, uid, ids, {
             'confirmed_user_id': uid,
             'confirmed_date': datetime.now().strftime(
@@ -594,9 +626,9 @@ class sql_payment_duelist(osv.osv):
             }, context=context)
 
     def duelist_done(self, cr, uid, ids, context=None):
-        self.write_thread_message(cr, uid, ids, 
-            subject=_('Change state'), 
-            body=_('Payment will be notified manually (no automation)'), 
+        self.write_thread_message(cr, uid, ids,
+            subject=_('Change state'),
+            body=_('Payment will be notified manually (no automation)'),
             context=None,
             )
 
@@ -608,9 +640,9 @@ class sql_payment_duelist(osv.osv):
             }, context=context)
 
     def duelist_cancel(self, cr, uid, ids, context=None):
-        self.write_thread_message(cr, uid, ids, 
-            subject=_('Change state'), 
-            body=_('Payment canceling, no automatic notification'), 
+        self.write_thread_message(cr, uid, ids,
+            subject=_('Change state'),
+            body=_('Payment canceling, no automatic notification'),
             context=None,
             )
 
@@ -623,8 +655,8 @@ class sql_payment_duelist(osv.osv):
 
     # fields date
     def _get_date_month_4_group(self, cr, uid, ids, fields, args, context=None):
-        ''' Fields function for calculate 
-        '''
+        """ Fields function for calculate
+        """
         res = {}
         for doc in self.browse(cr, uid, ids, context=context):
             if doc.date:
@@ -634,10 +666,10 @@ class sql_payment_duelist(osv.osv):
         return res
 
     # fields deadline
-    def _get_deadline_month_4_group(self, cr, uid, ids, fields, args, 
+    def _get_deadline_month_4_group(self, cr, uid, ids, fields, args,
             context=None):
-        ''' Fields function for calculate 
-        '''
+        """ Fields function for calculate
+        """
         res = {}
         for doc in self.browse(cr, uid, ids, context=context):
             if doc.deadline:
@@ -647,12 +679,12 @@ class sql_payment_duelist(osv.osv):
         return res
 
     # -------------------------------------------------------------------------
-    # Store function:    
+    # Store function:
     # -------------------------------------------------------------------------
     def _store_date_deadline_month(self, cr, uid, ids, context=None):
-        ''' if change date reload data
-        '''
-        _logger.warning('Change date_mont depend on date or deadline')
+        """ if change date reload data
+        """
+        _logger.warning('Storing data: date_month depend on date or deadline')
         return ids
 
     # -------------------------------------------------------------------------
@@ -660,34 +692,34 @@ class sql_payment_duelist(osv.osv):
     # -------------------------------------------------------------------------
     _columns = {
         # Generic info (imported):
-        'name': fields.char('Ref.', size=64, required=True, 
+        'name': fields.char('Ref.', size=64, required=True,
             help='Invoice reference'),
         'date': fields.date('Date'),
         'deadline': fields.date('Deadline'),
 
         'date_month': fields.function(
-            _get_date_month_4_group, method=True, 
+            _get_date_month_4_group, method=True,
             type='char', string='Mese inser.', size=15,
             store={
                 'sql.payment.duelist': (
                     _store_date_deadline_month, ['date'], 10),
-                }), 
+                }),
         'deadline_month': fields.function(
-            _get_deadline_month_4_group, method=True, 
-            type='char', string='Scadenza', size=15, 
+            _get_deadline_month_4_group, method=True,
+            type='char', string='Scadenza', size=15,
             store={
                 'sql.payment.duelist': (
                     _store_date_deadline_month, ['deadline'], 10),
-                }), 
-                        
+                }),
+
         'partner_id': fields.many2one('res.partner', 'Customer',
             required=True),
-        'duelist_mail': fields.related('partner_id', 'duelist_mail', 
+        'duelist_mail': fields.related('partner_id', 'duelist_mail',
             type='char', string='Due list address', size=400),
-        'country_id': fields.related('partner_id', 'country_id', 
-            type='many2one', relation="res.country", string='Country', 
+        'country_id': fields.related('partner_id', 'country_id',
+            type='many2one', relation="res.country", string='Country',
             store=True),
-        'duelist_optin': fields.related('partner_id','duelist_optin', 
+        'duelist_optin': fields.related('partner_id','duelist_optin',
             type='boolean', string='Partner opt-in'),
 
         'total': fields.float('Total', digits=(16, 3)),
@@ -700,13 +732,13 @@ class sql_payment_duelist(osv.osv):
             ('M', 'Cash'),
             ('V', 'MAV'),
             ], 'Payment type', select=True, readonly=False),
-        
+
         # Mail stage info:
         #'email_last_date': fields.date('E-mail last date'),
         #'email_next_date': fields.date('E-mail next date'),
         'todo_stage_id': fields.many2one('sql.payment.stage', 'Stage todo',
             required=False),
-        'stage_id': fields.many2one('sql.payment.stage', 'Stage', 
+        'stage_id': fields.many2one('sql.payment.stage', 'Stage',
             required=False),
 
         # Workflow:
@@ -731,38 +763,38 @@ class sql_payment_duelist(osv.osv):
     _defaults = {
         'state': lambda *a: 'draft',
         'draft_date': datetime.now().strftime(DEFAULT_SERVER_DATETIME_FORMAT),
-        'stage_id': lambda *x: False, 
-        'todo_stage_id': lambda *x: False, 
+        'stage_id': lambda *x: False,
+        'todo_stage_id': lambda *x: False,
         # s, cr, uid, ctx: s.pool.get('sql.payment.stage').get_default(cr, uid, context=ctx),
         }
 
 class res_partner(osv.osv):
-    ''' Add extra field for manage extra fields
-    '''
+    """ Add extra field for manage extra fields
+    """
     _name = 'res.partner'
     _inherit = 'res.partner'
 
     def _get_duelist_totals(self, cr, uid, ids, field, args, context=None):
-        ''' Multifunction for compute uncovered amount and value
+        """ Multifunction for compute uncovered amount and value
             Check all payment loaded deadlined not closed (or canceled)
-        ''' 
+        """
         res = {}
         today = datetime.now().strftime(DEFAULT_SERVER_DATE_FORMAT)
-        
-        for partner in self.browse(cr, uid, ids, context=context):            
+
+        for partner in self.browse(cr, uid, ids, context=context):
             res[partner.id] = {}
-            uncovered = exposition = 0.0    
-            
+            uncovered = exposition = 0.0
+
             if partner.duelist_ids:
                 currency_id = partner.duelist_ids[0].currency_id.id
-            else:    
+            else:
                 currency_id = False
             for due in partner.duelist_ids:
-                # Payment check:                
+                # Payment check:
                 if currency_id and due.currency_id.id != currency_id:
                     _logger.error('Different duelist currency found!')
                     currency_id = False # reset when different (first time)
-                                    
+
                 # Deadline check (remove negative check 05/05/2020):
                 if due.deadline < today:# and due.total > 0:
                     uncovered += due.total
@@ -771,14 +803,14 @@ class res_partner(osv.osv):
             res[partner.id]['duelist_currency_id'] = currency_id
             res[partner.id]['duelist_uncovered_amount'] = uncovered
             res[partner.id]['duelist_exposition_amount'] = exposition
-            res[partner.id]['duelist_uncovered'] = uncovered > 0.0            
+            res[partner.id]['duelist_uncovered'] = uncovered > 0.0
 
             if partner.duelist_fido and exposition > partner.duelist_fido:
                 res[partner.id]['duelist_over_fido'] = True
-            else:    
+            else:
                 res[partner.id]['duelist_over_fido'] = False
         return res
-    
+
     _columns = {
         'duelist_fido': fields.integer('FIDO'),
         'duelist_mail': fields.char('Due list address', size=400),
@@ -790,36 +822,36 @@ class res_partner(osv.osv):
         'account_agent_name': fields.char('Agent Name', size=40),
 
         # ---------------------------------------------------------------------
-        # Calculated fields:        
+        # Calculated fields:
         # ---------------------------------------------------------------------
         # Test:
-        'duelist_uncovered': fields.function(_get_duelist_totals, 
-            method=True, type='boolean', string='Insolvent', 
+        'duelist_uncovered': fields.function(_get_duelist_totals,
+            method=True, type='boolean', string='Insolvent',
             store=False, multi='totals', help='Payment over data present'),
-        'duelist_over_fido': fields.function(_get_duelist_totals, 
-            method=True, type='boolean', string='Over FIDO', 
+        'duelist_over_fido': fields.function(_get_duelist_totals,
+            method=True, type='boolean', string='Over FIDO',
             store=False, multi='totals', help='Exposition over FIDO'),
-        
+
         # Amount:
-        'duelist_uncovered_amount': fields.function(_get_duelist_totals, 
-            method=True, type='float', string='Payment over data', 
+        'duelist_uncovered_amount': fields.function(_get_duelist_totals,
+            method=True, type='float', string='Payment over data',
             store=False, multi='totals', help='Sum of payment over data'),
-        'duelist_exposition_amount': fields.function(_get_duelist_totals, 
-            method=True, type='float', string='Total open payment', 
+        'duelist_exposition_amount': fields.function(_get_duelist_totals,
+            method=True, type='float', string='Total open payment',
             store=False, multi='totals', help='Sum of all open payment'),
-        'duelist_currency_id': fields.function(_get_duelist_totals, 
-            method=True, type='many2one', string='Currency check', 
+        'duelist_currency_id': fields.function(_get_duelist_totals,
+            method=True, type='many2one', string='Currency check',
             store=False, multi='totals', relation='res.currency',
             help='If present is the currency of all payment'),
     }
 
 class res_currency(osv.osv):
-    ''' Add extra field for manage extra fields
-    '''
+    """ Add extra field for manage extra fields
+    """
     _inherit = 'res.currency'
 
     _columns = {
-        'sql_id': fields.integer('SQL ID'),        
+        'sql_id': fields.integer('SQL ID'),
         'sql_name': fields.char('Name', size=20),
         # TODO remove (move in production_line)
         'account_ref': fields.char('Account ref', size=5), # not use here
