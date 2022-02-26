@@ -20,6 +20,7 @@
 #
 ###############################################################################
 import os
+import pdb
 import sys
 import openerp.netsvc as netsvc
 import logging
@@ -306,13 +307,11 @@ class sql_payment_duelist(osv.osv):
                 # jump line if not in range
                 if from_code:
                     if customer_code < from_code:
-                        _logger.warning(_('%s. Jumped line from_code (%s)') % (
-                            i, customer_code))
+                        # Jump unused code:
                         continue
                 if to_code:
                     if customer_code >= to_code:
-                        _logger.warning(_('%s. Jumped line to_code (%s)') % (
-                            i, customer_code))
+                        # Jump unused code:
                         continue
 
                 deadline = format_date(csv_line[1])
@@ -330,7 +329,7 @@ class sql_payment_duelist(osv.osv):
                 partner_id = partner_pool.get_partner_from_sql_code(
                         cr, uid, customer_code, context=context)
 
-                # 17 apr 2020: Removed (jump accounti)
+                # 17 apr 2020: Removed (jump account)
                 # if total <= 0.0:
                 #    _logger.info('Jump negative total')
                 #    continue
@@ -340,7 +339,7 @@ class sql_payment_duelist(osv.osv):
                         'No partner found, ID: %s, create manually' %
                         customer_code)
                     partner_id = partner_pool.create(cr, uid, {
-                        'name': _("Customer %s") % customer_code,
+                        'name': 'Partner: %s' % customer_code,
                         'ref': customer_code,
                         'sql_customer_code': customer_code,
                         'sql_import': True,
@@ -367,8 +366,8 @@ class sql_payment_duelist(osv.osv):
                 if item_ids:
                     if len(item_ids) > 1:
                         _logger.warning(
-                            _("%s. Find more than one payment "
-                              "(take first)!") % i)
+                            _('%s. Find more than one payment '
+                              '(take first)!') % i)
                     item_id = item_ids[0]
                     if item_id in before_ids:
                         before_ids.remove(item_id)
@@ -380,6 +379,7 @@ class sql_payment_duelist(osv.osv):
                     _logger.info(_("%s. Create payment!") % i)
 
             except:
+                pdb.set_trace()
                 _logger.error(_("Error update payment: %s") % (
                     sys.exc_info(), ))
 
@@ -420,7 +420,7 @@ class sql_payment_duelist(osv.osv):
         for stage in stage_pool.browse(cr, uid, stage_ids, context=context):
             if stage.period == 'before':
                 stages[-stage.days] = stage.id
-            else: # 'deadline'
+            else:  # 'deadline'
                 stages[stage.days] = stage.id
 
         # Search and setup stage todo
@@ -434,7 +434,8 @@ class sql_payment_duelist(osv.osv):
                 item.deadline, DEFAULT_SERVER_DATE_FORMAT)
             for days, stage in stages_sorted:  # sort desc per days
                 if today - timedelta(days=days) >= deadline:
-                    if stage != item.stage_id.id: # test if it's not current stage
+                    # test if it's not current stage
+                    if stage != item.stage_id.id:
                         self.write(cr, uid, item.id, {
                             'todo_stage_id': stage}, context=context)
                     break  # next duelist (this was set up)
@@ -715,7 +716,8 @@ class sql_payment_duelist(osv.osv):
     def _store_date_deadline_month(self, cr, uid, ids, context=None):
         """ if change date reload data
         """
-        _logger.warning('Storing data: date_month depend on date or deadline')
+        # _logger.warning(
+        # 'Storing data: date_month depend on date or deadline')
         return ids
 
     # -------------------------------------------------------------------------
