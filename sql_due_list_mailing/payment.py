@@ -372,15 +372,14 @@ class sql_payment_duelist(osv.osv):
                     if item_id in before_ids:
                         before_ids.remove(item_id)
                     self.write(cr, uid, item_id, data, context=context)
-                    _logger.info(_("%s. Write payment!") % i)
+                    _logger.info('%s. Aggiorno pagamento!' % i)
 
                 else:
                     self.create(cr, uid, data, context=context)
-                    _logger.info(_("%s. Create payment!") % i)
+                    _logger.info('%s. Creao pagamento!' % i)
 
             except:
-                pdb.set_trace()
-                _logger.error(_("Error update payment: %s") % (
+                _logger.error('Errore aggiornando paamento: %s' % (
                     sys.exc_info(), ))
 
         # Delete all elements not present:
