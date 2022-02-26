@@ -611,7 +611,8 @@ class sql_payment_duelist(osv.osv):
     def resend_mail(self, cr, uid, ids, context=None):
         """ Remove stage to payment so it will be resent
         """
-        self.write_thread_message(cr, uid, ids,
+        self.write_thread_message(
+            cr, uid, ids,
             subject=_('Resend message:'),
             body=_('Mail for stage will be resent'),
             context=None,
