@@ -829,7 +829,7 @@ class res_partner(osv.osv):
                 # Payment check:
                 if currency_id and due.currency_id.id != currency_id:
                     _logger.error('Different duelist currency found!')
-                    currency_id = False # reset when different (first time)
+                    currency_id = False  # reset when different (first time)
 
                 # Deadline check (remove negative check 05/05/2020):
                 if due.deadline < today:  # and due.total > 0:
@@ -879,7 +879,8 @@ class res_partner(osv.osv):
             _get_duelist_totals,
             method=True, type='float', string='Total open payment',
             store=False, multi='totals', help='Sum of all open payment'),
-        'duelist_currency_id': fields.function(_get_duelist_totals,
+        'duelist_currency_id': fields.function(
+            _get_duelist_totals,
             method=True, type='many2one', string='Currency check',
             store=False, multi='totals', relation='res.currency',
             help='If present is the currency of all payment'),
