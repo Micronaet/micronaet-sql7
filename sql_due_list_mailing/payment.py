@@ -226,7 +226,8 @@ class sql_payment_duelist(osv.osv):
             'etl_duelist_file': etl_duelist_file,
         }, context=context)"""
 
-    def schedule_sql_payment_duelist_import(self, cr, uid, csv_file,
+    def schedule_sql_payment_duelist_import(
+            self, cr, uid, csv_file,
             from_code=False, to_code=False, fido_file=False, context=None):
         """ Import schedule action, 3 operations
             1. Import all payment (deleting payed)
@@ -250,7 +251,7 @@ class sql_payment_duelist(osv.osv):
                 value = format_string(value)
                 return float(value.replace(",", "."))
             except:
-                return 0.0 # in case of error # TODO log
+                return 0.0  # in case of error # TODO log
 
         def format_date(value):
             """ Format float value
@@ -323,20 +324,21 @@ class sql_payment_duelist(osv.osv):
                 currency_name = format_string(csv_line[7])
 
                 currency_id = currencies.get(currency_name, False)
-                if not currency_id and currency_name and currenct_name not in \
+                if not currency_id and currency_name and currency_name not in \
                         missed_currency:
                     missed_currency.append(currency_name)
                 partner_id = partner_pool.get_partner_from_sql_code(
                         cr, uid, customer_code, context=context)
 
                 # 17 apr 2020: Removed (jump accounti)
-                #if total <= 0.0:
+                # if total <= 0.0:
                 #    _logger.info('Jump negative total')
                 #    continue
 
                 if not partner_id:
                     _logger.error(
-                        'No partner found, ID: %s, create manually' % customer_code)
+                        'No partner found, ID: %s, create manually' %
+                        customer_code)
                     partner_id = partner_pool.create(cr, uid, {
                         'name': _("Customer %s") % customer_code,
                         'ref': customer_code,
