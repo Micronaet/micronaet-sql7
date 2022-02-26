@@ -304,6 +304,9 @@ class sql_payment_duelist(osv.osv):
                 csv_line = line.strip().split(separator)
 
                 customer_code = format_string(csv_line[0])
+                if customer_code == '270.00734':
+                    pdb.set_trace()
+
                 # jump line if not in range
                 if from_code:
                     if customer_code < from_code:
