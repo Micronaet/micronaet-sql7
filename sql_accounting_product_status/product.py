@@ -35,34 +35,41 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
+
 class res_company(osv.osv):
-    ''' Extend res.company with other parameters
-    '''
+    """ Extend res.company with other parameters
+    """
     _name = 'res.company'
     _inherit = 'res.company'
 
     _columns = {
-        'sql_exclude_movement': fields.boolean('Exclude movement', help = "There's some movement that is excluded (insert in next field), if so inventory quantity is calculated with this total"),
-        'sql_exclude_list': fields.char('Exclue list', help = 'Exclude list, use: ["SL", "CL"] or ("SL", "CL")'),
+        'sql_exclude_movement': fields.boolean(
+            'Exclude movement',
+            help="There's some movement that is excluded (insert in next field), if so inventory quantity is calculated with this total"),
+        'sql_exclude_list': fields.char(
+            'Exclude list',
+            help='Exclude list, use: ["SL", "CL"] or ("SL", "CL")'),
     }
 
     _defaults = {
         'sql_exclude_movement': lambda *a: False,
     }
 
+
 class product_product(osv.osv):
-    ''' Add extra fields.function that calculate stock status for product
+    """ Add extra fields.function that calculate stock status for product
         (used in some view for information)
-    '''
+    """
     _name = 'product.product'
     _inherit = 'product.product'
 
     # ------------------
     # Scheduled actions:
     # ------------------
-    def import_quantity_existence(self, cr, uid, verbose_quantity=100, context = None):
-        ''' Import status of product
-        '''
+    def import_quantity_existence(
+            self, cr, uid, verbose_quantity=100, context=None):
+        """ Import status of product
+        """
         _logger.info("Start import product existence!")
 
         # TODO current year always 9 (in company)
@@ -70,9 +77,11 @@ class product_product(osv.osv):
 
         year = str(datetime.now().year)[3]
 
-        cursor = self.pool.get('micronaet.accounting').get_product_quantity(cr, uid, stock, year, context=context)
+        cursor = self.pool.get('micronaet.accounting').get_product_quantity(
+            cr, uid, stock, year, context=context)
         if not cursor:
-            _logger.error("Unable to connect no importation of product existence!")
+            _logger.error(
+                "Unable to connect no importation of product existence!")
 
         # Verbose variables:
         i = 0
@@ -111,15 +120,16 @@ class product_product(osv.osv):
                             'sql_max_level':
                                 record.get('NQT_SCORTA_MAX', 0.0),
 
-                            #'sql_order_cancel': record.get('NQT_INV', 0.0),
-                            #'sql_order_locked': record.get('NQT_INV', 0.0),
-                            #'sql_order': record.get('NQT_INV', 0.0),
+                            # 'sql_order_cancel': record.get('NQT_INV', 0.0),
+                            # 'sql_order_locked': record.get('NQT_INV', 0.0),
+                            # 'sql_order': record.get('NQT_INV', 0.0),
                         }, context=context)
 
                     if verbose_quantity and (i % verbose_quantity == 0):
-                        _logger.info("%s Record product existing updated!"%(i))
+                        _logger.info("%s Record product existing updated!" % i)
                 except:
-                    _logger.error("Error update product state! [%s]"%(sys.exc_info()))
+                    _logger.error("Error update product state! [%s]" % (
+                        sys.exc_info()))
         except:
             _logger.error(sys.exc_info())
             return False
@@ -130,9 +140,9 @@ class product_product(osv.osv):
     # ----------------
     # Fields function:
     # ----------------
-    def _get_sql_store_qty(self, cr, uid, ids, fileds, args, context = None):
-        ''' Get total amount (multi function)
-        '''
+    def _get_sql_store_qty(self, cr, uid, ids, fileds, args, context=None):
+        """ Get total amount (multi function)
+        """
         res = {}
 
         for product in self.browse(cr, uid, ids, context=context):
@@ -157,23 +167,29 @@ class product_product(osv.osv):
 
         'sql_min_level': fields.float('Min. level', digits=(16, 5)),
         'sql_max_level': fields.float('Max. level', digits=(16, 5)),
-        # TODO sottoscorta (bool)?
+        # todo sottoscorta (bool)?
 
         'sql_load': fields.float('Load', digits=(16, 5)),
         'sql_unload': fields.float('Unload', digits=(16, 5)),
 
         'sql_order_customer': fields.float('Customer order', digits=(16, 5)),
-        'sql_order_customer_suspended': fields.float('Customer order susp.', digits=(16, 5)),
-        'sql_order_customer_auto': fields.float('Customer auto', digits=(16, 5)),
-        'sql_order_supplier': fields.float('Supplier order', digits=(16, 5)),
-        'sql_order_production': fields.float('Production order', digits=(16, 5)),
+        'sql_order_customer_suspended': fields.float(
+            'Customer order susp.', digits=(16, 5)),
+        'sql_order_customer_auto': fields.float(
+            'Customer auto', digits=(16, 5)),
+        'sql_order_supplier': fields.float(
+            'Supplier order', digits=(16, 5)),
+        'sql_order_production': fields.float(
+            'Production order', digits=(16, 5)),
         'sql_reorder_lot': fields.float('Reorder lot', digits=(16, 5)),
 
         'sql_net': fields.function(
-            _get_sql_store_qty, method = True, type = 'float', string = 'Net', store = False, multi='availability'),
+            _get_sql_store_qty, method=True, type='float', string='Net',
+            store=False, multi='availability'),
         'sql_availability_net': fields.function(
-            _get_sql_store_qty, method = True, type = 'float', string = 'Availability net', store = False, multi='availability'),
+            _get_sql_store_qty, method=True, type='float',
+            string='Availability net', store=False, multi='availability'),
         'sql_availability_gross': fields.function(
-            _get_sql_store_qty, method = True, type = 'float', string = 'Availability gross', store = False, multi='availability'),
+            _get_sql_store_qty, method=True, type='float',
+            string='Availability gross', store=False, multi='availability'),
     }
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
