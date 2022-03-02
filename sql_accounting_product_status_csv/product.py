@@ -2,13 +2,13 @@
 ##############################################################################
 #
 #    OpenERP module
-#    Copyright (C) 2010 Micronaet srl (<http://www.micronaet.it>) 
-#    
+#    Copyright (C) 2010 Micronaet srl (<http://www.micronaet.it>)
+#
 #    Italian OpenERP Community (<http://www.openerp-italia.com>)
 #
 #############################################################################
 #
-#    OpenERP, Open Source Management Solution	
+#    OpenERP, Open Source Management Solution
 #    Copyright (C) 2004-2009 Tiny SPRL (<http://tiny.be>). All Rights Reserved
 #    $Id$
 #
@@ -35,10 +35,11 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
+
 class product_product(osv.osv):
-    ''' Add extra fields.function that calculate stock status for product 
+    """ Add extra fields.function that calculate stock status for product
         (used in some view for information)
-    '''
+    """
     _name = 'product.product'
     _inherit = 'product.product'
 
@@ -46,28 +47,30 @@ class product_product(osv.osv):
     # Utility:
     # --------
     def get_supplier_id(self, cr, uid, ref, context=None):
-        ''' Search supplier from code
-        '''
+        """ Search supplier from code
+        """
         if not ref:
             return False
 
         partner_pool = self.pool.get('res.partner')
-        partner_ids = partner_pool.search(cr, uid, [('sql_supplier_code', '=', ref)], context=context)
+        partner_ids = partner_pool.search(cr, uid, [
+            ('sql_supplier_code', '=', ref),
+        ], context=context)
         if partner_ids:
             return partner_ids[0]
-        return False    
-    
+        return False
+
     # ------------------
     # Scheduled actions:
     # ------------------
     def export_store_qty_csv(self, cr, uid, path, csv_file, context=None):
-        ''' Export status material
-        '''
+        """ Export status material
+        """
         _logger.info("Start export product existence via CSV!")
-        f = open(os.path.join(os.path.expanduser(path), csv_file), "w")       
+        f = open(os.path.join(os.path.expanduser(path), csv_file), "w")
         i = 0
         separator = ";"
-        
+
         try:
             product_ids = self.search(cr, uid, [], context=context)
             for product in self.browse(cr, uid, product_ids, context=context):
@@ -80,32 +83,34 @@ class product_product(osv.osv):
                     product.sql_availability_net,
                     product.sql_availability_gross,
                 ))
-                
+
         except:
-            _logger.error("[Row: %s] Error exporting: %s" % (i, sys.exc_info()))
+            _logger.error("[Row: %s] Error exporting: %s" % (
+                i, sys.exc_info()))
             return False
         return True
 
-    def import_quantity_existence_csv(self, cr, uid, path, csv_file, context = None):    
-        ''' Import status of product
-        '''
+    def import_quantity_existence_csv(
+            self, cr, uid, path, csv_file, context = None):
+        """ Import status of product
+        """
         def format_float(value):
-            ''' Format float value
-            '''     
+            """ Format float value
+            """
             value = format_string(value)
             try:
                 return float(value.replace(",", "."))
             except:
-                return 0.0 # in case of error # TODO log
-               
+                return 0.0  # in case of error # TODO log
+
         def format_string(value):
-            ''' Format float value
-            '''        
+            """ Format float value
+            """
             return value.strip()
-            
+
         _logger.info("Start import product existence via CSV!")
 
-        f = open(os.path.join(os.path.expanduser(path), csv_file), "r")       
+        f = open(os.path.join(os.path.expanduser(path), csv_file), "r")
         i = 0
         separator = ";"
         try:
@@ -114,9 +119,9 @@ class product_product(osv.osv):
                     i += 1
                     if i % 100 == 0:
                         _logger.info("AQ Quantity line read: %s" % (i))
-                      
+
                     csv_line = line.strip().split(separator)
-                    
+
                     default_code = format_string(csv_line[0])
                     sql_inventary = format_float(csv_line[1])
                     sql_load = format_float(csv_line[2])
@@ -135,12 +140,13 @@ class product_product(osv.osv):
 
                     item_id = self.search(cr, uid, [
                         ('default_code', '=', default_code)], context=context)
-                    if item_id:                    
-                        #accounting_qty = (record['NQT_INV'] or 0.0) + (record['NQT_CAR'] or 0.0) - (record['NQT_SCAR'] or 0.0)
+                    if item_id:
+                        # accounting_qty = (record['NQT_INV'] or 0.0) +
+                        # (record['NQT_CAR'] or 0.0) - (record['NQT_SCAR'] or 0.0)
                         self.write(cr, uid, item_id, {
                             'sql_inventary': sql_inventary,
                             'sql_load': sql_load,
-                            'sql_unload': sql_unload,                            
+                            'sql_unload': sql_unload,
                             'sql_order_customer': sql_order_customer,
                             'sql_order_customer_suspended': sql_order_customer_suspended,
                             'sql_order_customer_auto': sql_order_customer_auto,
@@ -148,7 +154,7 @@ class product_product(osv.osv):
                             'sql_order_production': 0.0,
                             'sql_min_level': sql_min_level,
                             'sql_max_level': 0.0,
-                            'sql_reorder_lot': sql_reorder_lot, 
+                            'sql_reorder_lot': sql_reorder_lot,
                             #'sql_order_cancel': sql_order_cancel,
                             #'sql_order_locked': sql_order_locked,
                             #'sql_order': sql_order,
@@ -160,21 +166,23 @@ class product_product(osv.osv):
         except:
             _logger.error(sys.exc_info())
             return False
-        _logger.info("End import product existence!")        
+        _logger.info("End import product existence!")
         return True
-        
+
     _columns = {
-        'default_supplier_id':fields.many2one('res.partner', 'Default supplier', required=False),
+        'default_supplier_id': fields.many2one(
+            'res.partner', 'Default supplier', required=False),
     }
 
+
 class etl_move_line(osv.osv):
-    ''' Extra field 
-    '''    
-    _name = 'sql.move.line'    
-    _inherit = 'sql.move.line'    
-    
+    """ Extra field
+    """
+    _name = 'sql.move.line'
+    _inherit = 'sql.move.line'
+
     _columns = {
-        'default_supplier_id': fields.related('product_id', 'default_supplier_id', type='many2one', relation='res.partner', string='Default partner', store=True),
+        'default_supplier_id': fields.related(
+            'product_id', 'default_supplier_id', type='many2one',
+            relation='res.partner', string='Default partner', store=True),
     }
-    
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

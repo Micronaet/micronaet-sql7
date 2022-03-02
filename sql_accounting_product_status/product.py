@@ -72,7 +72,7 @@ class product_product(osv.osv):
         """
         _logger.info("Start import product existence!")
 
-        # TODO current year always 9 (in company)
+        # todo current year always 9 (in company)
         stock = 1
 
         year = str(datetime.now().year)[3]

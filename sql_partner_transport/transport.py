@@ -2,13 +2,13 @@
 ##############################################################################
 #
 #    OpenERP module
-#    Copyright (C) 2010 Micronaet srl (<http://www.micronaet.it>) 
-#    
+#    Copyright (C) 2010 Micronaet srl (<http://www.micronaet.it>)
+#
 #    Italian OpenERP Community (<http://www.openerp-italia.com>)
 #
 #############################################################################
 #
-#    OpenERP, Open Source Management Solution	
+#    OpenERP, Open Source Management Solution
 #    Copyright (C) 2004-2009 Tiny SPRL (<http://tiny.be>). All Rights Reserved
 #    $Id$
 #
@@ -39,29 +39,30 @@ from openerp import SUPERUSER_ID
 from openerp import tools
 from openerp.tools.translate import _
 from openerp.tools.float_utils import float_round as round
-from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT, 
-    DEFAULT_SERVER_DATETIME_FORMAT, 
-    DATETIME_FORMATS_MAP, 
+from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
+    DEFAULT_SERVER_DATETIME_FORMAT,
+    DATETIME_FORMATS_MAP,
     float_compare)
 
 
 _logger = logging.getLogger(__name__)
 
 class res_partner(osv.osv):
-    ''' Append extra info to partner
-    '''
+    """ Append extra info to partner
+    """
     _inherit = 'res.partner'
-    
+
     # -------------------------------------------------------------------------
     #                          Override function:
     # -------------------------------------------------------------------------
     # Scheduled function:
-    def schedule_sql_partner_import(self, cr, uid, verbose_log_count=100, 
-        capital=True, write_date_from=False, write_date_to=False, 
-        create_date_from=False, create_date_to=False, sync_vat=False,
-        address_link=False, only_block=False, dest_merged=False, 
+    def schedule_sql_partner_import(
+            self, cr, uid, verbose_log_count=100,
+            capital=True, write_date_from=False, write_date_to=False,
+            create_date_from=False, create_date_to=False, sync_vat=False,
+            address_link=False, only_block=False, dest_merged=False,
             set_lang=False, context=None):
-        ''' Import partner from external DB
+        """ Import partner from external DB
             verbose_log_count: number of record for verbose log (0 = nothing)
             capital: if table has capital letters (usually with mysql in win)
             write_date_from: for smart update (search from date update record)
@@ -73,47 +74,48 @@ class res_partner(osv.osv):
             only_block: update only passed block name:
                 (supplier, customer destination... TODO agent, employee)
             v. 8:
-            dest_merged 
+            dest_merged
             set_lang
             context: context of procedure
-        '''
+        """
         # ---------------------------------------------------------------------
-        #                           Utility: 
+        #                           Utility:
         # ---------------------------------------------------------------------
         def get_transport_product(self, cr, uid, context=None):
-            ''' Create of get default transport product
-            '''    
+            """ Create of get default transport product
+            """
             product_pool = self.pool.get('product.product')
             name = _('Cost of transport')
             product_ids = product_pool.search(cr, uid, [
                 ('name', '=', name)], context=context)
             if product_ids:
-                return product_ids[0]        
+                return product_ids[0]
 
             return product_pool.create(cr, uid, {
-                'name': name, 
+                'name': name,
                 'type': 'service',
                 }, context=context)
         # ---------------------------------------------------------------------
 
         try:
             # Normal import function launched:
-            super(res_partner, self).schedule_sql_partner_import(cr, uid, 
-                verbose_log_count=verbose_log_count, 
-                capital=capital, write_date_from=write_date_from, 
-                write_date_to=write_date_from, 
-                create_date_from=create_date_from, 
+            super(res_partner, self).schedule_sql_partner_import(
+                cr, uid,
+                verbose_log_count=verbose_log_count,
+                capital=capital, write_date_from=write_date_from,
+                write_date_to=write_date_from,
+                create_date_from=create_date_from,
                 create_date_to=create_date_to, sync_vat=sync_vat,
-                address_link=address_link, only_block=only_block, 
+                address_link=address_link, only_block=only_block,
                 context=context)
-            
+
             _logger.info('Start import SQL: Import transport ref.')
             carrier_pool = self.pool.get('delivery.carrier')
 
             cursor = self.pool.get(
                 'micronaet.accounting').get_partner_transport(
                     cr, uid, context=context)
-                    
+
             if not cursor:
                 _logger.error("Unable to connect, no transport for partner!")
                 return True
@@ -121,16 +123,16 @@ class res_partner(osv.osv):
             # Get product for default transport cost:
             transport_id = get_transport_product(
                 self, cr, uid, context=context)
-            
+
             _logger.info('Start import transport for partner')
-            i = 0            
-            for record in cursor:            
+            i = 0
+            for record in cursor:
                 i += 1
                 try:
-                    partner_code = record['CKY_CNT'] 
+                    partner_code = record['CKY_CNT']
                     vector_code = record['CKY_CNT_VETT']
                     # TODO Extra parameters!
-                    
+
                     # --------------
                     # Check partner:
                     # --------------
@@ -151,12 +153,12 @@ class res_partner(osv.osv):
                             vector_code))
                         continue
                     name = self.browse(
-                        cr, uid, vector_id, context=context).name    
+                        cr, uid, vector_id, context=context).name
 
                     # Mark as vector:
                     self.write(cr, uid, vector_id, {
                         'is_vector': True}, context=context)
-                        
+
                     # Create carrier block:
                     carrier_ids = carrier_pool.search(cr, uid, [
                         ('partner_id', '=', vector_id),
@@ -168,9 +170,9 @@ class res_partner(osv.osv):
                             'name': name,
                             'partner_id': vector_id,
                             'product_id': transport_id,
-                            }, context=context)    
+                            }, context=context)
 
-                    # Update payment term        
+                    # Update payment term
                     self.write(cr, uid, partner_id, {
                         'default_transport_id': vector_id,
                         'default_carrier_id': carrier_id,
@@ -188,12 +190,10 @@ class res_partner(osv.osv):
     _columns = {
         'is_vector': fields.boolean('Is Vector'),
         # TODO remove:?
-        'default_transport_id': fields.many2one('res.partner', 
+        'default_transport_id': fields.many2one('res.partner',
             'Default vector'),
-        'default_carrier_id': fields.many2one('delivery.carrier', 
+        'default_carrier_id': fields.many2one('delivery.carrier',
             'Default carrier'),
         'transport_number': fields.char(
-            'Transport #', size=25),     
+            'Transport #', size=25),
         }
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
