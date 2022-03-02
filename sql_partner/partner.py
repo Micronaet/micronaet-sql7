@@ -281,8 +281,10 @@ class res_partner(osv.osv):
                                 # if not in convert dict try to search
                                 if not data['parent_id']:
                                     parent_ids = self.search(cr, uid, ['|',
-                                        ('sql_customer_code', '=', parent_code),
-                                        ('sql_supplier_code', '=', parent_code),
+                                        ('sql_customer_code', '=',
+                                         parent_code),
+                                        ('sql_supplier_code', '=',
+                                         parent_code),
                                         ], context=context)
                                     if parent_ids:
                                         data['parent_id'] = parent_ids[0]
