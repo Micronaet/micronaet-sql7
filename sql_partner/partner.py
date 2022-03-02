@@ -102,8 +102,8 @@ class res_partner(osv.osv):
             ('sql_supplier_code', '=', code),
             ('sql_customer_code','=', code),
             ('sql_destination_code', '=', code),
-            #('sql_agent_code', '=', code),
-            #('sql_employee_code', '=', code),
+            # ('sql_agent_code', '=', code),
+            # ('sql_employee_code', '=', code),
             ])
 
         if partner_id:
@@ -111,7 +111,7 @@ class res_partner(osv.osv):
         return False
 
     # -------------------------------------------------------------------------
-    #                 Placeholder function (will be overrided)
+    #                 Placeholder function (will be overridden)
     # -------------------------------------------------------------------------
     def get_swap_parent(self, cr, uid, context=None):
         """ Virtual function that will be overridef from module that manage
@@ -183,17 +183,17 @@ class res_partner(osv.osv):
 
                 # todo (vedere come comportarsi durante la creazione
                 # (simli a fornitori, agganciarli a fiscalcode=
-                #(4,
-                #'sql_agent_code',
-                #company_proxy.sql_agent_from_code,
-                #company_proxy.sql_agent_to_code,
-                #'agent'),
+                # (4,
+                # 'sql_agent_code',
+                # company_proxy.sql_agent_from_code,
+                # company_proxy.sql_agent_to_code,
+                # 'agent'),
 
-                #(5,
-                #'sql_employee_code',
-                #company_proxy.sql_employee_from_code,
-                #company_proxy.sql_employee_to_code,
-                #'employee'),
+                # (5,
+                # 'sql_employee_code',
+                # company_proxy.sql_employee_from_code,
+                # company_proxy.sql_employee_to_code,
+                # 'employee'),
                 ]
             parents = {}              # Client / Supplier converter
             destination_parents = {}  # Partner code for Destination
@@ -242,7 +242,7 @@ class res_partner(osv.osv):
                     try:
                         data = {
                             'name': record['CDS_CNT'],
-                            #'sql_customer_code': record['CKY_CNT'],
+                            # 'sql_customer_code': record['CKY_CNT'],
                             'sql_import': True,
                             'is_company': True,
                             'street': record['CDS_INDIR'] or False,
@@ -251,10 +251,10 @@ class res_partner(osv.osv):
                             'phone': record['CDS_TEL_TELEX'] or False,
                             'email': record['CDS_INET'] or False,
                             'fax': record['CDS_FAX'] or False,
-                            #'mobile': record['CDS_INDIR'] or False,
+                            # 'mobile': record['CDS_INDIR'] or False,
                             'website': record['CDS_URL_INET'] or False,
                             'vat': record['CSG_PIVA'] or False,
-                            key_field: record['CKY_CNT'], # key code
+                            key_field: record['CKY_CNT'],  # key code
                             'country_id': countries.get(
                                 record['CKY_PAESE'], False),
                             }
@@ -274,7 +274,7 @@ class res_partner(osv.osv):
 
                             parent_code = destination_parents.get(
                                 record['CKY_CNT'], False)
-                            if parent_code: # Convert value with dict
+                            if parent_code:  # Convert value with dict
                                 data['parent_id'] = parents.get(
                                     parent_code, False)
 
@@ -331,8 +331,9 @@ class res_partner(osv.osv):
                             parents[record['CKY_CNT']] = partner_id
 
                     except:
-                        _logger.error('Error importing partner [%s], jumped: %s' % (
-                            record['CDS_CNT'], sys.exc_info()))
+                        _logger.error(
+                            'Error importing partner [%s], jumped: %s' % (
+                                record['CDS_CNT'], sys.exc_info()))
 
                 _logger.info('All %s is updated!' % block)
         except:
@@ -346,21 +347,22 @@ class res_partner(osv.osv):
     # -------------------------------------------------------------------------
     _columns = {
         'sql_import': fields.boolean('SQL import', required=False),
-        'sql_supplier_code':fields.char('SQL supplier code', size=10,
+        'sql_supplier_code':fields.char(
+            'SQL supplier code', size=10,
             required=False, readonly=False),
-        'sql_customer_code':fields.char('SQL customer code', size=10,
+        'sql_customer_code':fields.char(
+            'SQL customer code', size=10,
             required=False, readonly=False),
-        'sql_destination_code':fields.char('SQL destination code', size=10,
+        'sql_destination_code':fields.char(
+            'SQL destination code', size=10,
             required=False, readonly=False),
-        # TODO
-        #'sql_agent_code':fields.char('SQL agent code', size=10,
+        # todo
+        # 'sql_agent_code':fields.char('SQL agent code', size=10,
         #    required=False, readonly=False),
-        #'sql_employee_code':fields.char('SQL employee code', size=10,
+        # 'sql_employee_code':fields.char('SQL employee code', size=10,
         #    required=False, readonly=False),
         }
 
     _defaults = {
         'sql_import': lambda *a: False,
         }
-
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
