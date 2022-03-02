@@ -47,6 +47,7 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
 
 _logger = logging.getLogger(__name__)
 
+
 class res_partner(osv.osv):
     """ Append extra info to partner
     """
@@ -189,11 +190,11 @@ class res_partner(osv.osv):
 
     _columns = {
         'is_vector': fields.boolean('Is Vector'),
-        # TODO remove:?
-        'default_transport_id': fields.many2one('res.partner',
-            'Default vector'),
-        'default_carrier_id': fields.many2one('delivery.carrier',
-            'Default carrier'),
+        # todo remove:?
+        'default_transport_id': fields.many2one(
+            'res.partner', 'Default vector'),
+        'default_carrier_id': fields.many2one(
+            'delivery.carrier', 'Default carrier'),
         'transport_number': fields.char(
             'Transport #', size=25),
         }
