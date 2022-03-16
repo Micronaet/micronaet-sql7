@@ -79,19 +79,32 @@ class product_product(osv.osv):
     # -------------------------------------------------------------------------
     #                                  Scheduled action
     # -------------------------------------------------------------------------
-    def schedule_sql_product_import(self, cr, uid, verbose_log_count=100, write_date_from=False, write_date_to=False, create_date_from=False, create_date_to=False, context=None):
+    def schedule_sql_product_import(
+            self, cr, uid, verbose_log_count=100, write_date_from=False,
+            write_date_to=False, create_date_from=False, create_date_to=False,
+            context=None):
         """ Import product from external DB
+            context parameters:
+            > 'only_create': Boolean for not update product
         """
-        _logger.warning('Update product without')
+        if context is None:
+            context = {}
+        only_create = context.get('only_create')
+
+        _logger.warning('Update product without, parameters:\n%s' % (
+            '[only create]' if only_create else '[update and create]'
+        ))
         product_proxy = self.pool.get('product.product')
         accounting_pool = self.pool.get('micronaet.accounting')
         try:
             cursor = accounting_pool.get_product(
-                cr, uid, active = False, write_date_from=write_date_from,
+                cr, uid, active=False, write_date_from=write_date_from,
                 write_date_to=write_date_to, create_date_from=create_date_from,
                 create_date_to=create_date_to, context=context)
             if not cursor:
-                _logger.error("Unable to connect no importation of package list for product!")
+                _logger.error(
+                    "Unable to connect no importation of package list "
+                    "for product!")
                 return False
 
             i = 0
@@ -105,13 +118,14 @@ class product_product(osv.osv):
                         # TODO IFL_ART_DBP o DBV for supply_method='produce'
                         'name': record['CDS_ART'],
                         'default_code': record['CKY_ART'],
-                        #'standard_price': record['NMP_UCA'],
+                        # 'standard_price': record['NMP_UCA'],
                         'sql_import': True,
                         'active': True,
                         'statistic_category': "%s%s" % (
                             record['CKY_CAT_STAT_ART'] or '',
                             "%02d" % int(
-                                record['NKY_CAT_STAT_ART'] or '0') if record['CKY_CAT_STAT_ART'] else '',
+                                record['NKY_CAT_STAT_ART'] or '0')
+                            if record['CKY_CAT_STAT_ART'] else '',
                         ),
                     }
                     if accounting_pool.is_active(record):
@@ -122,12 +136,12 @@ class product_product(osv.osv):
                     product_ids = product_proxy.search(cr, uid, [
                         ('default_code', '=', record['CKY_ART'])])
                     if product_ids:
-                        product_id = product_ids[0]
-                        product_proxy.write(cr, uid, product_id, data,
-                            context=context)
+                        if not only_create:
+                            product_id = product_ids[0]
+                            product_proxy.write(
+                                cr, uid, product_id, data, context=context)
                     else:
-                        product_id = product_proxy.create(cr, uid, data,
-                            context=context)
+                        product_proxy.create(cr, uid, data, context=context)
 
                 except:
                     _logger.error('Error import product [%s], jumped: %s' % (
@@ -135,7 +149,8 @@ class product_product(osv.osv):
 
             _logger.info('All product is updated!')
         except:
-            _logger.error('Error generic import product: %s' % (sys.exc_info(), ))
+            _logger.error('Error generic import product: %s' % (
+                sys.exc_info(), ))
             return False
         return True
 
