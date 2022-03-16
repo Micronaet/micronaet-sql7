@@ -66,15 +66,17 @@ class product_product(osv.osv):
             return product_ids[0]
         return False
 
-    def get_is_to_import_product(self, cr, uid, item_id, context = None):
+    def get_is_to_import_product(self, cr, uid, item_id, context=None):
         """ Return if the product is to import (MM) from ID
         """
-        product_id = self.search(cr, uid, [('id', '=', item_id),])
+        product_id = self.search(cr, uid, [
+            ('id', '=', item_id),
+        ])
         if product_id:
-            product_browse = self.search(cr, uid, product_id, context = context)
+            product_browse = self.search(cr, uid, product_id, context=context)
             return not product_browse[0].not_analysis
 
-        return True #False # Jump line with product not found
+        return True  # False # Jump line with product not found
 
     # -------------------------------------------------------------------------
     #                                  Scheduled action
@@ -154,7 +156,10 @@ class product_product(osv.osv):
             return False
         return True
 
-    def schedule_sql_product_update_last_cost(self, cr, uid, verbose_log_count=100, write_date_from=False, write_date_to=False, create_date_from=False, create_date_to=False, context=None):
+    def schedule_sql_product_update_last_cost(
+            self, cr, uid, verbose_log_count=100, write_date_from=False,
+            write_date_to=False, create_date_from=False, create_date_to=False,
+            context=None):
         """ Import product from external DB only standard price
         """
         _logger.warning('Update product with last cost')
@@ -166,7 +171,9 @@ class product_product(osv.osv):
                 write_date_to=write_date_to, create_date_from=create_date_from,
                 create_date_to=create_date_to, context=context)
             if not cursor:
-                _logger.error("Unable to connect no importation of package list for product!")
+                _logger.error(
+                    "Unable to connect no importation of package list for "
+                    "product!")
                 return False
 
             i = 0
