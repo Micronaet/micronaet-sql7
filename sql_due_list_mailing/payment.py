@@ -433,7 +433,7 @@ class sql_payment_duelist(osv.osv):
             deadline = datetime.strptime(
                 item.deadline, DEFAULT_SERVER_DATE_FORMAT)
             for days, stage in stages_sorted:  # sort desc per days
-                if today - timedelta(days=days) >= deadline:
+                if total > 0 and today - timedelta(days=days) >= deadline:
                     # test if it's not current stage
                     if stage != item.stage_id.id:
                         self.write(cr, uid, item.id, {
