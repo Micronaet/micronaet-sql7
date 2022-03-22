@@ -430,6 +430,7 @@ class sql_payment_duelist(osv.osv):
         stages_sorted = sorted(stages.iteritems(), reverse=True)
 
         for item in self.browse(cr, uid, duelist_ids, context=context):
+            total = item.total
             deadline = datetime.strptime(
                 item.deadline, DEFAULT_SERVER_DATE_FORMAT)
             for days, stage in stages_sorted:  # sort desc per days
