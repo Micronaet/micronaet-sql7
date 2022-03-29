@@ -304,7 +304,7 @@ class res_partner(osv.osv):
                             try:
                                 partner_id = partner_ids[0]
                                 self.write(cr, uid, partner_id, data,
-                                    context = context)
+                                    context=context)
                             except:
                                 data['vat'] = False
                                 try:  # Remove vat for vat check problems:
@@ -323,7 +323,7 @@ class res_partner(osv.osv):
                                     cr, uid, data, context=context)
                             except:
                                 data['vat'] = False
-                                try: # Remove vat for vat check problems:
+                                try:  # Remove vat for vat check problems:
                                     partner_id = self.create(
                                         cr, uid, data, context=context)
                                 except:
@@ -336,14 +336,12 @@ class res_partner(osv.osv):
                         if address_link and block != 'destination':
                             # Save partner for destination search
                             parents[record['CKY_CNT']] = partner_id
-
                     except:
                         _logger.error(
                             'Error importing partner [%s], jumped: %s' % (
                                 record['CDS_CNT'], sys.exc_info()))
                         continue
-
-                _logger.info('All %s is updated!' % block)
+                _logger.info('>>>> All record in block %s is updated!' % block)
         except:
             _logger.error(
                 'Error generic import partner: %s' % (sys.exc_info(), ))
