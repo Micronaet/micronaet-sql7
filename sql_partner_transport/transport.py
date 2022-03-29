@@ -129,10 +129,13 @@ class res_partner(osv.osv):
             i = 0
             for record in cursor:
                 i += 1
+                if not i % 100:
+                    _logger.info('Partner transport import record %s' % i)
+
                 try:
                     partner_code = record['CKY_CNT']
                     vector_code = record['CKY_CNT_VETT']
-                    # TODO Extra parameters!
+                    # todo Extra parameters!
 
                     # --------------
                     # Check partner:

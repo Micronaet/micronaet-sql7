@@ -228,14 +228,14 @@ class res_partner(osv.osv):
                     create_date_to=create_date_to, context=context)
                 if not cursor:
                     _logger.error("Unable to connect, no partner!")
-                    continue # next block
+                    continue  # next block
 
                 _logger.info('Start import %s from: %s to: %s' % (
                     block, from_code, to_code))
                 i = 0
                 for record in cursor:
                     i += 1
-                    if verbose_log_count and i % verbose_log_count == 0:
+                    if verbose_log_count and not i % verbose_log_count:
                         _logger.info(
                             'Import %s: %s record imported / updated!' % (
                                 block, i, ))
@@ -355,7 +355,7 @@ class res_partner(osv.osv):
     # -------------------------------------------------------------------------
     _columns = {
         'sql_import': fields.boolean('SQL import', required=False),
-        'sql_supplier_code':fields.char(
+        'sql_supplier_code': fields.char(
             'SQL supplier code', size=10,
             required=False, readonly=False),
         'sql_customer_code':fields.char(
