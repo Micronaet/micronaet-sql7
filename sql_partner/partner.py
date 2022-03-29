@@ -114,7 +114,7 @@ class res_partner(osv.osv):
     #                 Placeholder function (will be overridden)
     # -------------------------------------------------------------------------
     def get_swap_parent(self, cr, uid, context=None):
-        """ Virtual function that will be overridef from module that manage
+        """ Virtual function that will be overridden from module that manage
             parent_id swap partner (not implemented here)
         """
         return {}
@@ -160,7 +160,7 @@ class res_partner(osv.osv):
             company_proxy = company_pool.get_from_to_dict(
                 cr, uid, context=context)
             if not company_proxy:
-                _logger.error('Company parameters not setted up!')
+                _logger.error('Company parameters not set up!')
 
             import_loop = [
                 (1,                                     # order
@@ -280,7 +280,8 @@ class res_partner(osv.osv):
 
                                 # if not in convert dict try to search
                                 if not data['parent_id']:
-                                    parent_ids = self.search(cr, uid, ['|',
+                                    parent_ids = self.search(cr, uid, [
+                                        '|',
                                         ('sql_customer_code', '=',
                                          parent_code),
                                         ('sql_supplier_code', '=',
@@ -293,7 +294,8 @@ class res_partner(osv.osv):
                             (key_field, '=', record['CKY_CNT'])])
 
                         # Search per vat (only for customer and supplier)
-                        if sync_vat and not partner_ids and block != 'destination':
+                        if sync_vat and not partner_ids and block != \
+                                'destination':
                             partner_ids = self.search(cr, uid, [
                                 ('vat', '=', record['CSG_PIVA'])])
 
@@ -305,12 +307,14 @@ class res_partner(osv.osv):
                                     context = context)
                             except:
                                 data['vat'] = False
-                                try: # Remove vat for vat check problems:
-                                    self.write(cr, uid, partner_id, data,
-                                        context = context)
+                                try:  # Remove vat for vat check problems:
+                                    self.write(
+                                        cr, uid, partner_id, data,
+                                        context=context)
                                 except:
                                     _logger.error(
-                                        '%s. Error updating partner [%s]: %s' % (
+                                        '%s. Error updating partner [%s]: '
+                                        '%s' % (
                                              i, partner_id, sys.exc_info()))
                                     continue
                         else:
@@ -320,11 +324,12 @@ class res_partner(osv.osv):
                             except:
                                 data['vat'] = False
                                 try: # Remove vat for vat check problems:
-                                    partner_id = self.create(cr, uid, data,
-                                        context=context)
+                                    partner_id = self.create(
+                                        cr, uid, data, context=context)
                                 except:
                                     _logger.error(
-                                        '%s. Error creating partner [%s]: %s' % (
+                                        '%s. Error creating partner [%s]: '
+                                        '%s' % (
                                             i, partner_id, sys.exc_info()))
                                     continue
 
@@ -336,11 +341,12 @@ class res_partner(osv.osv):
                         _logger.error(
                             'Error importing partner [%s], jumped: %s' % (
                                 record['CDS_CNT'], sys.exc_info()))
+                        continue
 
                 _logger.info('All %s is updated!' % block)
         except:
-            _logger.error('Error generic import partner: %s' % (
-                sys.exc_info(), ))
+            _logger.error(
+                'Error generic import partner: %s' % (sys.exc_info(), ))
             return False
         return True
 
