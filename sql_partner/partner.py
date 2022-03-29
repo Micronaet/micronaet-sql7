@@ -318,7 +318,7 @@ class res_partner(osv.osv):
                                     _logger.error(
                                         '%s. Error updating partner [%s]: '
                                         '%s' % (
-                                             i, partner_id, sys.exc_info()))
+                                             i, record, sys.exc_info()))
                                     continue
                         else:
                             try:
