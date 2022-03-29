@@ -236,7 +236,8 @@ class res_partner(osv.osv):
                 for record in cursor:
                     i += 1
                     if block == 'destination' and i > 1000:
-                        _logger.info('Importing: %s' % record['CDS_CNT'])
+                        _logger.info('%s Importing: %s' % (
+                            i, record['CDS_CNT']))
                     if verbose_log_count and not i % verbose_log_count:
                         _logger.info(
                             'Import %s: %s record imported / updated!' % (
