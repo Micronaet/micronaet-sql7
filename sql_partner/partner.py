@@ -332,7 +332,7 @@ class res_partner(osv.osv):
                                     _logger.error(
                                         '%s. Error creating partner [%s]: '
                                         '%s' % (
-                                            i, partner_id, sys.exc_info()))
+                                            i, record, sys.exc_info()))
                                     continue
 
                         if address_link and block != 'destination':
