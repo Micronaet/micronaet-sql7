@@ -18,6 +18,7 @@
 #
 ###############################################################################
 import os
+import pdb
 import sys
 import netsvc
 import logging
@@ -236,6 +237,8 @@ class res_partner(osv.osv):
                 for record in cursor:
                     i += 1
                     if block == 'destination':
+                        if i == 1091:
+                            pdb.set_trace()
                         verbose_log_count = 1
                     if verbose_log_count and not i % verbose_log_count:
                         _logger.info(
@@ -276,6 +279,9 @@ class res_partner(osv.osv):
 
                             parent_code = destination_parents.get(
                                 record['CKY_CNT'], False)
+                            # Debug:
+                            if parent_code == '06.02814':
+                                pdb.set_trace()
                             if parent_code:  # Convert value with dict
                                 data['parent_id'] = parents.get(
                                     parent_code, False)
