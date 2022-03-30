@@ -237,10 +237,10 @@ class res_partner(osv.osv):
                 for record in cursor:
                     i += 1
                     # Debug:
-                    if block == 'destination':
-                        if i == 1091:
-                            pdb.set_trace()
-                        verbose_log_count = 1
+                    # if block == 'destination':
+                    #    if i == 1091:
+                    #        pdb.set_trace()
+                    #    verbose_log_count = 1
                     if verbose_log_count and not i % verbose_log_count:
                         _logger.info(
                             'Import %s: %s record imported / updated!' % (
@@ -269,9 +269,10 @@ class res_partner(osv.osv):
                             data['type'] = 'default'
                             data['customer'] = True
                             data['ref'] = record['CKY_CNT']
+
                             # Debug:
-                            if data['ref'] == '06.02814':
-                                pdb.set_trace()
+                            # if data['ref'] == '06.02814':
+                            #    pdb.set_trace()
 
                         if block == 'supplier':
                             data['type'] = 'default'
@@ -312,7 +313,8 @@ class res_partner(osv.osv):
                         if partner_ids:
                             try:
                                 partner_id = partner_ids[0]
-                                self.write(cr, uid, partner_id, data,
+                                self.write(
+                                    cr, uid, partner_id, data,
                                     context=context)
                             except:
                                 data['vat'] = False
