@@ -236,6 +236,7 @@ class res_partner(osv.osv):
                 i = 0
                 for record in cursor:
                     i += 1
+                    # Debug:
                     if block == 'destination':
                         if i == 1091:
                             pdb.set_trace()
