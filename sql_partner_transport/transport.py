@@ -44,7 +44,6 @@ from openerp.tools import (DEFAULT_SERVER_DATE_FORMAT,
     DATETIME_FORMATS_MAP,
     float_compare)
 
-
 _logger = logging.getLogger(__name__)
 
 
@@ -100,6 +99,7 @@ class res_partner(osv.osv):
 
         try:
             # Normal import function launched:
+            _logger.info('TRANSPORT: Call original import partner')
             super(res_partner, self).schedule_sql_partner_import(
                 cr, uid,
                 verbose_log_count=verbose_log_count,
@@ -110,7 +110,7 @@ class res_partner(osv.osv):
                 address_link=address_link, only_block=only_block,
                 context=context)
 
-            _logger.info('Start import SQL: Import transport ref.')
+            _logger.info('TRANSPORT: Start Import transport ref.')
             carrier_pool = self.pool.get('delivery.carrier')
 
             cursor = self.pool.get(
@@ -129,7 +129,7 @@ class res_partner(osv.osv):
             i = 0
             for record in cursor:
                 i += 1
-                if not i % 100:
+                if not i % 200:
                     _logger.info('Partner transport import record %s' % i)
 
                 try:
