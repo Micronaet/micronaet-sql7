@@ -269,6 +269,9 @@ class res_partner(osv.osv):
                             data['type'] = 'default'
                             data['customer'] = True
                             data['ref'] = record['CKY_CNT']
+                            # Debug:
+                            if data['ref'] == '06.02814':
+                                pdb.set_trace()
 
                         if block == 'supplier':
                             data['type'] = 'default'
@@ -280,9 +283,6 @@ class res_partner(osv.osv):
 
                             parent_code = destination_parents.get(
                                 record['CKY_CNT'], False)
-                            # Debug:
-                            if parent_code == '06.02814':
-                                pdb.set_trace()
                             if parent_code:  # Convert value with dict
                                 data['parent_id'] = parents.get(
                                     parent_code, False)
