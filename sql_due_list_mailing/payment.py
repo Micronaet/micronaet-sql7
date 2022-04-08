@@ -267,6 +267,8 @@ class sql_payment_duelist(osv.osv):
         # ---------------
         # Import duelist:
         # ---------------
+        # Micronaet 8 apr 2022:
+        send_email_trigger = False  # Removed send email for now
         _logger.info(_("Start import payment duelist via CSV!"))
 
         # Check FIDO file if present (and import):
@@ -492,39 +494,41 @@ class sql_payment_duelist(osv.osv):
                 # Send an e-mail to Company for correcting:
                 valid_email = False
                 mail_subject = _(
-                    "Fount invalid email for this payment partner")
+                    "Found invalid email for this payment partner")
                 mail_to = item.partner_id.company_id.partner_id.email
 
             # Create relative message (required by mail)
             #  > Note: thread for link in payment message:
-            message_id = message_pool.create(cr, uid, {
-                'type': 'email',
-                'subject': mail_subject,
-                'body': _("[%s] Template for mail: %s ") % (
-                    datetime.now().strftime(DEFAULT_SERVER_DATETIME_FORMAT),
-                    template.name,
-                    ),
-                'model': 'sql.payment.duelist',
-                'res_id': item.id,
-                }, context=context)
+            if send_email_trigger:
+                message_id = message_pool.create(cr, uid, {
+                    'type': 'email',
+                    'subject': mail_subject,
+                    'body': _("[%s] Template for mail: %s ") % (
+                        datetime.now().strftime(
+                            DEFAULT_SERVER_DATETIME_FORMAT),
+                        template.name,
+                        ),
+                    'model': 'sql.payment.duelist',
+                    'res_id': item.id,
+                    }, context=context)
 
-            # Create mail message
-            mail_id = mail_pool.create(cr, uid, {
-                'mail_message_id': message_id,
-                'mail_server_id':
-                    template.mail_server_id and
-                    template.mail_server_id.id or False,
-                'state': 'outgoing',
-                'auto_delete': template.auto_delete,  # False
-                'email_from': mail_from,
-                'email_to': mail_to,
-                'reply_to': reply_to,
-                'body_html': mail_body,
-                })
-            mail_ids.append(mail_id)
+                # Create mail message
+                mail_id = mail_pool.create(cr, uid, {
+                    'mail_message_id': message_id,
+                    'mail_server_id':
+                        template.mail_server_id and
+                        template.mail_server_id.id or False,
+                    'state': 'outgoing',
+                    'auto_delete': template.auto_delete,  # False
+                    'email_from': mail_from,
+                    'email_to': mail_to,
+                    'reply_to': reply_to,
+                    'body_html': mail_body,
+                    })
+                mail_ids.append(mail_id)
 
             # Set stage to last mail sent (TODO not yet sent!!!)
-            if valid_email: # Remain in sending state:
+            if valid_email:  # Remain in sending state:
                 self.write(cr, uid, item.id, {
                     'stage_id': item.todo_stage_id.id,
                     'todo_stage_id': False
