@@ -4,5 +4,8 @@
         <record id="group_manager_duelist" model="res.groups">
             <field name="name">Duelist Manager</field>
         </record>
+        <record id="group_user_duelist" model="res.groups">
+            <field name="name">Duelist user</field>
+        </record>
    </data>
 </openerp>
