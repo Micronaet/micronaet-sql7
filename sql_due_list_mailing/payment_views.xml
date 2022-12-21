@@ -309,7 +309,7 @@
     </record>
 
     <!--Menu tree:-->    
-    <menuitem id="menu_sql_accounting_all_duelist_sale" name="Pagamenti contabili" parent="base.menu_sales" sequence="10" action="action_payment_duelist_all_form" />
+    <menuitem id="menu_sql_accounting_all_duelist_sale" name="Pagamenti contabili" parent="base.menu_sales" sequence="30" action="action_payment_duelist_all_form" />
     
     <menuitem id="menu_sql_accounting" name="Accounting sql" parent="account.menu_finance" sequence="1" />
         <menuitem id="menu_sql_accounting_duelist" name="Deadline payment" parent="menu_sql_accounting" sequence="10" action="action_payment_duelist_form" />
