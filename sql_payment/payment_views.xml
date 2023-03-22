@@ -21,6 +21,16 @@
             </field>
         </field>
     </record>
+    <record id="acccount_payment_term_view_search" model="ir.ui.view">
+        <field name="name">Pagamenti</field>
+        <field name="model">account.payment.term</field>
+        <field name="inherit_id" ref="account.view_payment_term_search"/>
+        <field name="arch" type="xml">
+            <field name="active" position="after">
+                <filter string="Importati" name="import_id_on" domain="[('import_id','!=',0)]"/>
+            </field>
+        </field>
+    </record>
 </data>
 </openerp>
 
