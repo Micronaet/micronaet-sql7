@@ -2,13 +2,13 @@
 ##############################################################################
 #
 #    OpenERP module
-#    Copyright (C) 2010 Micronaet srl (<http://www.micronaet.it>) 
-#    
+#    Copyright (C) 2010 Micronaet srl (<http://www.micronaet.it>)
+#
 #    Italian OpenERP Community (<http://www.openerp-italia.com>)
 #
 #############################################################################
 #
-#    OpenERP, Open Source Management Solution	
+#    OpenERP, Open Source Management Solution
 #    Copyright (C) 2004-2009 Tiny SPRL (<http://tiny.be>). All Rights Reserved
 #    $Id$
 #
@@ -35,19 +35,21 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
+
 class res_partner(osv.osv):
-    ''' Append extra info to partner
-    '''
+    """ Append extra info to partner
+    """
     _inherit = 'res.partner'
-    
+
     _columns = {
-        'default_payment': fields.many2one('account.payment.term', 
+        'default_payment': fields.many2one('account.payment.term',
             'Default payment'),
         }
-        
+
+
 class account_payment_term(osv.osv):
-    ''' Extend account.payment.term
-    '''    
+    """ Extend account.payment.term
+    """
     _inherit = 'account.payment.term'
 
     # -------------------------------------------------------------------------
@@ -55,45 +57,45 @@ class account_payment_term(osv.osv):
     # -------------------------------------------------------------------------
     # Scheduled function:
     def schedule_sql_payment_import(self, cr, uid, context=None):
-        ''' Import payment and after link to partner
-        ''' 
+        """ Import payment and after link to partner
+        """
         context = context or {}
         company_pool = self.pool.get('res.company')
         company_ids = company_pool.search(cr, uid, [], context=context)[0]
         company_proxy = company_pool.browse(
             cr, uid, company_ids, context=context)
 
-        customer_start = company_proxy.sql_customer_from_code or ''    
-        customer_end = company_proxy.sql_customer_to_code or ''    
-        supplier_start = company_proxy.sql_supplier_from_code or ''    
-        supplier_end = company_proxy.sql_supplier_to_code or ''    
-        
-        if not(customer_start and customer_end and \
+        customer_start = company_proxy.sql_customer_from_code or ''
+        customer_end = company_proxy.sql_customer_to_code or ''
+        supplier_start = company_proxy.sql_supplier_from_code or ''
+        supplier_end = company_proxy.sql_supplier_to_code or ''
+
+        if not(customer_start and customer_end and
                 supplier_start and supplier_end):
             _logger.error('Setup customer/supplier range in company SQL form')
             return False
-             
+
         try:
             # Normal import function launched:
             super(account_payment_term, self).schedule_sql_payment_import(
-                cr, uid) # context=context)
-            
+                cr, uid)  # context=context)
+
             _logger.info('Start import SQL: payment for partner')
             partner_pool = self.pool.get('res.partner')
 
             cursor = self.pool.get(
                 'micronaet.accounting').get_payment_partner(
                     cr, uid, context=context)
-                    
+
             if not cursor:
                 _logger.error("Unable to connect, no payment for partner!")
                 return True
 
             _logger.info('Start import payment for partner')
-            i = 0            
-            
+            i = 0
+
             # Load dict for convert account ID in OpenERP ID:
-            payment_convert = {}            
+            payment_convert = {}
             payment_ids = self.search(cr, uid, [], context=context)
             for payment in self.browse(cr, uid, payment_ids, context=context):
                 payment_convert[payment.import_id] = payment.id
@@ -101,40 +103,38 @@ class account_payment_term(osv.osv):
             for record in cursor:
                 i += 1
                 try:
-                    partner_code = record['CKY_CNT'] 
+                    partner_code = record['CKY_CNT']
                     payment_code = record['NKY_PAG']
-                    
+
                     # Check payment:
                     payment_id = payment_convert.get(payment_code, False)
                     if not payment_id:
                         _logger.error('Payment not found, account code: %s' % (
                             payment_code))
                         continue
-                        
-                    # Chech partner    
+
+                    # Check partner
                     partner_id = partner_pool.get_partner_from_sql_code(
                         cr, uid, partner_code, context=context)
                     if not partner_id:
                         _logger.error('Partner code not found: %s' % (
                             partner_code))
                         continue
-                            
+
                     # Update payment term (customer or supplier)
-                    if partner_code >= supplier_start and \
-                            partner_code < supplier_end:
+                    if supplier_start <= partner_code < supplier_end:
                         field_name = 'property_supplier_payment_term'
-                    elif partner_code >= customer_start and \
-                            partner_code < customer_end:
+                    elif customer_start <= partner_code < customer_end:
                         field_name = 'property_payment_term'
                     else:
                         field_name = ''
-                        
+
                     if not field_name:
                         _logger.error(
                             'No partner/supplier start, cannot decide: %s!' % (
-                            partner_code))    
-                        continue    
-                            
+                                partner_code))
+                        continue
+
                     partner_pool.write(cr, uid, partner_id, {
                         field_name: payment_id,
                         }, context=context)
@@ -143,7 +143,7 @@ class account_payment_term(osv.osv):
                         sys.exc_info(), ))
         except:
             _logger.error('Error generic import payment: %s' % (
-                sys.exc_info()))
+                sys.exc_info(), ))
             return False
         _logger.info('All payment is updated!')
         return True
@@ -154,4 +154,3 @@ class account_payment_term(osv.osv):
     _columns = {
         'import_id': fields.integer('SQL import'),
         }
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
