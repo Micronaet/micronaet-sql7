@@ -2,13 +2,13 @@
 ##############################################################################
 #
 #    OpenERP module
-#    Copyright (C) 2010 Micronaet srl (<http://www.micronaet.it>) 
-#    
+#    Copyright (C) 2010 Micronaet srl (<http://www.micronaet.it>)
+#
 #    Italian OpenERP Community (<http://www.openerp-italia.com>)
 #
 #############################################################################
 #
-#    OpenERP, Open Source Management Solution	
+#    OpenERP, Open Source Management Solution
 #    Copyright (C) 2004-2009 Tiny SPRL (<http://tiny.be>). All Rights Reserved
 #    $Id$
 #
@@ -35,41 +35,42 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
+
 class account_payment_term(osv.osv):
-    ''' Extend account.payment.term
-    '''    
+    """ Extend account.payment.term
+    """
     _name = 'account.payment.term'
     _inherit = 'account.payment.term'
-    
+
     # -------------------------------------------------------------------------
     # Utility function
     # -------------------------------------------------------------------------
     def get_payment(self, cr, uid, account_id, context=None):
-        ''' Return OpenERP ID from  account ID        
-        '''
+        """ Return OpenERP ID from  account ID
+        """
         payment_ids = self.search(cr, uid, [
             ('import_id', '=', account_id)], context=context)
         if payment_ids:
             return payment_ids[0]
-        else:    
+        else:
             return False
-            
+
     # -------------------------------------------------------------------------
     #                             Scheduled action
     # -------------------------------------------------------------------------
     def schedule_sql_payment_import(self, cr, uid, context=None):
-        ''' Import payment
-        '''
+        """ Import payment
+        """
         try:
             _logger.info('Start import SQL: payment')
-            
+
             cursor = self.pool.get('micronaet.accounting').get_payment(
                 cr, uid, context=context)
             if not cursor:
                 _logger.error("Unable to connect, no payment!")
                 return True
 
-            _logger.info('Start import payment')                          
+            _logger.info('Start import payment')
             i = 0
             for record in cursor:
                 i += 1
@@ -79,7 +80,7 @@ class account_payment_term(osv.osv):
                     data = {
                         'import_id': import_id,
                         'name': name,
-                        }                    
+                        }
                     payment_ids = self.search(cr, uid, [
                         '|',
                         ('import_id', '=', import_id),
@@ -89,10 +90,11 @@ class account_payment_term(osv.osv):
                     # Update / Create
                     if payment_ids:
                         payment_id = payment_ids[0]
-                        self.write(cr, uid, payment_id, data, 
+                        self.write(
+                            cr, uid, payment_id, data,
                             context=context)
                     else:
-                        payment_id = self.create(
+                        self.create(
                             cr, uid, data, context=context)
                 except:
                     _logger.error('Error importing payment [%s]' % (
@@ -110,4 +112,3 @@ class account_payment_term(osv.osv):
     _columns = {
         'import_id': fields.integer('SQL import'),
         }
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

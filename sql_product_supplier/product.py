@@ -77,6 +77,7 @@ class product_product(osv.osv):
         except:
             return False
 
+
 class product_product(osv.osv):
     """ Extend product.product
     """
