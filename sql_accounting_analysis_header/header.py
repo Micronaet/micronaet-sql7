@@ -31,8 +31,8 @@ from openerp.tools.translate import _
 _logger = logging.getLogger(__name__)
 
 class etl_move_line(osv.osv):
-    ''' Objetc populated with accounting movement header
-    '''    
+    """ Objetc populated with accounting movement header
+    """
     _name = 'sql.move.header'
     _order = 'name'
     _description = 'ETL Move header'
@@ -41,10 +41,10 @@ class etl_move_line(osv.osv):
     # Utility function for fields (to remove):
     # ----------------------------------------
     def force_header_id(self, cr, uid, ids, context=None):
-        ''' Search header field in sql.move.header and link header_id 
+        """ Search header field in sql.move.header and link header_id
             fields for link the lines to the header
             (act as a button for speed up operation)
-        '''
+        """
         line_pool = self.pool.get("sql.move.line")
         move_ids = line_pool.search(cr, uid, [], context=context)
         for item in line_pool.browse(cr, uid, move_ids, context=context):
@@ -53,29 +53,29 @@ class etl_move_line(osv.osv):
             if header_id:
                 line_pool.write(cr, uid, item.id, {
                     'header_id': header_id[0]
-                    }, context=context) 
+                    }, context=context)
             else:
                 _logger.warning("Header not found: %s!" % item.header)
-        return True       
+        return True
 
     def force_total(self, cr, uid, ids, context=None):
-        ''' Force total from lines
-        '''
+        """ Force total from lines
+        """
         header_ids = self.search(cr, uid, [], context=context)
         for item in self.browse(cr, uid, header_ids, context=context):
             total = 0.0
             for line in item.line_ids:
                 total += line.total
-            if total:    
+            if total:
                 self.write(cr, uid, item.id, {
                     'total': total,
                     'analysis_total': -total,
                     }, context=context)
-        return True       
+        return True
 
     def force_number(self, cr, uid, ids, context=None):
-        ''' Force total from lines
-        '''
+        """ Force total from lines
+        """
         header_ids = self.search(cr, uid, [], context=context)
         for item in self.browse(cr, uid, header_ids, context=context):
             try:
@@ -83,15 +83,15 @@ class etl_move_line(osv.osv):
                     'number': int(item.name.split("-")[-1]),
                     }, context=context)
             except:
-                _logger.error("Cannot see number in %s" % name)        
-        return True       
+                _logger.error("Cannot see number in %s" % name)
+        return True
 
     # -----------------
     # Scheduled action:
     # -----------------
     def schedule_etl_move_header_import(self, cr, uid, context=None):
-        ''' Import header movements
-        '''
+        """ Import header movements
+        """
         from openerp.addons.base_mssql.tools import conversion
 
         _logger.info("Start import movement header!")
@@ -104,23 +104,23 @@ class etl_move_line(osv.osv):
             reason_proxy = self.pool.get('stock.picking.transportation_reason')
 
             # ------------------
-            # Import move header: 
+            # Import move header:
             # ------------------
             cursor = accounting_proxy.get_mm_header(
-                cr, uid, context=context) 
+                cr, uid, context=context)
             if not cursor:
                 _logger.error(
                     "Unable to connect no importation of movement header!")
                 return False
 
             i = 0
-            for record in cursor:        
+            for record in cursor:
                 try:
-                    i += 1                    
+                    i += 1
                     name = accounting_proxy.KEY_MM_HEADER_FORMAT % (record)
-                   
+
                     if i % 500 == 0:
-                        _logger.info('Header %s: record imported/updated!' % i)                             
+                        _logger.info('Header %s: record imported/updated!' % i)
 
                     partner_id = partner_proxy.get_partner_from_sql_code(
                         cr, uid, record['CKY_CNT_CLFR'], context = context)
@@ -131,7 +131,7 @@ class etl_move_line(osv.osv):
 
                     if agent_id and agent_id not in agent_list:
                         agent_list.append(agent_id)
-                        
+
                     data = {
                         # Movement line:
                         'name': name, # line key
@@ -148,7 +148,7 @@ class etl_move_line(osv.osv):
                     if item_id:
                         item_id = item_id[0]
                         self.write(cr, uid, item_id, data, context=context)
-                    else:    
+                    else:
                         item_id = self.create(cr, uid, data, context=context)
                 except:
                     _logger.error(
@@ -158,23 +158,23 @@ class etl_move_line(osv.osv):
                     continue
 
             # -----------------
-            # Update foot info: 
+            # Update foot info:
             # -----------------
             _logger.info("Start import movement footer!")
-            cursor = accounting_proxy.get_mm_footer(cr, uid, context=context) 
+            cursor = accounting_proxy.get_mm_footer(cr, uid, context=context)
             if not cursor:
                 _logger.error(
                     "Unable to connect no importation of movement footer!")
                 return False
 
             i = 0
-            for record in cursor:        
+            for record in cursor:
                 try:
-                    i += 1                    
+                    i += 1
                     name = accounting_proxy.KEY_MM_HEADER_FORMAT % (record)
-                   
+
                     if i % 500 == 0:
-                        _logger.info('Footer %s: record imported/updated!' % i)                             
+                        _logger.info('Footer %s: record imported/updated!' % i)
 
                     payment_id = payment_proxy.get_payment(
                         cr, uid, record['NKY_PAG'], context = context)
@@ -184,7 +184,7 @@ class etl_move_line(osv.osv):
                         self.write(cr, uid, item_id[0], {
                             'payment_id': payment_id,
                             }, context=context)
-                    else:    
+                    else:
                         pass # jump
                 except:
                     _logger.error(
@@ -206,13 +206,13 @@ class etl_move_line(osv.osv):
         return True
 
     # ------------------------
-    # Field utility functions:    
+    # Field utility functions:
     # ------------------------
     def _get_movement_list(self, cr, uid, context=None):
-        ''' Get list of movement from move line class
-        '''    
-        return self.pool.get('sql.move.line').movement_type   
-        
+        """ Get list of movement from move line class
+        """
+        return self.pool.get('sql.move.line').movement_type
+
     _columns = {
         'name': fields.char('Ref. document', size=24, required=True, readonly=False, help = 'Header document information'),
         'number': fields.integer('Number'),
@@ -222,51 +222,53 @@ class etl_move_line(osv.osv):
         #'amount': fields.float('Total amount', digits=(16, 2)),
 
         'partner_id': fields.many2one('res.partner', 'Partner'),
-        'partner_name': fields.related('partner_id', 'name', type='char', 
+        'partner_name': fields.related('partner_id', 'name', type='char',
             string='Partner name', store=True),
-        'agent_id': fields.many2one('res.partner', 'Agent',), 
+        'agent_id': fields.many2one('res.partner', 'Agent',),
         'payment_id': fields.many2one('account.payment.term', 'Payment term'),
-        'reason_id': fields.many2one('stock.picking.transportation_reason', 
+        'reason_id': fields.many2one('stock.picking.transportation_reason',
             'Transportation reason'),
 
         'note': fields.text('Note'),
 
         'total': fields.float('Amount', digits=(16, 5)),
-        'analysis_total': fields.float('Amount', digits=(16, 5), 
+        'analysis_total': fields.float('Amount', digits=(16, 5),
             help="Used for analysis purpose (usually is equal to -(total)"),
-        'type': fields.selection(_get_movement_list, 'State', select=True, readonly=False),
+        'type': fields.selection(
+            _get_movement_list, 'State', select=True, readonly=False),
     }
 
+
 class etl_move_line(osv.osv):
-    ''' Extra relation fields:
-    '''    
+    """ Extra relation fields:
+    """
     _name = 'sql.move.line'
     _inherit = 'sql.move.line'
-                
+
     _columns = {
-        'header_id': fields.many2one('sql.move.header', 'Header', 
+        'header_id': fields.many2one('sql.move.header', 'Header',
             ondelete='cascade'),
         }
 
 class etl_move_header(osv.osv):
-    ''' Extra relation fields:
-    '''    
+    """ Extra relation fields:
+    """
     _name = 'sql.move.header'
     _inherit = 'sql.move.header'
-    
+
     _columns = {
         'line_ids': fields.one2many('sql.move.line', 'header_id', 'Lines'),
         }
 
 class res_partner(osv.osv):
-    ''' Add extra field for partner
-    '''
+    """ Add extra field for partner
+    """
     _name = 'res.partner'
     _inherit = 'res.partner'
-    
+
     _columns = {
         'is_agent': fields.boolean('Agent'),
     }
-        
-        
+
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

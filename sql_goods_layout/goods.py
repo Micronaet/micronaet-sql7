@@ -2,13 +2,13 @@
 ##############################################################################
 #
 #    OpenERP module
-#    Copyright (C) 2010 Micronaet srl (<http://www.micronaet.it>) 
-#    
+#    Copyright (C) 2010 Micronaet srl (<http://www.micronaet.it>)
+#
 #    Italian OpenERP Community (<http://www.openerp-italia.com>)
 #
 #############################################################################
 #
-#    OpenERP, Open Source Management Solution	
+#    OpenERP, Open Source Management Solution
 #    Copyright (C) 2004-2009 Tiny SPRL (<http://tiny.be>). All Rights Reserved
 #    $Id$
 #
@@ -35,22 +35,23 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
+
 class micronaet_accounting(osv.osv):
-    ''' Object for keep function with the query
+    """ Object for keep function with the query
         Record are only table with last date of access
-    '''
+    """
     _inherit = "micronaet.accounting"
 
     # -------------------
     #  GOODS DESCRIPTION:
     # -------------------
     def get_goods_description(self, cr, uid, year=False, context=None):
-        ''' Access to anagrafic table of goods desc.
+        """ Access to anagrafic table of goods desc.
             Table: MB_ASP_EST_BENI
-        '''
-        if self.pool.get('res.company').table_capital_name(cr, uid, 
-                context=context):
-            table = "MB_ASP_EST_BENI" 
+        """
+        if self.pool.get('res.company').table_capital_name(
+                cr, uid, context=context):
+            table = "MB_ASP_EST_BENI"
         else:
             table = "mb_asp_est_beni"
 
@@ -60,24 +61,24 @@ class micronaet_accounting(osv.osv):
                 SELECT NKY_ASPBEN, CDS_ASPBEN FROM %s WHERE CDS_ASPBEN != '';
                 """ % table)
             return cursor
-        except: 
+        except:
             return False
 
 
 class stock_picking_goods_description(osv.osv):
-    ''' Extend stock.picking.goods_description
-    '''    
+    """ Extend stock.picking.goods_description
+    """
     _inherit = 'stock.picking.goods_description'
-    
+
     # -------------------------------------------------------------------------
     #                             Scheduled action
     # -------------------------------------------------------------------------
     def schedule_good_description_import(self, cr, uid, context=None):
-        ''' Import goods description
-        '''            
+        """ Import goods description
+        """
         try:
             _logger.info('Start import SQL: good descriptions')
-            
+
             cursor = self.pool.get(
                 'micronaet.accounting').get_goods_description(
                     cr, uid, context=context)
@@ -93,22 +94,22 @@ class stock_picking_goods_description(osv.osv):
                     data = {
                         'import_id': import_id,
                         'name': record['CDS_ASPBEN'],
-                        }                    
+                        }
                     goods_ids = self.search(cr, uid, [
-                        ('import_id', '=', import_id)], context=context)
+                        ('import_id', '=', import_id),
+                    ], context=context)
 
                     # Update / Create
                     if goods_ids:
                         goods_id = goods_ids[0]
-                        self.write(cr, uid, goods_id, data, 
-                            context=context)
+                        self.write(
+                            cr, uid, goods_id, data, context=context)
                     else:
-                        goods_id = self.create(
-                            cr, uid, data, context=context)
+                        self.create(cr, uid, data, context=context)
                 except:
                     _logger.error('Error importing goods desc.[%s]' % (
                         sys.exc_info(), ))
-                                            
+
         except:
             _logger.error('Error generic import goods description: %s' % (
                 sys.exc_info(), ))
@@ -122,4 +123,3 @@ class stock_picking_goods_description(osv.osv):
     _columns = {
         'import_id': fields.integer('SQL import'),
         }
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

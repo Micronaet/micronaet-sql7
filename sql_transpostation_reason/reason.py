@@ -2,13 +2,13 @@
 ##############################################################################
 #
 #    OpenERP module
-#    Copyright (C) 2010 Micronaet srl (<http://www.micronaet.it>) 
-#    
+#    Copyright (C) 2010 Micronaet srl (<http://www.micronaet.it>)
+#
 #    Italian OpenERP Community (<http://www.openerp-italia.com>)
 #
 #############################################################################
 #
-#    OpenERP, Open Source Management Solution	
+#    OpenERP, Open Source Management Solution
 #    Copyright (C) 2004-2009 Tiny SPRL (<http://tiny.be>). All Rights Reserved
 #    $Id$
 #
@@ -35,64 +35,68 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
+
 class stock_picking_transportation_reason(osv.osv):
-    ''' Extend stock.picking.transportation_reason
-    '''    
+    """ Extend stock.picking.transportation_reason
+    """
     _inherit = 'stock.picking.transportation_reason'
-    
+
     # -------------------------------------------------------------------------
     # Utility function
     # -------------------------------------------------------------------------
     def get_transportation(self, cr, uid, account_id, context=None):
-        ''' Return OpenERP ID from  account ID        
-        '''
+        """ Return OpenERP ID from  account ID
+        """
         transportation_ids = self.search(cr, uid, [
             ('import_id', '=', account_id)], context=context)
         if transportation_ids:
             return transportation_ids[0]
-        else:    
+        else:
             return False
-            
+
     # -------------------------------------------------------------------------
     #                             Scheduled action
     # -------------------------------------------------------------------------
-    def schedule_sql_transportation_import(self, cr, uid, context=None):
-        ''' Import transportation
-        '''            
+    def schedule_sql_reason_import(self, cr, uid, context=None):
+        """ Import transportation
+        """
         try:
             _logger.info('Start import SQL: transportation')
-            
+
             cursor = self.pool.get('micronaet.accounting').get_transportation(
                 cr, uid, context=context)
             if not cursor:
                 _logger.error('Unable to connect, no transportation!')
                 return True
 
-            _logger.info('Start import transportation')                          
+            _logger.info('Start import transportation')
             i = 0
             for record in cursor:
                 i += 1
-                try: 
+                try:
                     import_id = record['NKY_CAUM']
+                    name = record['CDS_CAUM']
                     data = {
                         'import_id': import_id,
-                        'name': record['CDS_CAUM'],
-                        }                    
+                        'name': name,
+                        }
                     transportation_ids = self.search(cr, uid, [
                         ('import_id', '=', import_id)], context=context)
+                    if not transportation_ids:
+                        transportation_ids = self.search(cr, uid, [
+                            ('name', '=', name)], context=context)
 
                     # Update / Create
                     if transportation_ids:
                         transportation_id = transportation_ids[0]
-                        self.write(cr, uid, transportation_id, data, 
-                            context=context)
+                        self.write(
+                            cr, uid, transportation_id, data, context=context)
                     else:
-                        transportation_id = self.create(
-                            cr, uid, data, context=context)
+                        self.create(cr, uid, data, context=context)
                 except:
                     _logger.error('Error importing transportation [%s]' % (
                         sys.exc_info(), ))
-                                            
+
         except:
             _logger.error('Error generic import transportation: %s' % (
                 sys.exc_info(), ))
@@ -106,4 +110,3 @@ class stock_picking_transportation_reason(osv.osv):
     _columns = {
         'import_id': fields.integer('SQL import'),
         }
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
