@@ -251,7 +251,6 @@ class res_partner(osv.osv):
                 _logger.info('Start import %s from: %s to: %s' % (
                     block, from_code, to_code))
                 i = 0
-                pdb.set_trace()
                 for record in cursor:
                     i += 1
                     if verbose_log_count and not i % verbose_log_count:
@@ -282,16 +281,16 @@ class res_partner(osv.osv):
                             data['type'] = 'default'
                             data['customer'] = True
                             data['ref'] = record['CKY_CNT']
-                            # if fiscal_position_db:
-                            #    data['property_account_position'] = \
-                            #        fiscal_position_db.get(record['IST_NAZ'])
+                            if fiscal_position_db:
+                                data['property_account_position'] = \
+                                    fiscal_position_db.get(record['IST_NAZ'])
 
                         if block == 'supplier':
                             data['type'] = 'default'
                             data['supplier'] = True
-                            # if fiscal_position_db:
-                            #    data['property_fiscal_position'] = \
-                            #        fiscal_position_db.get(record['IST_NAZ'])
+                            if fiscal_position_db:
+                                data['property_fiscal_position'] = \
+                                    fiscal_position_db.get(record['IST_NAZ'])
 
                         if address_link and block == 'destination':
                             data['type'] = 'delivery'
