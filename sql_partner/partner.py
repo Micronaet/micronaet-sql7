@@ -238,6 +238,7 @@ class res_partner(osv.osv):
                 if only_block and only_block != block:
                     _logger.warning("Jump block: %s!" % block)
                     continue
+                pdb.set_trace()
                 cursor = self.pool.get('micronaet.accounting').get_partner(
                     cr, uid, from_code=from_code, to_code=to_code,
                     write_date_from=write_date_from,
