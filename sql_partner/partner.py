@@ -330,13 +330,13 @@ class res_partner(osv.osv):
                             try:
                                 partner_id = partner_ids[0]
                                 self.write(
-                                    cr, uid, partner_id, data,
+                                    cr, uid, [partner_id], data,
                                     context=context)
                             except:
                                 data['vat'] = False
                                 try:  # Remove vat for vat check problems:
                                     self.write(
-                                        cr, uid, partner_id, data,
+                                        cr, uid, [partner_id], data,
                                         context=context)
                                 except:
                                     _logger.error(
