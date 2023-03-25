@@ -283,7 +283,7 @@ class res_partner(osv.osv):
                             data['customer'] = True
                             data['ref'] = record['CKY_CNT']
                             if fiscal_position_db:
-                                data['property_fiscal_position'] = \
+                                data['property_account_position'] = \
                                     fiscal_position_db.get(record['IST_NAZ'])
 
                         if block == 'supplier':
