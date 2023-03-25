@@ -251,6 +251,7 @@ class res_partner(osv.osv):
                 _logger.info('Start import %s from: %s to: %s' % (
                     block, from_code, to_code))
                 i = 0
+                pdb.set_trace()
                 for record in cursor:
                     i += 1
                     if verbose_log_count and not i % verbose_log_count:
