@@ -284,7 +284,7 @@ class micronaet_accounting(osv.osv):
                 SELECT 
                     CKY_CNT, CDS_CNT, CDS_RAGSOC_COGN, CDS_INDIR, CDS_CAP, 
                     CDS_LOC, CDS_PROV, CDS_TEL_TELEX, CSG_CFIS, CSG_PIVA, 
-                    CDS_FAX, CDS_INET, CKY_PAESE, CDS_URL_INET
+                    CDS_FAX, CDS_INET, CKY_PAESE, CDS_URL_INET, IST_NAZ,
                 FROM %s %s;""" % (
                     table,
                     "WHERE %s" % where_clause if where_clause else "")

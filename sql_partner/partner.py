@@ -149,6 +149,23 @@ class res_partner(osv.osv):
         # Load country for get ID from code
         countries = {}
         country_pool = self.pool.get('res.country')
+        fiscal_pool = self.pool.get('account.fiscal.position')
+
+        # ---------------------------------------------------------------------
+        # Load fiscal position type CEI:
+        # ---------------------------------------------------------------------
+        fiscal_ids = fiscal_pool.search(cr, uid, [], context=context)
+        fiscal_position_db = {}
+        for fiscal in fiscal_pool.browse(
+                cr, uid, fiscal_ids, context=context):
+            try:
+                cei_ref = fiscal.cei_ref
+            except:
+                _logger.error('No CEI Management in fiscal position, '
+                              'no assign')
+                break
+            fiscal_position_db[cei_ref] = fiscal.id
+
         country_ids = country_pool.search(cr, uid, [], context=context)
         country_proxy = country_pool.browse(
             cr, uid, country_ids, context=context)
@@ -264,14 +281,21 @@ class res_partner(osv.osv):
                             data['type'] = 'default'
                             data['customer'] = True
                             data['ref'] = record['CKY_CNT']
+                            if fiscal_position_db:
+                                data['property_fiscal_position'] = \
+                                    fiscal_position_db.get(record['IST_NAZ'])
 
                         if block == 'supplier':
                             data['type'] = 'default'
                             data['supplier'] = True
+                            if fiscal_position_db:
+                                data['property_fiscal_position'] = \
+                                    fiscal_position_db.get(record['IST_NAZ'])
 
                         if address_link and block == 'destination':
                             data['type'] = 'delivery'
                             data['is_address'] = True
+                            # No fiscal position
 
                             parent_code = destination_parents.get(
                                 record['CKY_CNT'], False)
