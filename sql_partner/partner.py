@@ -289,7 +289,7 @@ class res_partner(osv.osv):
                             data['type'] = 'default'
                             data['supplier'] = True
                             if fiscal_position_db:
-                                data['property_fiscal_position'] = \
+                                data['property_account_position'] = \
                                     fiscal_position_db.get(record['IST_NAZ'])
 
                         if address_link and block == 'destination':
