@@ -63,16 +63,20 @@ class account_payment_term(osv.osv):
         """
         try:
             # Normal import function launched:
+            _logger.info('Start import SQL: Call import payment')
             super(account_payment_term, self).schedule_sql_payment_import(
                 cr, uid, context=context)
 
-            _logger.info('Start import SQL: payment for bank')
+            _logger.info('Start import SQL: Append import bank after payment')
 
             # Used pool:
             partner_pool = self.pool.get('res.partner')
             bank_pool = self.pool.get('res.bank')
             partner_bank_pool = self.pool.get('res.partner.bank')
 
+            # -----------------------------------------------------------------
+            # Partner - Bank from SQL:
+            # -----------------------------------------------------------------
             cursor = self.pool.get(
                 'micronaet.accounting').get_payment_bank(
                     cr, uid, context=context)
@@ -81,9 +85,18 @@ class account_payment_term(osv.osv):
                 _logger.error("Unable to connect, no payment for bank!")
                 return True
 
+            # -----------------------------------------------------------------
+            # Load partner - bank from OpenERP (current)
+            # -----------------------------------------------------------------
+            partner_bank_ids = partner_bank_pool.search(
+                cr, uid, [], context=context)
+
+            # -----------------------------------------------------------------
+            # Bank list:
+            # -----------------------------------------------------------------
             # Load dict for convert bank ID in OpenERP ID:
             bank_convert = {}  # Correct
-            # bank_names = {} # With problem!
+            # bank_names = {}  # With problem!
             bank_ids = bank_pool.search(cr, uid, [], context=context)
             for bank in bank_pool.browse(cr, uid, bank_ids, context=context):
                 bank_convert[(bank.abi, bank.cab)] = bank.id
@@ -134,9 +147,9 @@ class account_payment_term(osv.osv):
                             'nation_code': nation_code,
                             'cin_code': cin_code,
                             'cin_letter': cin_letter,
-                            # todo enought data!!!!!
+                            # todo enough data!!!!!
                             }, context=context)
-                        bank_convert[(abi, cab)] = bank_id # save for after
+                        bank_convert[(abi, cab)] = bank_id  # save for after
 
                     # ---------------------------------------------------------
                     #                    res.partner.bank:
@@ -157,8 +170,14 @@ class account_payment_term(osv.osv):
                         ], context=context)
 
                     if account_ids:  # Update information:
-                        partner_bank_pool.write(cr, uid, account_ids[0], {
+                        account_id = account_ids[0]
+                        partner_bank_pool.write(cr, uid, account_id, {
                             }, context=context)
+                        # Remove assigned partner CC ID for end clean operation
+                        try:
+                            partner_bank_ids.remove(account_id)
+                        except:
+                            pass
                     else:  # create:
                         partner_bank_pool.create(cr, uid, {
                             'partner_id': partner_id,
@@ -170,8 +189,8 @@ class account_payment_term(osv.osv):
                             'nation_code': nation_code,
                             'cin_code': cin_code,
                             'cin_letter': cin_letter,
-                            'state': 'bank', #'iban',
-                            # todo enought?
+                            'state': 'bank',  # 'iban',
+                            # todo enough?
                             }, context=context)
                 except:
                     _logger.error('Importing payment for partner [%s]' % (
@@ -180,6 +199,8 @@ class account_payment_term(osv.osv):
             _logger.error('Error generic import payment: %s' % (
                 sys.exc_info(), ))
             return False
+        if partner_bank_ids:
+            _logger.error('Remove partner - bank: %s' % (partner_bank_ids, ))
         _logger.info('All payment is updated!')
         return True
 
