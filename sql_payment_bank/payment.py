@@ -96,11 +96,9 @@ class account_payment_term(osv.osv):
             # -----------------------------------------------------------------
             # Load dict for convert bank ID in OpenERP ID:
             bank_convert = {}  # Correct
-            # bank_names = {}  # With problem!
             bank_ids = bank_pool.search(cr, uid, [], context=context)
             for bank in bank_pool.browse(cr, uid, bank_ids, context=context):
                 bank_convert[(bank.abi, bank.cab)] = bank.id
-                # bank_names[bank.name] = bank.id
 
             i = 0
             _logger.info('Start import payment for bank')

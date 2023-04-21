@@ -200,7 +200,7 @@ class res_partner(osv.osv):
                  'destination'),
 
                 # todo (vedere come comportarsi durante la creazione
-                # (simli a fornitori, agganciarli a fiscalcode=
+                # (simili a fornitori, agganciarli a fiscalcode)
                 # (4,
                 # 'sql_agent_code',
                 # company_proxy.sql_agent_from_code,

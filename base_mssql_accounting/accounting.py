@@ -162,8 +162,8 @@ class micronaet_accounting(osv.osv):
             Table: PC_CONDIZIONI_COMM
         """
         table = "pc_condizioni_comm"
-        if self.pool.get('res.company').table_capital_name(cr, uid,
-                context=context):
+        if self.pool.get('res.company').table_capital_name(
+                cr, uid, context=context):
             table = table.upper()
 
         cursor = self.connect(cr, uid, year=year, context=context)
@@ -176,7 +176,7 @@ class micronaet_accounting(osv.osv):
                 FROM 
                     %s;
                 """ % table)
-            return cursor # with the query setted up
+            return cursor  # with the query setted up
         except:
             return False  # Error return nothing
 

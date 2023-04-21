@@ -42,8 +42,8 @@ class res_partner(osv.osv):
     _inherit = 'res.partner'
 
     _columns = {
-        'default_payment': fields.many2one('account.payment.term',
-            'Default payment'),
+        'default_payment': fields.many2one(
+            'account.payment.term', 'Default payment'),
         }
 
 
