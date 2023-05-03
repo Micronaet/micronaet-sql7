@@ -116,9 +116,14 @@ class product_product(osv.osv):
                     if verbose_log_count and i % verbose_log_count == 0:
                         _logger.info('Import %s: record import/update!' % i)
 
+                    name = record['CDS_ART'].strip()
+                    name_addendum = record['CDS_AGGIUN_ART'].strip()
+                    if name_addendum:
+                        name += name_addendum
+
                     data = {
                         # TODO IFL_ART_DBP o DBV for supply_method='produce'
-                        'name': record['CDS_ART'],
+                        'name': name,
                         'default_code': record['CKY_ART'],
                         # 'standard_price': record['NMP_UCA'],
                         'sql_import': True,

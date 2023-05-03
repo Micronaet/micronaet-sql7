@@ -30,21 +30,21 @@ from openerp.tools import (
 import openerp.addons.decimal_precision as dp
 from openerp.tools.translate import _
 
-
 _logger = logging.getLogger(__name__)
+
 
 class res_company(osv.osv):
     """ Extra fields for setup the module
     """
     _inherit = 'res.company'
 
-    def get_from_to_dict(self, cr, uid, context = None):
+    def get_from_to_dict(self, cr, uid, context=None):
         """ Return a company proxy for get from to clause
         """
-        company_id = self.search(cr, uid, [], context = context)
+        company_id = self.search(cr, uid, [], context=context)
         if not company_id:
             return False
-        return self.browse(cr, uid, company_id, context = context)[0]
+        return self.browse(cr, uid, company_id, context=context)[0]
 
     _columns = {
         # Supplier:
@@ -69,7 +69,7 @@ class res_company(osv.osv):
             'SQL destination from code <',
             size=10, required=False, readonly=False),
 
-        # TODO
+        # todo
         # Agent:
         'sql_agent_from_code': fields.char(
             'SQL agent from code >=',
@@ -77,15 +77,17 @@ class res_company(osv.osv):
         'sql_agent_to_code': fields.char(
             'SQL agent from code <',
             size=10, required=False, readonly=False),
-        # Employe
+
+        # Employee
         'sql_employee_from_code': fields.char(
             'SQL employee from code >=',
             size=10, required=False, readonly=False),
         'sql_employee_to_code': fields.char(
             'SQL employee from code <',
             size=10, required=False, readonly=False),
-        # TODO Bank account???
+        # todo Bank account???
         }
+
 
 class res_partner(osv.osv):
     """ Extend res.partner
@@ -97,11 +99,12 @@ class res_partner(osv.osv):
     # -------------------------------------------------------------------------
     def get_partner_from_sql_code(self, cr, uid, code, context=None):
         """ Return partner_id read from the import code passed
-            (search in customer, supplier, destiantion)
+            (search in customer, supplier, destination)
         """
-        partner_id = self.search(cr, uid, ['|', '|',
+        partner_id = self.search(cr, uid, [
+            '|', '|',
             ('sql_supplier_code', '=', code),
-            ('sql_customer_code','=', code),
+            ('sql_customer_code', '=', code),
             ('sql_destination_code', '=', code),
             # ('sql_agent_code', '=', code),
             # ('sql_employee_code', '=', code),
@@ -231,7 +234,7 @@ class res_partner(osv.osv):
                         # Swapped:
                         destination_parents[
                             record['CKY_CNT']] = swap_parent.get(
-                                record['CKY_CNT_CLI_FATT'], # search invoice to
+                                record['CKY_CNT_CLI_FATT'],  # search inv. to
                                 record['CKY_CNT_CLI_FATT'])  # default invoice
 
             for order, key_field, from_code, to_code, block in import_loop:
@@ -382,7 +385,7 @@ class res_partner(osv.osv):
         'sql_supplier_code': fields.char(
             'SQL supplier code', size=10,
             required=False, readonly=False),
-        'sql_customer_code':fields.char(
+        'sql_customer_code': fields.char(
             'SQL customer code', size=10,
             required=False, readonly=False),
         'sql_destination_code':fields.char(

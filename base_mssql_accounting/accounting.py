@@ -210,11 +210,11 @@ class micronaet_accounting(osv.osv):
             table = "pc_condizioni_comm"
 
         cursor = self.connect(cr, uid, year=year, context=context)
-        try:#                        ID       Description
+        try:  # ID Description
             cursor.execute("""
                 SELECT CKY_CNT, CKY_CNT_CLI_FATT 
                 FROM %s WHERE CKY_CNT_CLI_FATT != '';""" % table)
-            return cursor # with the query setted up
+            return cursor  # with the query set up
         except:
             return False  # Error return nothing
 
@@ -224,8 +224,8 @@ class micronaet_accounting(osv.osv):
     def get_partner_transport(self, cr, uid, year=False, context=None):
         """ Import partner-vector information
         """
-        if self.pool.get('res.company').table_capital_name(cr, uid,
-                context=context):
+        if self.pool.get('res.company').table_capital_name(
+                cr, uid, context=context):
             table = "PC_VETTORI"
         else:
             table = "pc_vettori"
@@ -239,7 +239,8 @@ class micronaet_accounting(osv.osv):
         except:
             return False
 
-    def get_partner(self, cr, uid, from_code, to_code, write_date_from=False,
+    def get_partner(
+            self, cr, uid, from_code, to_code, write_date_from=False,
             write_date_to=False, create_date_from=False, create_date_to=False,
             year=False, context=None):
         """ Import partner, customer or supplier, depend on from to code passed
@@ -247,8 +248,8 @@ class micronaet_accounting(osv.osv):
             Extra where clause: from_code, to_code, write from/to,
             create from/to
         """
-        if self.pool.get('res.company').table_capital_name(cr, uid,
-                context=context):
+        if self.pool.get('res.company').table_capital_name(
+                cr, uid, context=context):
             table = "PA_RUBR_PDC_CLFR"
         else:
             table = "pa_rubr_pdc_clfr"
@@ -354,7 +355,8 @@ class micronaet_accounting(osv.osv):
             return False  # Error return nothing
 
 
-    def get_product(self, cr, uid, active=True, write_date_from=False,
+    def get_product(
+            self, cr, uid, active=True, write_date_from=False,
             write_date_to=False, create_date_from=False, create_date_to=False,
             year=False, context=None):
         """ Access to anagrafic table of product and return dictionary read
@@ -404,7 +406,7 @@ class micronaet_accounting(osv.osv):
                        "WHERE %s" % where_clause if where_clause else ""))
 
             # NOTE: TAX: AR_CONDIZIONI_COMM
-            return cursor # with the query setted up
+            return cursor  # with the query setted up
         except:
             return False  # Error return nothing
 
