@@ -171,7 +171,7 @@ class sql_payment_duelist(osv.osv):
         partner_pool = self.pool.get('res.partner')
         separator = ';'
 
-        #no_fido_ids = partner_pool.search(cr, uid, [
+        # no_fido_ids = partner_pool.search(cr, uid, [
         #    ('duelist_fido', '=', 0),
         #    ], context=context)
 
@@ -382,7 +382,7 @@ class sql_payment_duelist(osv.osv):
                     _logger.info('%s. Creao pagamento!' % i)
 
             except:
-                _logger.error('Errore aggiornando paamento: %s' % (
+                _logger.error('Errore aggiornando pagamento: %s' % (
                     sys.exc_info(), ))
 
         # Delete all elements not present:
