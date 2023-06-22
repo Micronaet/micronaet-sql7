@@ -33,7 +33,8 @@ class product_categ(osv.osv):
     """
     _inherit = 'product.category'
 
-    def preload_category_from_account(
+    # No more used procedure (old version)
+    def preload_category_from_account_old(
             self, cr, uid, force_category_csv=False, context=None):
         """ Preload from file
         """
@@ -89,6 +90,71 @@ class product_categ(osv.osv):
             # Saved for parent ID in child (need alphabetic sort for list)
             if account_ref[1:] == '00':
                 parent_code_db[account_ref] = stat_id
+
+        # Delete old items:
+        for item_id in current_stat.values():
+            self.write(cr, uid, [item_id], {
+                'account_ref': False,
+                'code_list': False,
+            }, context=context)
+        return True
+
+    def preload_category_from_account(
+            self, cr, uid, force_category_csv=False, context=None):
+        """ Preload from file
+        """
+        if not force_category_csv:
+            force_category_csv = '~/account/catstatpan.csv'
+        stat_file = os.path.expanduser(force_category_csv)
+        _logger.info('Reading Cat. Stat. from %s' % stat_file)
+
+        i = 0
+        # all_product_id = 1
+        current_stat = {}
+
+        stat_ids = self.search(cr, uid, [
+            ('auto_category_type', '=', 'statistic_category'),
+        ], context=context)
+        for stat in self.browse(cr, uid, stat_ids, context=context):
+            if stat.account_ref:
+                current_stat[stat.account_ref] = stat.id
+
+        # parent_code_db = {}
+        for line in open(stat_file, 'r'):
+            i += 1
+            line = line.strip()
+            if not line:
+                _logger.warning('%s. Jump empty line' % i)
+                continue
+
+            row = line.split(';')
+            if len(row) != 2:
+                _logger.warning('%s. Different number of columns!' % i)
+                continue
+
+            account_ref = row[0].strip()
+            name = row[1].strip().title().replace('/', ' - ')
+            # parent_code = '%s00' % account_ref[:1]
+            if account_ref in current_stat:
+                # Update only name:
+                stat_id = current_stat[account_ref]
+                self.write(cr, uid, [stat_id], {
+                    'name': name,
+                }, context=context)
+                del(current_stat[account_ref])  # Delete remain after in DB!
+            else:
+                stat_id = self.create(cr, uid, {
+                    'name': name,
+                    'account_ref': account_ref,
+                    'code_list': account_ref,
+                    # 'parent_id': parent_code_db.get(
+                    #     parent_code, all_product_id),
+                    'auto_category_type': 'statistic_category',
+                }, context=context)
+
+            # Saved for parent ID in child (need alphabetic sort for list)
+            # if account_ref[1:] == '00':
+            #    parent_code_db[account_ref] = stat_id
 
         # Delete old items:
         for item_id in current_stat.values():
