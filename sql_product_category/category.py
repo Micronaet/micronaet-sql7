@@ -33,7 +33,27 @@ class product_categ(osv.osv):
     """
     _inherit = 'product.category'
 
-    # No more used procedure (old version)
+    def name_get(self, cr, uid, ids, context=None):
+        """ Force detailed view
+        """
+        if context is None:
+            context = {}
+
+        # Detailed mode:
+        if isinstance(ids, (list, tuple)) and not len(ids):
+            return []
+
+        if isinstance(ids, int):
+            ids = [ids]
+
+        res = []
+        for record in self.browse(cr, uid, ids, context=context):
+            res.append((record.id, '%s%s' % (
+                record.name,
+                ('[%s]' % record.account_ref) if record.account_ref else '',
+            )))
+        return res
+
     def preload_category_from_account_old(
             self, cr, uid, force_category_csv=False, context=None):
         """ Preload from file
