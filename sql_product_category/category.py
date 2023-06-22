@@ -131,7 +131,7 @@ class product_categ(osv.osv):
                             cr, uid, product_ids, {
                                 'categ_id': category.id
                             }, context=context)
-                        _logger.info('Update category: %s [Tot.: %s]' % (
+                        _logger.info('\nUpdate category: %s [Tot.: %s]' % (
                             category.name,
                             len(product_ids),
                         ))
