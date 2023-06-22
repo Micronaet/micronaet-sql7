@@ -33,6 +33,7 @@ class product_categ(osv.osv):
     """
     _inherit = 'product.category'
 
+    '''
     def name_get(self, cr, uid, ids, context=None):
         """ Force detailed view
         """
@@ -53,7 +54,8 @@ class product_categ(osv.osv):
                 ('[%s]' % record.account_ref) if record.account_ref else '',
             )))
         return res
-
+    '''
+    # OLD PROCEDURE!!!
     def preload_category_from_account_old(
             self, cr, uid, force_category_csv=False, context=None):
         """ Preload from file
@@ -154,6 +156,7 @@ class product_categ(osv.osv):
 
             account_ref = row[0].strip()
             name = row[1].strip().title().replace('/', ' - ')
+            name = '%s [%s]' % (name, account_ref)
             # parent_code = '%s00' % account_ref[:1]
             if account_ref in current_stat:
                 # Update only name:
