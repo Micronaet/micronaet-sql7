@@ -33,10 +33,15 @@ class product_categ(osv.osv):
     """
     _inherit = 'product.category'
 
-    def preload_category_from_account(self, cr, uid, context=None):
+    def preload_category_from_account(
+            self, cr, uid, force_category_csv=False, context=None):
         """ Preload from file
         """
-        stat_file = os.path.expanduser('~/account/catstatpan.csv')
+        if not force_category_csv:
+            force_category_csv = '~/account/catstatpan.csv'
+        stat_file = os.path.expanduser(force_category_csv)
+        _logger.info('Reading Cat. Stat. from %s' % stat_file)
+
         i = 0
         all_product_id = 1
 
@@ -94,13 +99,15 @@ class product_categ(osv.osv):
         return True
 
     # Scheduled action: #######################################################
-    def schedule_update_product_category(self, cr, uid, context=None):
+    def schedule_update_product_category(
+            self, cr, uid, force_category_csv=False, context=None):
         """ Update product category from external DB
         """
         _logger.info('Start updating product category')
 
         # Update category list:
-        self.preload_category_from_account(cr, uid, context=context)
+        self.preload_category_from_account(
+            cr, uid, force_category_csv, context=context)
 
         # Read category range:
         category_ids = self.search(cr, uid, [
