@@ -149,6 +149,7 @@ class res_partner(osv.osv):
             context: context of procedure
 
         """
+        pdb.set_trace()
         # Load country for get ID from code
         countries = {}
         country_pool = self.pool.get('res.country')
@@ -375,6 +376,7 @@ class res_partner(osv.osv):
             _logger.error(
                 'Error generic import partner: %s' % (sys.exc_info(), ))
             return False
+        pdb.set_trace()
         return True
 
     # -------------------------------------------------------------------------
