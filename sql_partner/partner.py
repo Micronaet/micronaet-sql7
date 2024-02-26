@@ -164,11 +164,15 @@ class res_partner(osv.osv):
             try:
                 cei_ref = fiscal.cei_ref
             except:
-                _logger.error('No CEI Management in fiscal position, '
-                              'no assign')
+                _logger.error(
+                    'No CEI Management in fiscal position. '
+                    'No fiscal position loaded!')
                 break
             fiscal_position_db[cei_ref] = fiscal.id
 
+        # ---------------------------------------------------------------------
+        # Load Country:
+        # ---------------------------------------------------------------------
         country_ids = country_pool.search(cr, uid, [], context=context)
         country_proxy = country_pool.browse(
             cr, uid, country_ids, context=context)
@@ -177,11 +181,18 @@ class res_partner(osv.osv):
 
         try:
             _logger.info('Start import SQL: customer, supplier, destination')
+            # -----------------------------------------------------------------
+            # Load company for parameters:
+            # -----------------------------------------------------------------
             company_pool = self.pool.get('res.company')
             company_proxy = company_pool.get_from_to_dict(
                 cr, uid, context=context)
             if not company_proxy:
                 _logger.error('Company parameters not set up!')
+
+            # -----------------------------------------------------------------
+            #                          MASTER LOOP:
+            # -----------------------------------------------------------------
 
             import_loop = [
                 (1,                                     # order
@@ -261,6 +272,8 @@ class res_partner(osv.osv):
                             'Import %s: %s record imported / updated!' % (
                                 block, i, ))
                     try:
+                        if record['CKY_CNT'] in ('06.03132', '06.03173'):
+                            pdb.set_trace()
                         data = {
                             'name': record['CDS_CNT'],
                             # 'sql_customer_code': record['CKY_CNT'],
@@ -390,7 +403,7 @@ class res_partner(osv.osv):
         'sql_customer_code': fields.char(
             'SQL customer code', size=10,
             required=False, readonly=False),
-        'sql_destination_code':fields.char(
+        'sql_destination_code': fields.char(
             'SQL destination code', size=10,
             required=False, readonly=False),
         # todo
