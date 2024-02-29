@@ -39,7 +39,8 @@ class res_company(osv.osv):
 
     # Button event:
     def test_database_connection(self, cr, uid, ids, context=None):
-        """ Test if with the current configuration OpenERP can connect to database
+        """ Test if with the current configuration OpenERP can connect to
+            database
             Test for current name
             TODO parametrize depend on multi year params
         """

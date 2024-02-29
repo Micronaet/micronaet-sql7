@@ -229,8 +229,8 @@ try:
                     data['is_address'] = True
                     # No fiscal position
 
-                    parent_code = destination_parents.get(
-                        record['CKY_CNT'], False)
+                    # Swap parent code:
+                    parent_code = destination_parents.get(record['CKY_CNT'])
                     if parent_code:  # Convert value with dict
                         # Cache search:
                         data['parent_id'] = parents.get(
@@ -241,10 +241,8 @@ try:
                             # Normal search:
                             parent_ids = partner_pool.search([
                                 '|',
-                                ('sql_customer_code', '=',
-                                 parent_code),
-                                ('sql_supplier_code', '=',
-                                 parent_code),
+                                ('sql_customer_code', '=', parent_code),
+                                ('sql_supplier_code', '=', parent_code),
                                 ])
                             if parent_ids:
                                 data['parent_id'] = parent_ids[0]
