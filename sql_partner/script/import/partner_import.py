@@ -83,12 +83,13 @@ if not company_proxy:
 # -----------------------------------------------------------------------------
 #                          MASTER LOOP:
 # -----------------------------------------------------------------------------
+# order, key field, from code, to code, type
 import_loop = [
-    (1,                                      # order
-     'sql_customer_code',                    # key field
-     company_proxy.sql_customer_from_code,   # form_code
-     company_proxy.sql_customer_to_code,     # to_code
-     'customer'),                            # type
+    (1,
+     'sql_customer_code',
+     company_proxy.sql_customer_from_code,
+     company_proxy.sql_customer_to_code,
+     'customer'),
 
     (2,
      'sql_supplier_code',
