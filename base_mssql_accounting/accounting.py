@@ -203,8 +203,8 @@ class micronaet_accounting(osv.osv):
         """ Parent partner code for destination
             Table: PC_CONDIZIONI_COMM
         """
-        if self.pool.get('res.company').table_capital_name(cr, uid,
-                context=context):
+        if self.pool.get('res.company').table_capital_name(
+                cr, uid, context=context):
             table = "PC_CONDIZIONI_COMM"
         else:
             table = "pc_condizioni_comm"
