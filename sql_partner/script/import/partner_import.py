@@ -74,11 +74,11 @@ dest_merged = False
 set_lang = False
 
 # OpenERP:
-pdb.set_trace()
-company_proxy = company_pool.get_from_to_dict()
-if not company_proxy:
+company_ids = company_pool.search([])
+if not company_ids:
     print('Company parameters not set up!')
     sys.exit()
+company_proxy = company_pool.browse(company_ids[0])
 
 # -----------------------------------------------------------------------------
 #                          MASTER LOOP:
@@ -144,6 +144,7 @@ country_proxy = country_pool.browse(country_ids)
 for item in country_proxy:
     countries[item.code] = item.id
 
+pdb.set_trace()
 try:
     print('Start import SQL: customer, supplier, destination')
     parents = {}              # Client / Supplier converter
