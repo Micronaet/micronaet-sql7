@@ -146,7 +146,7 @@
         <field name="model">sql.payment.duelist</field>
         <field name="priority" eval="20"/>
         <field name="arch" type="xml">
-            <search string="Payment duelist (red=no mail, blue=deadlined, grey=not deadline, orange=deadlined today)">
+            <search string="Payment duelist">
                     <field name="name" string="Ref." filter_domain="[('name','=',self)]"/>
                     <field name="partner_id" string="Partner" filter_domain="[('partner_id','=',self)]"/>
                     <field name="country_id" string="Country" filter_domain="[('country_id','=',self)]"/>
@@ -184,8 +184,8 @@
         <field name="name">sql.payment.duelist.tree</field>
         <field name="model">sql.payment.duelist</field>
         <field name="arch" type="xml">
-            <tree string="Payment duelist (red=no mail, blue=deadlined, grey=not deadline, orange=deadlined today)"
-                  colors="red:duelist_mail==False;orange:deadline==current_date;grey:deadline&gt;current_date;blue:deadline&lt;current_date">
+            <tree string="Scadenzario pagamenti (rosso=scaduti, arancio=scaduti oggi, grigio=non scaduto)"
+                  colors="orange:deadline==current_date;grey:deadline&gt;current_date;red:deadline&lt;current_date">
                 <field name="name" />
                 <field name="date" />
                 <field name="deadline" />
