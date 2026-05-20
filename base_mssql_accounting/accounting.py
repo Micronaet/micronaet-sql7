@@ -53,16 +53,11 @@ class micronaet_accounting(osv.osv):
     _description = "Micronaet accounting"
 
     # Format parameters (for keys):
-    KEY_MM_HEADER_FORMAT = "%(CSG_DOC)s%(NGB_SR_DOC)s:" + \
-        datetime.now().strftime("%y") + "-%(NGL_DOC)s"
-    KEY_MM_LINE_FORMAT = "%(CSG_DOC)s%(NGB_SR_DOC)s:" + \
-        datetime.now().strftime("%y") + \
-        "-%(NGL_DOC)s[%(NPR_DOC)s.%(NPR_RIGA_ART)s]"
+    KEY_MM_HEADER_FORMAT = "%(CSG_DOC)s%(NGB_SR_DOC)s:" + datetime.now().strftime("%y") + "-%(NGL_DOC)s"
+    KEY_MM_LINE_FORMAT = "%(CSG_DOC)s%(NGB_SR_DOC)s:" + datetime.now().strftime("%y") + "-%(NGL_DOC)s[%(NPR_DOC)s.%(NPR_RIGA_ART)s]"
 
-    KEY_OC_LINE_FORMAT = "%(CSG_DOC)s%(NGB_SR_DOC)s:" + \
-        datetime.now().strftime("%y") + "-%(NGL_DOC)s[%(NPR_RIGA)s]"
-    KEY_OC_FORMAT = "%(CSG_DOC)s%(NGB_SR_DOC)s:" + \
-        datetime.now().strftime("%y") + "-%(NGL_DOC)s"
+    KEY_OC_LINE_FORMAT = "%(CSG_DOC)s%(NGB_SR_DOC)s:" + datetime.now().strftime("%y") + "-%(NGL_DOC)s[%(NPR_RIGA)s]"
+    KEY_OC_FORMAT = "%(CSG_DOC)s%(NGB_SR_DOC)s:" + datetime.now().strftime("%y") + "-%(NGL_DOC)s"
 
     # -----------------
     # Utility function:
@@ -528,8 +523,7 @@ class micronaet_accounting(osv.osv):
         """ Return quantity element for product
             Table: OF_RIGHE
         """
-        if self.pool.get('res.company').table_capital_name(
-                cr, uid, context=context):
+        if self.pool.get('res.company').table_capital_name(cr, uid, context=context):
             table = "OF_RIGHE"
         else:
             table = "of_righe"
