@@ -537,7 +537,7 @@ class micronaet_accounting(osv.osv):
                     NQT_RIGA_O_PLOR, NCF_CONV
                 FROM %s;""" % table)
             # Sort: NGL_DOC, NPR_SORT_RIGA
-            return cursor # with the query setted up
+            return cursor # with the query set up
         except:
             return False  # Error return nothing
 
