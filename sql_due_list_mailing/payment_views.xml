@@ -205,7 +205,7 @@
                 <field name="payment_type" />
                 <field name="duelist_optin" invisible="1"/>
 
-                <button string="Always mail" name="trigger_duelist_draft_confirmed_always" type="object" icon="terp-personal+" attrs="{'invisible':['|',('duelist_optin','=',True),('state','!=','draft')]}"/>
+                <!--<button string="Always mail" name="trigger_duelist_draft_confirmed_always" type="object" icon="terp-personal+" attrs="{'invisible':['|',('duelist_optin','=',True),('state','!=','draft')]}"/>
                 <button string="Never mail" name="trigger_duelist_draft_confirmed_never" type="object" icon="terp-personal-" attrs="{'invisible':['|',('duelist_optin','=',False),('state','!=','draft')]}"/>
                 <button string="Confirmed" name="trigger_duelist_draft_confirmed" type="workflow" states="draft" icon="terp-mail-message-new"/>
                 <button string="Re-send" name="resend_mail" type="object" icon="terp-mail-replied" attrs="{'invisible':['|',('state','!=','confirmed'),('stage_id','=',False),]}"/>
@@ -218,6 +218,7 @@
                 <button string="Cancel" name="trigger_duelist_done_cancel" type="workflow" states="done" icon="gtk-cancel"/>
 
                 <button string="Restart" name="trigger_duelist_cancel_draft" type="workflow" states="cancel" icon="gtk-refresh"/>
+                -->
 
                 <field name="state" invisible="1" />
             </tree>
