@@ -52,7 +52,6 @@
                          <field name="duelist_over_fido" readonly="1"/>
                          <field name="duelist_uncovered" readonly="1"/>
 
-
                          <separator name="Duelist" colspan="4" />
                          <field name="duelist_ids" colspan="4" nolabel="1" readonly="1"/>
                     </group>
@@ -198,7 +197,7 @@
                 <field name="country_id" />
 
                 <field name="todo_stage_id" invisible="1" />
-                <field name="stage_id" />
+                <field name="stage_id" invisible="1" />
 
                 <field name="total" sum="total" />
                 <field name="currency_id" />
@@ -220,7 +219,7 @@
 
                 <button string="Restart" name="trigger_duelist_cancel_draft" type="workflow" states="cancel" icon="gtk-refresh"/>
 
-                <field name="state" widget="statusbar" />
+                <field name="state" invisible="1" />
             </tree>
         </field>
     </record>
