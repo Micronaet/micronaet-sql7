@@ -202,7 +202,7 @@
                 <field name="total" sum="total" />
                 <field name="currency_id" />
 
-                <field name="payment_type" />
+                <field name="payment_type" invisible="1"/>
                 <field name="partner_payment_id" />
                 <field name="duelist_optin" invisible="1"/>
 
