@@ -29,10 +29,11 @@
         Manage in OpenERP mailing for deadline               
     """,
     'author': 'Micronaet s.r.l.',
-    'website': 'http://www.micronaet.it',
+    'website': 'https://micronaet.it',
     'depends': [
         'base',                
         'sql_partner',
+        'account',
     ],
     'init_xml': [], 
     'data': [
