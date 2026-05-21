@@ -41,7 +41,7 @@
                 <page string="Duelist payment">
                     <group name="payment_duelist" colspan="4" col="4">
                          <field name="duelist_optin" />
-                         <field name="duelist_mail" />
+                         <field name="duelist_mail" invisible="1"/>
 
                          <field name="duelist_fido" readonly="1"/>
                          <field name="duelist_currency_id" readonly="1" />
@@ -193,7 +193,7 @@
                 <field name="deadline_month" invisible="1" />
 
                 <field name="partner_id" />
-                <field name="duelist_mail" />
+                <field name="duelist_mail" invisible="1"/>
                 <button name="%(res_partner_assign_duelist_mail_wizard_action)d" string="Assign" type="action" icon="gtk-index" context="{'partner_id':partner_id}" />
                 <field name="country_id" />
 
