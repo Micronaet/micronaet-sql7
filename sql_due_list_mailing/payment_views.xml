@@ -169,7 +169,8 @@
                         <filter name="group_partner" string="Partner" icon="terp-partner" context="{'group_by':'partner_id'}"/>
                         <filter name="group_country" string="Country" icon="terp-partner" context="{'group_by':'country_id'}"/>
                         <filter name="group_currency" string="Currency" icon="terp-accessories-archiver" context="{'group_by':'currency_id'}"/>
-                        <filter name="group_payment_type" string="Type of payment" icon="terp-accessories-archiver" context="{'group_by':'payment_type'}"/>
+                        <filter name="group_payment_type" string="Type of payment" context="{'group_by':'payment_type'}"/>
+                        <filter name="group_partner_payment_id" string="Pagamento cliente" context="{'group_by':'partner_payment_id'}"/>
                         <filter name="group_payment_stage" string="Stage" icon="terp-accessories-archiver" context="{'group_by':'stage_id'}"/>
                         <filter name="group_date" string="Date" icon="terp-accessories-archiver" context="{'group_by':'date_month'}"/>
                         <filter name="group_deadline" string="Deadline" icon="terp-accessories-archiver" context="{'group_by':'deadline_month'}"/>
