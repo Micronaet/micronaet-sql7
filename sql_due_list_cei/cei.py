@@ -35,7 +35,6 @@ _logger = logging.getLogger(__name__)
 class sql_payment_duelist(osv.osv):
     ''' Payment stage for sending e-mail
     '''
-    _name = 'sql.payment.duelist'
     _inherit = 'sql.payment.duelist'
 
     _columns = {
@@ -46,4 +45,3 @@ class sql_payment_duelist(osv.osv):
            ('e', 'Extra CEE'),               
            ]),
         }
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

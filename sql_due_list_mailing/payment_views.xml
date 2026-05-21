@@ -203,6 +203,7 @@
                 <field name="currency_id" />
 
                 <field name="payment_type" />
+                <field name="partner_payment_id" />
                 <field name="duelist_optin" invisible="1"/>
 
                 <!--<button string="Always mail" name="trigger_duelist_draft_confirmed_always" type="object" icon="terp-personal+" attrs="{'invisible':['|',('duelist_optin','=',True),('state','!=','draft')]}"/>

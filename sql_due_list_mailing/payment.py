@@ -751,18 +751,14 @@ class sql_payment_duelist(osv.osv):
                     _store_date_deadline_month, ['deadline'], 10),
                 }),
 
-        'partner_id': fields.many2one(
-            'res.partner', 'Customer', required=True),
-        'duelist_mail': fields.related(
-            'partner_id', 'duelist_mail',
-            type='char', string='Due list address', size=400),
+        'partner_id': fields.many2one('res.partner', 'Customer', required=True),
+        'duelist_mail': fields.related('partner_id', 'duelist_mail', type='char', string='Due list address', size=400),
         'country_id': fields.related(
-            'partner_id', 'country_id',
-            type='many2one', relation="res.country", string='Country',
-            store=True),
-        'duelist_optin': fields.related(
-            'partner_id', 'duelist_optin',
-            type='boolean', string='Partner opt-in'),
+            'partner_id', 'country_id', type='many2one', relation="res.country", string='Country', store=True),
+        'duelist_optin': fields.related('partner_id', 'duelist_optin', type='boolean', string='Partner opt-in'),
+        'partner_payment_id': fields.related(
+            'partner_id', 'property_payment_term', type='many2one', relation="account.payment.term",
+            string='Pagamento cliente', store=True),
 
         'total': fields.float('Total', digits=(16, 3)),
         'currency_id': fields.many2one(
@@ -778,10 +774,8 @@ class sql_payment_duelist(osv.osv):
         # Mail stage info:
         # 'email_last_date': fields.date('E-mail last date'),
         # 'email_next_date': fields.date('E-mail next date'),
-        'todo_stage_id': fields.many2one(
-            'sql.payment.stage', 'Stage todo', required=False),
-        'stage_id': fields.many2one(
-            'sql.payment.stage', 'Stage', required=False),
+        'todo_stage_id': fields.many2one('sql.payment.stage', 'Stage todo', required=False),
+        'stage_id': fields.many2one('sql.payment.stage', 'Stage', required=False),
 
         # Workflow:
         'draft_date': fields.date('Creation date'),
