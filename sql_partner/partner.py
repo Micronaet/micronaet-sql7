@@ -156,6 +156,15 @@ class res_partner(osv.osv):
         province_pool = self.pool.get('res.province')
 
         # ---------------------------------------------------------------------
+        # Load Provinces (Italian provinces cached upfront to fix N+1 bottleneck)
+        # ---------------------------------------------------------------------
+        provinces = {}
+        if province_pool:
+            prov_ids = province_pool.search(cr, uid, [], context=context)
+            for prov in province_pool.browse(cr, uid, prov_ids, context=context):
+                provinces[prov.code] = prov.id
+
+        # ---------------------------------------------------------------------
         # Load fiscal position type CEI:
         # ---------------------------------------------------------------------
         fiscal_ids = fiscal_pool.search(cr, uid, [], context=context)
@@ -163,12 +172,12 @@ class res_partner(osv.osv):
         for fiscal in fiscal_pool.browse(cr, uid, fiscal_ids, context=context):
             try:
                 cei_ref = fiscal.cei_ref
-            except:
+                fiscal_position_db[cei_ref] = fiscal.id
+            except Exception:
                 _logger.error(
                     'No CEI Management in fiscal position. '
                     'No fiscal position loaded!')
                 break
-            fiscal_position_db[cei_ref] = fiscal.id
 
         # ---------------------------------------------------------------------
         # Load Country:
@@ -233,11 +242,9 @@ class res_partner(osv.osv):
             if address_link:
                 _logger.info('Read parent for destinations')
                 cursor = self.pool.get(
-                    'micronaet.accounting').get_parent_partner(
-                        cr, uid, context=context)
+                    'micronaet.accounting').get_parent_partner(cr, uid, context=context)
                 if not cursor:
-                    _logger.error(
-                        "Unable to connect to parent for destination!")
+                    _logger.error("Unable to connect to parent for destination!")
                 else:
                     for record in cursor:
                         # Swapped:
@@ -269,6 +276,8 @@ class res_partner(osv.osv):
                         cr.commit()  # Save transaction
                         _logger.info('Import %s: %s record imported / updated!' % (block, i, ))
 
+                    # Save point
+                    cr.execute('SAVEPOINT partner_import_item')
                     try:
                         country_code = record['CKY_PAESE']
                         data = {
@@ -291,12 +300,9 @@ class res_partner(osv.osv):
 
                         # Province management (only for Italy if exist object):
                         if province_pool and country_code == 'IT':
-                            province_code = record['CDS_PROV']
-                            province_ids = province_pool.search(cr, uid, [
-                                ('code', '=', province_code),
-                            ], context=context)
-                            if province_ids:
-                                data['province'] = province_ids[0]
+                            province_id = provinces.get(record['CDS_PROV'])
+                            if province_id:
+                                data['province'] = province_id
 
                         if block == 'customer':
                             data['type'] = 'default'
@@ -326,10 +332,8 @@ class res_partner(osv.osv):
                                     # Normal search:
                                     parent_ids = self.search(cr, uid, [
                                         '|',
-                                        ('sql_customer_code', '=',
-                                         parent_code),
-                                        ('sql_supplier_code', '=',
-                                         parent_code),
+                                        ('sql_customer_code', '=', parent_code),
+                                        ('sql_supplier_code', '=', parent_code),
                                         ], context=context)
                                     if parent_ids:
                                         data['parent_id'] = parent_ids[0]
@@ -341,7 +345,8 @@ class res_partner(osv.osv):
                         # Search per vat (only for customer and supplier)
                         if sync_vat and not partner_ids and block != 'destination':
                             partner_ids = self.search(cr, uid, [
-                                ('vat', '=', record['CSG_PIVA'])])
+                                ('vat', '=', record['CSG_PIVA']),
+                            ])
 
                         # Update / Create
                         if partner_ids:
@@ -349,14 +354,19 @@ class res_partner(osv.osv):
                                 partner_id = partner_ids[0]
                                 self.write(cr, uid, [partner_id], data, context=context)
                             except Exception:
-                                cr.rollback()  # Rollback PG error
+                                # Rollback PG error:
+                                cr.execute('ROLLBACK TO SAVEPOINT partner_import_item')
+                                cr.execute('SAVEPOINT partner_import_item')
 
                                 data['vat'] = False
                                 try:  # Remove vat for vat check problems:
                                     self.write(cr, uid, [partner_id], data,  context=context)
 
                                 except Exception:
-                                    cr.rollback()  # Rollback PG error
+                                    # Rollback PG error:
+                                    cr.execute('ROLLBACK TO SAVEPOINT partner_import_item')
+                                    cr.execute('SAVEPOINT partner_import_item')
+
                                     _logger.error(
                                         '%s. Error updating partner [%s]: %s' % (i, record, sys.exc_info()))
                                     continue
@@ -364,13 +374,18 @@ class res_partner(osv.osv):
                             try:
                                 partner_id = self.create(cr, uid, data, context=context)
                             except Exception:
-                                cr.rollback()  # Rollback PG error
+                                # Rollback PG error:
+                                cr.execute('ROLLBACK TO SAVEPOINT partner_import_item')
+                                cr.execute('SAVEPOINT partner_import_item')
 
                                 data['vat'] = False
                                 try:  # Remove vat for vat check problems:
                                     partner_id = self.create(cr, uid, data, context=context)
                                 except Exception:
-                                    cr.rollback()  # Rollback PG error
+                                    # Rollback PG error:
+                                    cr.execute('ROLLBACK TO SAVEPOINT partner_import_item')
+                                    cr.execute('SAVEPOINT partner_import_item')
+
                                     _logger.error(
                                         '%s. Error creating partner [%s]: %s' % (i, record, sys.exc_info()))
                                     continue
@@ -380,15 +395,20 @@ class res_partner(osv.osv):
                             parents[record['CKY_CNT']] = partner_id
 
                     except Exception:
-                        cr.rollback()  # Rollback PG error
+                        # Rollback PG error:
+                        cr.execute('ROLLBACK TO SAVEPOINT partner_import_item')
+                        cr.execute('SAVEPOINT partner_import_item')  # TODO Could be removed!
+
+                        record_name = record.get('CDS_CNT') if isinstance(record, dict) else 'Unknown'
+
                         _logger.error(
-                            'Error importing partner [%s], jumped: %s' % (record['CDS_CNT'], sys.exc_info()))
+                            'Error importing partner [%s], jumped: %s' % (record_name, sys.exc_info()))
                         continue
 
                 # Final commit:
                 cr.commit()
                 _logger.info('>>>> All record in block %s is updated!' % block)
-        except:
+        except Exception:
             _logger.error(
                 'Error generic import partner: %s' % (sys.exc_info(), ))
             return False
