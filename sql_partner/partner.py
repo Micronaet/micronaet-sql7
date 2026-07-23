@@ -153,14 +153,14 @@ class res_partner(osv.osv):
         countries = {}
         country_pool = self.pool.get('res.country')
         fiscal_pool = self.pool.get('account.fiscal.position')
+        province_pool = self.pool.get('res.province')
 
         # ---------------------------------------------------------------------
         # Load fiscal position type CEI:
         # ---------------------------------------------------------------------
         fiscal_ids = fiscal_pool.search(cr, uid, [], context=context)
         fiscal_position_db = {}
-        for fiscal in fiscal_pool.browse(
-                cr, uid, fiscal_ids, context=context):
+        for fiscal in fiscal_pool.browse(cr, uid, fiscal_ids, context=context):
             try:
                 cei_ref = fiscal.cei_ref
             except:
@@ -174,8 +174,7 @@ class res_partner(osv.osv):
         # Load Country:
         # ---------------------------------------------------------------------
         country_ids = country_pool.search(cr, uid, [], context=context)
-        country_proxy = country_pool.browse(
-            cr, uid, country_ids, context=context)
+        country_proxy = country_pool.browse(cr, uid, country_ids, context=context)
         for item in country_proxy:
             countries[item.code] = item.id
 
@@ -185,8 +184,7 @@ class res_partner(osv.osv):
             # Load company for parameters:
             # -----------------------------------------------------------------
             company_pool = self.pool.get('res.company')
-            company_proxy = company_pool.get_from_to_dict(
-                cr, uid, context=context)
+            company_proxy = company_pool.get_from_to_dict(cr, uid, context=context)
             if not company_proxy:
                 _logger.error('Company parameters not set up!')
 
@@ -262,18 +260,15 @@ class res_partner(osv.osv):
                     _logger.error("Unable to connect, no partner!")
                     continue  # next block
 
-                _logger.info('Start import %s from: %s to: %s' % (
-                    block, from_code, to_code))
+                _logger.info('Start import %s from: %s to: %s' % (block, from_code, to_code))
                 i = 0
                 for record in cursor:
                     i += 1
                     if verbose_log_count and not i % verbose_log_count:
                         _logger.info(
-                            'Import %s: %s record imported / updated!' % (
-                                block, i, ))
+                            'Import %s: %s record imported / updated!' % (block, i, ))
                     try:
-                        # if record['CKY_CNT'] in ('06.03132', '06.03173'):
-                        #    pdb.set_trace()
+                        country_code = record['CKY_PAESE']
                         data = {
                             'name': record['CDS_CNT'],
                             # 'sql_customer_code': record['CKY_CNT'],
@@ -289,36 +284,40 @@ class res_partner(osv.osv):
                             'website': record['CDS_URL_INET'] or False,
                             'vat': record['CSG_PIVA'] or False,
                             key_field: record['CKY_CNT'],  # key code
-                            'country_id': countries.get(
-                                record['CKY_PAESE'], False),
+                            'country_id': countries.get(country_code, False),
                             }
+
+                        # Province management (only for Italy if exist object):
+                        if province_pool and country_code == 'IT':
+                            province_code = record['CDS_PROV']
+                            province_ids = province_pool.search(cr, uid, [
+                                ('code', '=', province_code),
+                            ], context=context)
+                            if province_ids:
+                                data['province'] = province_ids[0]
 
                         if block == 'customer':
                             data['type'] = 'default'
                             data['customer'] = True
                             data['ref'] = record['CKY_CNT']
                             if fiscal_position_db:
-                                data['property_account_position'] = \
-                                    fiscal_position_db.get(record['IST_NAZ'])
+                                data['property_account_position'] = fiscal_position_db.get(record['IST_NAZ'])
 
                         if block == 'supplier':
                             data['type'] = 'default'
                             data['supplier'] = True
                             if fiscal_position_db:
-                                data['property_account_position'] = \
-                                    fiscal_position_db.get(record['IST_NAZ'])
+                                data['property_account_position'] = fiscal_position_db.get(record['IST_NAZ'])
 
                         if address_link and block == 'destination':
                             data['type'] = 'delivery'
                             data['is_address'] = True
                             # No fiscal position
 
-                            parent_code = destination_parents.get(
-                                record['CKY_CNT'], False)
+                            parent_code = destination_parents.get(record['CKY_CNT'], False)
                             if parent_code:  # Convert value with dict
                                 # Cache search:
-                                data['parent_id'] = parents.get(
-                                    parent_code, False)
+                                data['parent_id'] = parents.get(parent_code, False)
 
                                 # if not in convert dict try to search
                                 if not data['parent_id']:
@@ -337,8 +336,7 @@ class res_partner(osv.osv):
                             (key_field, '=', record['CKY_CNT'])])
 
                         # Search per vat (only for customer and supplier)
-                        if sync_vat and not partner_ids and block != \
-                                'destination':
+                        if sync_vat and not partner_ids and block != 'destination':
                             partner_ids = self.search(cr, uid, [
                                 ('vat', '=', record['CSG_PIVA'])])
 
@@ -346,20 +344,15 @@ class res_partner(osv.osv):
                         if partner_ids:
                             try:
                                 partner_id = partner_ids[0]
-                                self.write(
-                                    cr, uid, [partner_id], data,
-                                    context=context)
+                                self.write(cr, uid, [partner_id], data, context=context)
                             except:
                                 data['vat'] = False
                                 try:  # Remove vat for vat check problems:
-                                    self.write(
-                                        cr, uid, [partner_id], data,
-                                        context=context)
+                                    self.write(cr, uid, [partner_id], data,  context=context)
                                 except:
                                     _logger.error(
                                         '%s. Error updating partner [%s]: '
-                                        '%s' % (
-                                             i, record, sys.exc_info()))
+                                        '%s' % (i, record, sys.exc_info()))
                                     continue
                         else:
                             try:
@@ -368,13 +361,11 @@ class res_partner(osv.osv):
                             except:
                                 data['vat'] = False
                                 try:  # Remove vat for vat check problems:
-                                    partner_id = self.create(
-                                        cr, uid, data, context=context)
+                                    partner_id = self.create(cr, uid, data, context=context)
                                 except:
                                     _logger.error(
                                         '%s. Error creating partner [%s]: '
-                                        '%s' % (
-                                            i, record, sys.exc_info()))
+                                        '%s' % (i, record, sys.exc_info()))
                                     continue
 
                         if address_link and block != 'destination':
@@ -382,8 +373,7 @@ class res_partner(osv.osv):
                             parents[record['CKY_CNT']] = partner_id
                     except:
                         _logger.error(
-                            'Error importing partner [%s], jumped: %s' % (
-                                record['CDS_CNT'], sys.exc_info()))
+                            'Error importing partner [%s], jumped: %s' % (record['CDS_CNT'], sys.exc_info()))
                         continue
                 _logger.info('>>>> All record in block %s is updated!' % block)
         except:
