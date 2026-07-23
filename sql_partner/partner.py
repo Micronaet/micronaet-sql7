@@ -264,9 +264,11 @@ class res_partner(osv.osv):
                 i = 0
                 for record in cursor:
                     i += 1
+
                     if verbose_log_count and not i % verbose_log_count:
-                        _logger.info(
-                            'Import %s: %s record imported / updated!' % (block, i, ))
+                        cr.commit()  # Save transaction
+                        _logger.info('Import %s: %s record imported / updated!' % (block, i, ))
+
                     try:
                         country_code = record['CKY_PAESE']
                         data = {
@@ -333,7 +335,8 @@ class res_partner(osv.osv):
                                         data['parent_id'] = parent_ids[0]
 
                         partner_ids = self.search(cr, uid, [
-                            (key_field, '=', record['CKY_CNT'])])
+                            (key_field, '=', record['CKY_CNT']),
+                        ])
 
                         # Search per vat (only for customer and supplier)
                         if sync_vat and not partner_ids and block != 'destination':
@@ -345,36 +348,45 @@ class res_partner(osv.osv):
                             try:
                                 partner_id = partner_ids[0]
                                 self.write(cr, uid, [partner_id], data, context=context)
-                            except:
+                            except Exception:
+                                cr.rollback()  # Rollback PG error
+
                                 data['vat'] = False
                                 try:  # Remove vat for vat check problems:
                                     self.write(cr, uid, [partner_id], data,  context=context)
-                                except:
+
+                                except Exception:
+                                    cr.rollback()  # Rollback PG error
                                     _logger.error(
-                                        '%s. Error updating partner [%s]: '
-                                        '%s' % (i, record, sys.exc_info()))
+                                        '%s. Error updating partner [%s]: %s' % (i, record, sys.exc_info()))
                                     continue
                         else:
                             try:
-                                partner_id = self.create(
-                                    cr, uid, data, context=context)
-                            except:
+                                partner_id = self.create(cr, uid, data, context=context)
+                            except Exception:
+                                cr.rollback()  # Rollback PG error
+
                                 data['vat'] = False
                                 try:  # Remove vat for vat check problems:
                                     partner_id = self.create(cr, uid, data, context=context)
-                                except:
+                                except Exception:
+                                    cr.rollback()  # Rollback PG error
                                     _logger.error(
-                                        '%s. Error creating partner [%s]: '
-                                        '%s' % (i, record, sys.exc_info()))
+                                        '%s. Error creating partner [%s]: %s' % (i, record, sys.exc_info()))
                                     continue
 
                         if address_link and block != 'destination':
                             # Save partner for destination search
                             parents[record['CKY_CNT']] = partner_id
-                    except:
+
+                    except Exception:
+                        cr.rollback()  # Rollback PG error
                         _logger.error(
                             'Error importing partner [%s], jumped: %s' % (record['CDS_CNT'], sys.exc_info()))
                         continue
+
+                # Final commit:
+                cr.commit()
                 _logger.info('>>>> All record in block %s is updated!' % block)
         except:
             _logger.error(
